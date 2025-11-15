@@ -10,10 +10,30 @@ let isAuthenticated = false;
 const ADMIN_PASSWORD = '123456*';
 
 // Inicialización
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     checkAuth(); // Solo verifica el estado, no abre modal
-    loadData();
     setupEventListeners();
+    
+    // Intentar cargar desde servidor primero, si no existe usar localStorage
+    try {
+        const response = await fetch('data.json');
+        if (response.ok) {
+            const serverData = await response.json();
+            if (Array.isArray(serverData) && serverData.length > 0) {
+                modules = serverData;
+                // Guardar en localStorage también para referencia local
+                saveData();
+            } else {
+                loadData(); // Usar localStorage o datos iniciales
+            }
+        } else {
+            loadData(); // Usar localStorage o datos iniciales
+        }
+    } catch (error) {
+        // Si no existe data.json, cargar desde localStorage
+        loadData();
+    }
+    
     checkStudentName(); // Verificar si hay nombre de estudiante guardado
     renderStudentView();
     updateAuthUI(); // Actualizar UI según estado de autenticación
@@ -48,6 +68,14 @@ function setupEventListeners() {
     document.getElementById('resourceType').addEventListener('change', handleResourceTypeChange);
     document.getElementById('fileUpload').addEventListener('change', handleFileUpload);
     document.getElementById('resourceChapter').addEventListener('change', handleResourceChapterChange);
+
+    // Exportar/Importar datos
+    document.getElementById('exportDataBtn').addEventListener('click', exportData);
+    document.getElementById('importDataBtn').addEventListener('click', () => {
+        document.getElementById('importFileInput').click();
+    });
+    document.getElementById('importFileInput').addEventListener('change', handleImportFile);
+    document.getElementById('loadFromServerBtn').addEventListener('click', loadDataFromServer);
 
     // Módulos
     document.getElementById('addModuleBtn').addEventListener('click', () => openModuleModal());
@@ -219,6 +247,8 @@ function switchView(view) {
 
 // Cargar datos desde localStorage
 function loadData() {
+    // Primero intentar cargar desde el servidor (data.json)
+    // Si no existe, usar localStorage
     const saved = localStorage.getItem('emprendeSmartData');
     if (saved) {
         modules = JSON.parse(saved);
@@ -308,6 +338,96 @@ function loadData() {
 // Guardar datos en localStorage
 function saveData() {
     localStorage.setItem('emprendeSmartData', JSON.stringify(modules));
+}
+
+// ========== EXPORTAR/IMPORTAR DATOS ==========
+
+// Exportar datos a JSON
+function exportData() {
+    const dataStr = JSON.stringify(modules, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'curso-emprende-smart.json';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    
+    alert('✅ Datos exportados correctamente. Renombra el archivo como "data.json" y súbelo a tu repositorio de GitHub.');
+}
+
+// Importar datos desde archivo
+function handleImportFile(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const importedData = JSON.parse(e.target.result);
+            
+            if (Array.isArray(importedData)) {
+                const confirmar = confirm(
+                    '⚠️ Esto reemplazará todos los datos actuales.\n\n' +
+                    '¿Deseas continuar?'
+                );
+                
+                if (confirmar) {
+                    modules = importedData;
+                    saveData();
+                    renderStudentView();
+                    renderAdminView();
+                    alert('✅ Datos importados correctamente!');
+                }
+            } else {
+                alert('❌ El archivo no tiene el formato correcto. Debe ser un array de módulos.');
+            }
+        } catch (error) {
+            alert('❌ Error al leer el archivo. Verifica que sea un JSON válido.');
+            console.error(error);
+        }
+    };
+    reader.readAsText(file);
+    event.target.value = ''; // Reset para poder seleccionar el mismo archivo otra vez
+}
+
+// Cargar datos desde servidor (data.json)
+async function loadDataFromServer() {
+    try {
+        const response = await fetch('data.json');
+        
+        if (!response.ok) {
+            throw new Error('Archivo no encontrado');
+        }
+        
+        const serverData = await response.json();
+        
+        if (Array.isArray(serverData)) {
+            const confirmar = confirm(
+                '⚠️ Esto reemplazará todos los datos actuales con los del servidor.\n\n' +
+                '¿Deseas continuar?'
+            );
+            
+            if (confirmar) {
+                modules = serverData;
+                // Guardar también en localStorage para referencia
+                saveData();
+                renderStudentView();
+                if (isAuthenticated) {
+                    renderAdminView();
+                }
+                alert('✅ Datos cargados desde el servidor correctamente!');
+            }
+        } else {
+            alert('❌ El archivo del servidor no tiene el formato correcto.');
+        }
+    } catch (error) {
+        alert('❌ No se pudo cargar el archivo data.json del servidor.\n\n' +
+              'Asegúrate de que el archivo existe en la raíz del proyecto.');
+        console.error(error);
+    }
 }
 
 // Generar ID único

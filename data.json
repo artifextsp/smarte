@@ -1,0 +1,82 @@
+[
+  {
+    "id": "mhzlx28gnto43mj5t2e",
+    "name": "Ingeniería de Prompts",
+    "description": "Aprende técnicas avanzadas para crear prompts efectivos con IA",
+    "order": 1,
+    "chapters": [
+      {
+        "id": "mhzmli23wf4zchv0m5k",
+        "name": "CONCEPTOS",
+        "description": "La base conceptual es la base del conocimiento, comprender los conceptos le da sentido a los aprendizajes porque es la semilla de cualquier construcción intelectual.",
+        "order": 1,
+        "resources": [
+          {
+            "id": "mhznb82aeayk21qkm4v",
+            "title": "DICCIONARIO DE TÉRMINOS IA",
+            "url": "DICCIONARIO.html",
+            "type": "platform",
+            "description": "Términos que utilizaremos en la interacción de la clase para referirnos a los procesos que llevaremos a cabo con la IA",
+            "order": 1
+          },
+          {
+            "id": "mhzo4hb5gju151x5sk",
+            "title": "RETO 1 POR EQUIPOS",
+            "url": "https://drive.google.com/file/d/1EQM7h-cAsv2zDXnUjWUADm6WSigqtx5C/view?usp=drive_link",
+            "type": "pdf",
+            "description": "Equipos de 3 a 4 estudiantes, el objetivo es afinar las habilidades de trabajo en equipo y liderazgo, comprender que la IA puede ver y escuchar.",
+            "order": 2
+          }
+        ]
+      },
+      {
+        "id": "mhzo8xn9hvli1uesnhr",
+        "name": "HABILIDADES",
+        "description": "El desarrollo de la habilidad, la aplicación de la técnica, el conocimiento de los protocolos son habilidades para la vida que nos ayudan a integrarnos efectivamente con la IA",
+        "order": 2,
+        "resources": [
+          {
+            "id": "mhzol3hmgw8xs7b237c",
+            "title": "PLATAFORMA DE HABILIDAD",
+            "url": "IPROMPTS.html",
+            "type": "platform",
+            "description": "Plataforma de entrenamiento para el desarrollo de habilidades en el diseño de prompts, identificación de problemas y técnicas de análisis de situaciones.",
+            "order": 1
+          }
+        ]
+      },
+      {
+        "id": "mhzps0r3ag3adhmdyzb",
+        "name": "OPERACIÓN",
+        "description": "La práctica en tiempo real con las herramientas de IA son cruciales para afinar nuestras habilidades de diseño de prompts efectivos.",
+        "order": 3,
+        "resources": [
+          {
+            "id": "mhzptlfvx274uwhwdd",
+            "title": "PLATAFORMA DE OPERACIÓN",
+            "url": "GESTIONIA.html",
+            "type": "platform",
+            "description": "Diseño en tiempo real de prompts para ser ejecutados con diferentes modelos IA generativas.",
+            "order": 1
+          }
+        ]
+      },
+      {
+        "id": "mhzsk48t9z501du7ygf",
+        "name": "TRANSFERENCIA",
+        "description": "El objetivo de aprender es poder aplicar y que el conocimiento y la habilidad se conviertan en una herramienta para ser usadas en la vida real.",
+        "order": 4,
+        "resources": [
+          {
+            "id": "mhzt9e3uauofiaymxy",
+            "title": "PLATAFORMA DE TRANSFERENCIA",
+            "url": "transferencia.html",
+            "type": "platform",
+            "description": "Aplicación del conocimiento a situaciones de la vida real.",
+            "order": 1
+          }
+        ]
+      }
+    ]
+  }
+]
