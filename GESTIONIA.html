@@ -1,0 +1,2102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GESTIÓN IA - Prompts & Workflows</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <style>
+        /* Loader inicial */
+        #loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s, visibility 0.5s;
+        }
+        #loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        .loader-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .workflow-preview {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+        }
+        .workflow-node-preview {
+            position: relative;
+            margin: 8px 0;
+        }
+        .workflow-connector {
+            width: 2px;
+            height: 24px;
+            background: linear-gradient(to bottom, #cbd5e1, #64748b);
+            margin: 0 auto;
+        }
+        .node-badge {
+            position: absolute;
+            top: -8px;
+            left: -8px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            font-size: 14px;
+        }
+        .tooltip-container {
+            position: relative;
+            display: inline-block;
+        }
+        .tooltip-text {
+            visibility: hidden;
+            width: 200px;
+            background-color: #1e293b;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 12px;
+        }
+        .tooltip-container:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        
+        /* Estilos del Taller PER-T-CO-F */
+        .caso-section {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 2px solid #e5e7eb;
+        }
+        
+        .caso-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        
+        .caso-number {
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-right: 1rem;
+        }
+        
+        .contexto-box, .reto-box, .prompt-defectuoso {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 4px solid;
+        }
+        
+        .contexto-box {
+            background: linear-gradient(to right, #f8fafc, #f1f5f9);
+            border-left-color: #3b82f6;
+        }
+        
+        .reto-box {
+            background: linear-gradient(to right, #fef3c7, #fde68a);
+            border-left-color: #f59e0b;
+        }
+        
+        .prompt-defectuoso {
+            background: linear-gradient(to right, #fee2e2, #fecaca);
+            border-left-color: #ef4444;
+            font-style: italic;
+        }
+        
+        .prompt-defectuoso::before {
+            content: "❌ Prompt Defectuoso: ";
+            font-weight: 700;
+            font-style: normal;
+            color: #ef4444;
+        }
+        
+        .tips-box {
+            background: linear-gradient(to right, #d1fae5, #a7f3d0);
+            border-left: 4px solid #10b981;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        
+        .tips-list {
+            list-style: none;
+            padding: 0;
+            margin: 0.5rem 0 0 0;
+        }
+        
+        .tips-list li {
+            padding: 0.5rem 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+        
+        .tips-list li::before {
+            content: "💡";
+            font-size: 1.2rem;
+        }
+        
+        .pertcof-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: white;
+            margin-right: 0.5rem;
+        }
+        
+        .pertcof-badge.per { background: linear-gradient(135deg, #2563eb, #1e40af); }
+        .pertcof-badge.t { background: linear-gradient(135deg, #10b981, #059669); }
+        .pertcof-badge.co { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+        .pertcof-badge.f { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        
+        .ejemplo-box {
+            background: linear-gradient(to right, #eff6ff, #dbeafe);
+            border-left: 4px solid #3b82f6;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            display: none;
+        }
+        
+        .ejemplo-box.show {
+            display: block;
+        }
+        
+        .ejemplo-prompt {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            border: 1px solid #e5e7eb;
+            margin-top: 0.5rem;
+        }
+        
+        .instrucciones-box {
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .instrucciones-box ol {
+            margin-left: 1.5rem;
+            line-height: 1.8;
+        }
+        
+        .hint-box {
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            border-radius: 8px;
+            padding: 0.75rem;
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: #64748b;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen">
+    <!-- Loader inicial -->
+    <div id="loader">
+        <div class="loader-spinner"></div>
+        <p class="text-white mt-4 font-semibold">Cargando GESTIÓN IA...</p>
+    </div>
+
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        // Configuración de IAs por defecto - ORDEN CORREGIDO
+        const DEFAULT_AI_LINKS = [
+            { url: 'https://chat.openai.com' },      // IA 1 - ChatGPT
+            { url: 'https://claude.ai' },             // IA 2 - Claude
+            { url: 'https://gemini.google.com' },     // IA 3 - Gemini
+            { url: 'https://www.perplexity.ai' },     // IA 4 - Perplexity
+            { url: 'https://chat.deepseek.com' },     // IA 5 - DeepSeek
+            { url: 'https://kimi.moonshot.cn' },      // IA 6 - Kimi AI
+            { url: 'https://www.manus.ai' },          // IA 7 - Manus AI
+            { url: 'https://seedream.pro' },          // IA 8 - SeeDream
+            { url: 'https://www.promptcowboy.ai/' }   // IA 9 - Prompt Cowboy
+        ];
+
+        // Plantillas predefinidas - Adaptadas para Emprende Smart
+        const PROMPT_TEMPLATES = {
+            marketing: {
+                per: 'Eres un estratega de marketing digital senior con 10+ años de experiencia en growth hacking, análisis de mercado, campañas multicanal, branding y fidelización de clientes. Especialista en ROI, métricas y conversión.',
+                t: 'Diseñar una estrategia de marketing digital completa y accionable para el lanzamiento/posicionamiento de un producto o servicio.',
+                co: 'Producto/Servicio: [DESCRIBIR]. Público objetivo: [EDAD, UBICACIÓN, INTERESES, COMPORTAMIENTO]. Presupuesto mensual: [MONTO]. Canales disponibles: [Redes sociales, email, Google Ads, SEO, Influencers]. Objetivo principal: [Conversiones/Ventas/Brand awareness en X tiempo]. Competencia: [PRINCIPALES COMPETIDORES]. Recursos disponibles: [EQUIPO, TIEMPO].',
+                f: 'Estrategia estructurada: 1) Análisis de mercado y competencia (máx 1 página), 2) Propuesta de valor diferenciada, 3) Tabla con canales, estrategia específica, KPIs y presupuesto por canal, 4) Cronograma mensual primeros 3 meses, 5) Métricas de seguimiento. Formato ejecutivo y visual.'
+            },
+            derecho: {
+                per: 'Eres un abogado consultor senior con expertise en derecho empresarial, comercial, laboral y tributario. Especialista en estructuración legal de empresas, contratos, propiedad intelectual y cumplimiento normativo.',
+                t: 'Proporcionar asesoría legal estratégica y estructuración de documentos jurídicos para proteger y hacer crecer el negocio.',
+                co: 'Tipo de negocio: [DESCRIBIR]. Estructura actual: [Persona natural/Sociedad]. Sector: [INDUSTRIA]. Ubicación: [PAÍS/CIUDAD]. Necesidad específica: [Contratos, Propiedad intelectual, Laboral, Tributario, Corporativo]. Situación actual: [DESCRIBIR PROBLEMA/OBSERVACIÓN]. Presupuesto legal: [APROXIMADO].',
+                f: 'Documento legal estructurado: 1) Análisis de la situación y riesgos identificados, 2) Recomendaciones legales priorizadas, 3) Estructura de documentos necesarios (listado), 4) Pasos a seguir con cronograma, 5) Consideraciones importantes y precauciones. Lenguaje claro y accionable.'
+            },
+            contabilidad: {
+                per: 'Eres un contador público certificado con especialización en análisis financiero, planeación tributaria, control interno y gestión financiera para Pymes y emprendimientos.',
+                t: 'Analizar la situación financiera y tributaria del negocio e identificar oportunidades de optimización, ahorro y mejora en el flujo de caja.',
+                co: 'Tipo de negocio: [DESCRIBIR]. Ingresos mensuales aproximados: [MONTO]. Gastos principales: [LISTAR TOP 7]. Régimen tributario: [ESPECIFICAR]. País: [UBICAR]. Estados financieros: [DISPONIBLES/SIN PREPARAR]. Necesidad específica: [Análisis financiero, Optimización fiscal, Control de gastos, Proyecciones]. Desafíos actuales: [DESCRIBIR].',
+                f: 'Informe financiero ejecutivo: 1) Resumen ejecutivo de hallazgos (máx 5 puntos clave), 2) Análisis de situación actual, 3) Oportunidades de optimización con impacto estimado, 4) Recomendaciones priorizadas con pasos de implementación, 5) Proyección financiera (si aplica). Incluir tablas y gráficos simples.'
+            },
+            construccion: {
+                per: 'Eres un constructor/empresario con 15+ años de experiencia en gestión de proyectos de construcción, control de costos, logística de materiales, seguridad industrial y relaciones con proveedores y clientes.',
+                t: 'Desarrollar un plan de gestión de proyecto de construcción que optimice tiempos, costos y calidad, aplicando mejores prácticas del sector.',
+                co: 'Tipo de proyecto: [Residencial/Comercial/Industrial]. Alcance: [DESCRIBIR OBRA]. Presupuesto total: [MONTO]. Plazo estimado: [MESES]. Ubicación: [CIUDAD]. Desafíos: [Terreno, Permisos, Clima, Proveedores]. Recursos disponibles: [EQUIPO, MAQUINARIA]. Necesidad específica: [Planificación, Control de costos, Optimización, Seguridad].',
+                f: 'Plan de gestión estructurado: 1) Cronograma de obra con hitos principales, 2) Desglose de costos por partida, 3) Gestión de materiales y proveedores, 4) Plan de seguridad y calidad, 5) Sistema de control y seguimiento. Formato práctico y accionable.'
+            },
+            arquitectura: {
+                per: 'Eres un arquitecto consultor senior especializado en diseño arquitectónico, diseño de interiores, gestión de proyectos, normativa urbanística y sostenibilidad. Experiencia en proyectos residenciales, comerciales e institucionales.',
+                t: 'Desarrollar propuestas de diseño arquitectónico y/o planificación de espacios que sean funcionales, estéticas y viables económicamente.',
+                co: 'Tipo de proyecto: [Residencial/Comercial/Oficinas/Retail]. Área total: [m²]. Ubicación: [CIUDAD, ZONA]. Presupuesto: [MONTO]. Usuarios objetivo: [DESCRIBIR]. Necesidades específicas: [Funcionalidades, Estilo, Sostenibilidad]. Restricciones: [Normativas, Espacio, Presupuesto]. Requerimientos especiales: [ACCESIBILIDAD, SEGURIDAD].',
+                f: 'Propuesta arquitectónica: 1) Concepto de diseño y justificación, 2) Distribución de espacios y programa arquitectónico, 3) Consideraciones técnicas principales, 4) Fases de desarrollo (si aplica), 5) Cronograma y presupuesto estimado. Incluir descripciones detalladas y consideraciones prácticas.'
+            },
+            medicina: {
+                per: 'Eres un médico consultor con experiencia clínica y en gestión de servicios de salud, atención al paciente, protocolos médicos y administración de consultorios/clínicas.',
+                t: 'Desarrollar protocolos, procedimientos o estrategias para mejorar la atención médica, gestión del consultorio o emprendimiento en salud.',
+                co: 'Área médica: [ESPECIALIDAD]. Tipo de servicio: [Consulta privada, Clínica, Telemedicina, Otro]. Volumen de pacientes: [PROMEDIO/DÍA]. Necesidad específica: [Protocolos, Marketing, Gestión, Tecnología]. Desafíos actuales: [AGENDAMIENTO, HISTORIAS CLÍNICAS, COMUNICACIÓN]. Presupuesto disponible: [MONTO]. Tecnología actual: [SISTEMAS/SOFTWARE].',
+                f: 'Documento estructurado: 1) Análisis de la situación actual, 2) Propuesta de mejora con fundamentación, 3) Protocolos/procedimientos detallados paso a paso, 4) Recursos y herramientas necesarias, 5) Métricas de éxito y seguimiento. Formato profesional y práctico.'
+            },
+            deporte: {
+                per: 'Eres un entrenador/consultor deportivo de alto nivel con expertise en preparación física, psicología deportiva, nutrición deportiva y gestión de carreras deportivas profesionales.',
+                t: 'Desarrollar planes de entrenamiento, estrategias de rendimiento o modelos de negocio en el ámbito deportivo y fitness.',
+                co: 'Deporte/Actividad: [ESPECIFICAR]. Nivel: [Principiante/Intermedio/Avanzado/Profesional]. Objetivo: [Rendimiento, Fitness, Rehabilitación, Negocio]. Audiencia: [ATLETA INDIVIDUAL/GRUPO/CLIENTES]. Necesidad: [Plan de entrenamiento, Estrategia de negocio, Marketing, Protocolos]. Recursos: [EQUIPAMIENTO, INSTALACIONES]. Tiempo disponible: [HORAS/SEMANA].',
+                f: 'Plan estructurado: 1) Análisis del estado actual y objetivos, 2) Metodología y fundamentación, 3) Programa detallado (entrenamiento/estrategia) con progresión, 4) Nutrición y recuperación (si aplica), 5) Seguimiento y ajustes. Formato claro y motivador.'
+            },
+            multimedia: {
+                per: 'Eres un productor multimedia senior con expertise en producción audiovisual, diseño gráfico, edición de video, fotografía profesional, animación y creación de contenido digital de alta calidad.',
+                t: 'Desarrollar estrategias de producción, flujos de trabajo o propuestas creativas para proyectos multimedia y contenido audiovisual.',
+                co: 'Tipo de proyecto: [Video, Fotografía, Animación, Contenido digital, Streaming]. Objetivo: [Marketing, Entretenimiento, Educativo, Corporativo]. Presupuesto: [MONTO]. Equipamiento disponible: [LISTAR]. Equipo de trabajo: [CANTIDAD/PERSONAS]. Plazo: [TIEMPO]. Audiencia objetivo: [DESCRIBIR]. Estilo deseado: [MODERNO, CORPORATIVO, DINÁMICO].',
+                f: 'Propuesta creativa estructurada: 1) Concepto y dirección creativa, 2) Preproducción (guión, storyboard, plan de rodaje), 3) Producción (equipamiento, ubicaciones, equipo), 4) Postproducción (edición, efectos, entrega), 5) Distribución y métricas. Incluir referencias visuales si aplica.'
+            },
+            administracion: {
+                per: 'Eres un administrador de empresas con expertise en gestión operativa, control de procesos, administración financiera, recursos humanos y optimización de operaciones para Pymes y emprendimientos.',
+                t: 'Desarrollar planes de administración, optimización de procesos o estructuras organizacionales que mejoren la eficiencia y rentabilidad del negocio.',
+                co: 'Tipo de negocio: [SECTOR]. Tamaño: [Micro/Pequena/Mediana empresa]. Empleados: [CANTIDAD]. Ingresos anuales: [MONTO APROX]. Necesidad específica: [Procesos, Organización, Control, Crecimiento]. Desafíos: [INEFFICIENCIA, CRECIMIENTO, CONTROL]. Sistemas actuales: [SOFTWARE/HERRAMIENTAS]. Áreas problemáticas: [DESCRIBIR].',
+                f: 'Plan administrativo estructurado: 1) Diagnóstico de situación actual, 2) Propuesta de mejora con procesos optimizados, 3) Estructura organizacional y responsabilidades, 4) Sistema de control y métricas, 5) Cronograma de implementación. Formato ejecutivo y práctico.'
+            },
+            gastronomia: {
+                per: 'Eres un chef ejecutivo y consultor gastronómico con experiencia en cocina internacional, gestión de restaurantes, costeo de menús, diseño de experiencias culinarias y emprendimiento gastronómico.',
+                t: 'Desarrollar propuestas gastronómicas, menús rentables, procesos operativos o estrategias de negocio para emprendimientos gastronómicos.',
+                co: 'Tipo de establecimiento: [Restaurante, Food truck, Catering, Delivery, Otro]. Concepto: [ALTA COCINA, CASERA, TEMÁTICO]. Capacidad: [COMENSALES]. Presupuesto mensual: [MONTO]. Necesidad: [Menú, Procesos, Costeo, Marketing, Operación]. Público objetivo: [DESCRIBIR]. Ubicación: [ZONA/CIUDAD]. Competencia: [PRINCIPALES].',
+                f: 'Propuesta gastronómica estructurada: 1) Concepto y propuesta de valor, 2) Desarrollo de menú con costeo y pricing, 3) Procesos operativos (BOH/FOH), 4) Estrategia de experiencia del cliente, 5) Plan de implementación y métricas. Incluir recetas base y consideraciones técnicas.'
+            },
+            emprendimiento: {
+                per: 'Eres un consultor de emprendimiento con expertise en validación de ideas de negocio, modelos de negocio, lean startup, crecimiento empresarial y escalamiento de startups.',
+                t: 'Desarrollar modelos de negocio, planes de validación o estrategias de crecimiento para emprendimientos en diferentes etapas.',
+                co: 'Idea de negocio: [DESCRIBIR CONCEPTO]. Etapa actual: [Ideación, Validación, Tracción, Crecimiento]. Sector: [INDUSTRIA]. Mercado objetivo: [DESCRIBIR]. Problema que resuelve: [ESPECIFICAR]. Recursos disponibles: [CAPITAL, EQUIPO, TIEMPO]. Desafíos: [VALIDACIÓN, FINANCIACIÓN, COMPETENCIA]. Objetivo principal: [VENTAS, USUARIOS, INVERSIONES].',
+                f: 'Modelo de negocio estructurado: 1) Propuesta de valor y segmento de clientes, 2) Canvas del modelo de negocio simplificado, 3) Estrategia de validación y MVP, 4) Plan de crecimiento y métricas clave, 5) Próximos pasos accionables. Formato visual y práctico.'
+            },
+            inversion: {
+                per: 'Eres un asesor financiero y consultor en inversiones con expertise en análisis de oportunidades, evaluación de riesgos, estructuras de inversión y gestión de portafolios para emprendedores e inversionistas.',
+                t: 'Analizar oportunidades de inversión y desarrollar estrategias de inversión apropiadas según perfil de riesgo y objetivos.',
+                co: 'Tipo de inversión: [Negocio, Inmobiliaria, Acciones, Cripto, Otro]. Capital disponible: [MONTO]. Perfil de riesgo: [Conservador/Moderado/Agresivo]. Objetivo: [CRECIMIENTO, RENTA, DIVERSIFICACIÓN]. Plazo: [CORTO/MEDIANO/LARGO]. Experiencia: [PRINCIPIANTE/EXPERTO]. Oportunidad específica: [DESCRIBIR SI APLICA].',
+                f: 'Análisis de inversión estructurado: 1) Evaluación de la oportunidad (pros/contras), 2) Análisis de riesgo y retorno, 3) Estructura de inversión recomendada, 4) Diversificación y estrategia de portafolio, 5) Pasos a seguir y precauciones. Incluir cálculos de proyecciones si aplica.'
+            },
+            ingenieria: {
+                per: 'Eres un ingeniero consultor multidisciplinario con expertise en diseño técnico, gestión de proyectos, innovación tecnológica, automatización y optimización de procesos industriales.',
+                t: 'Desarrollar soluciones técnicas, diseños ingenieriles o planes de optimización para proyectos y procesos industriales o tecnológicos.',
+                co: 'Área de ingeniería: [Industrial, Sistemas, Mecánica, Civil, Otro]. Tipo de proyecto: [DESCRIBIR]. Objetivo: [Optimización, Diseño, Automatización, Innovación]. Restricciones: [TÉCNICAS, PRESUPUESTO, TIEMPO]. Recursos: [EQUIPAMIENTO, PERSONAL]. Normativas aplicables: [ESTÁNDARES]. Necesidad específica: [SOLUCIÓN, DISEÑO, PROCESO].',
+                f: 'Solución técnica estructurada: 1) Análisis de requerimientos y restricciones, 2) Propuesta técnica con fundamentación, 3) Diseño/diagrama del proceso o sistema, 4) Especificaciones técnicas principales, 5) Plan de implementación y validación. Incluir consideraciones prácticas.'
+            },
+            atencionCliente: {
+                per: 'Eres un experto en experiencia del cliente y servicio al cliente con expertise en gestión de relaciones, resolución de conflictos, ventas consultivas, fidelización y creación de procesos de atención excelentes.',
+                t: 'Desarrollar estrategias de atención al cliente, protocolos de servicio o sistemas de gestión que mejoren la satisfacción y retención de clientes.',
+                co: 'Tipo de negocio: [SECTOR]. Canales de atención: [Presencial, Telefónico, Chat, Email, Redes]. Volumen de clientes: [CANTIDAD/DÍA]. Necesidad: [Protocolos, Capacitación, Sistema, Estrategia]. Desafíos actuales: [TIEMPOS, SATISFACCIÓN, QUEJAS]. Objetivos: [SATISFACCIÓN, RESOLUCIÓN, VENTAS]. Recursos: [EQUIPO, TECNOLOGÍA].',
+                f: 'Estrategia de atención estructurada: 1) Diagnóstico de situación actual, 2) Estándares de servicio y protocolos, 3) Flujos de atención por canal, 4) Sistema de métricas y seguimiento, 5) Plan de capacitación e implementación. Formato práctico y accionable.'
+            },
+            ventas: {
+                per: 'Eres un consultor en ventas y televentas senior con expertise en técnicas de cierre, prospección, negociación, CRM, embudos de venta y generación de leads. Especialista en ventas consultivas y B2B.',
+                t: 'Desarrollar estrategias de ventas, embudos de conversión o procesos de televentas que incrementen los ingresos y la tasa de cierre.',
+                co: 'Tipo de producto/servicio: [DESCRIBIR]. Modelo: [B2B, B2C, Ventas directas, E-commerce]. Equipo de ventas: [CANTIDAD]. Ticket promedio: [MONTO]. Necesidad: [Prospección, Cierre, Proceso, Capacitación]. Métricas actuales: [TASA DE CIERRE, CONVERSIÓN]. Canales: [PRESENCIAL, TELEFÓNICO, DIGITAL]. Objetivo: [INCREMENTO VENTAS].',
+                f: 'Estrategia de ventas estructurada: 1) Análisis de situación actual y oportunidades, 2) Embudo de ventas optimizado, 3) Proceso de ventas paso a paso, 4) Técnicas y scripts por etapa, 5) Sistema de seguimiento y métricas. Incluir ejemplos prácticos.'
+            },
+            liderazgo: {
+                per: 'Eres un consultor en liderazgo y desarrollo organizacional con expertise en gestión de equipos, coaching ejecutivo, cultura organizacional, cambio organizacional y desarrollo de talento directivo.',
+                t: 'Desarrollar estrategias de liderazgo, planes de desarrollo de equipos o cultura organizacional que impulsen el rendimiento y compromiso.',
+                co: 'Contexto: [Startup, Pyme, Equipo específico, Organización]. Tamaño del equipo: [CANTIDAD]. Situación actual: [DESCRIBIR DESAFÍOS]. Necesidad: [Liderazgo, Cultura, Equipos, Cambio]. Objetivos: [PRODUCTIVIDAD, MOTIVACIÓN, RETENCIÓN]. Estilo actual: [DESCRIBIR]. Presupuesto: [APROXIMADO].',
+                f: 'Plan de liderazgo estructurado: 1) Diagnóstico de situación actual, 2) Modelo de liderazgo recomendado, 3) Estrategias y prácticas específicas, 4) Plan de desarrollo de competencias, 5) Sistema de seguimiento y métricas. Formato inspirador y práctico.'
+            },
+            socialMedia: {
+                per: 'Eres un estratega de redes sociales y community manager senior con expertise en creación de contenido viral, gestión de comunidades, advertising en redes, analytics y construcción de marca en el mundo digital.',
+                t: 'Desarrollar estrategias de contenido y gestión de redes sociales que construyan comunidad, engagement y generen resultados de negocio.',
+                co: 'Marca/Negocio: [DESCRIBIR]. Redes actuales: [Instagram, Facebook, TikTok, LinkedIn, etc.]. Audiencia objetivo: [EDAD, INTERESES, COMPORTAMIENTO]. Objetivo: [Seguidores, Engagement, Ventas, Brand awareness]. Contenido actual: [TIPO/FRECUENCIA]. Presupuesto: [MONTO/MES]. Recursos: [EQUIPO, TIEMPO]. Necesidad: [Contenido, Estrategia, Ads, Crecimiento].',
+                f: 'Estrategia de redes estructurada: 1) Análisis de audiencia y competencia, 2) Estrategia de contenido por red social, 3) Calendario editorial mensual, 4) Plan de publicidad y presupuesto, 5) Métricas y KPIs a seguir. Incluir ejemplos de contenido.'
+            },
+            ecommerce: {
+                per: 'Eres un consultor en e-commerce y ventas online con expertise en plataformas de venta, conversión, logística de envíos, marketing digital, SEO y optimización de tiendas online.',
+                t: 'Desarrollar estrategias de e-commerce, optimización de tienda online o planes de crecimiento para negocios digitales.',
+                co: 'Tipo de producto: [FÍSICO, DIGITAL, SERVICIO]. Plataforma actual: [Shopify, WooCommerce, Mercado Libre, Propia]. Volumen de ventas: [UNIDADES/MES]. Necesidad: [Optimización, Crecimiento, Marketing, Logística]. Desafíos: [CONVERSIÓN, TRÁFICO, LOGÍSTICA]. Presupuesto: [MONTO]. Objetivos: [VENTAS, TRÁFICO, CONVERSIÓN].',
+                f: 'Estrategia de e-commerce estructurada: 1) Análisis de tienda actual y oportunidades, 2) Optimización de producto y UX, 3) Estrategia de tráfico y marketing digital, 4) Optimización de conversión, 5) Logística y cumplimiento. Incluir checklist de mejoras.'
+            },
+            coaching: {
+                per: 'Eres un coach profesional certificado con expertise en desarrollo personal, coaching ejecutivo, coaching de vida, PNL, inteligencia emocional y transformación personal y profesional.',
+                t: 'Desarrollar programas de coaching, planes de desarrollo personal o metodologías que faciliten el crecimiento y transformación de personas o equipos.',
+                co: 'Tipo de coaching: [Ejecutivo, Personal, De equipos, De vida]. Objetivo del cliente: [DESCRIBIR META]. Situación actual: [DESAFÍOS, BLOQUEOS]. Duración: [SESIONES/MESES]. Modalidad: [Presencial, Virtual, Híbrido]. Necesidad: [Programa, Herramientas, Metodología, Seguimiento].',
+                f: 'Programa de coaching estructurado: 1) Análisis de situación actual y objetivos, 2) Metodología y herramientas a utilizar, 3) Estructura de sesiones y contenido, 4) Plan de acción y tareas entre sesiones, 5) Métricas de seguimiento y éxito. Formato inspirador.'
+            },
+            educacion: {
+                per: 'Eres un consultor educativo y diseñador instruccional con expertise en diseño curricular, metodologías de enseñanza, e-learning, desarrollo de cursos online y educación para adultos.',
+                t: 'Desarrollar programas educativos, cursos o metodologías de enseñanza efectivas y atractivas para diferentes audiencias.',
+                co: 'Área temática: [ESPECIALIDAD]. Audiencia: [NIVEL, EDAD, INTERESES]. Modalidad: [Presencial, Online, Híbrido]. Duración: [HORAS/MESES]. Objetivo educativo: [COMPETENCIAS, HABILIDADES]. Necesidad: [Contenido, Metodología, Evaluación, Tecnología]. Recursos: [PLATAFORMA, MATERIALES].',
+                f: 'Programa educativo estructurado: 1) Objetivos de aprendizaje y competencias, 2) Estructura del programa por módulos, 3) Metodología y actividades de enseñanza, 4) Materiales y recursos necesarios, 5) Sistema de evaluación y seguimiento. Incluir cronograma detallado.'
+            },
+            tecnologia: {
+                per: 'Eres un consultor tecnológico senior con expertise en desarrollo de software, arquitectura de sistemas, transformación digital, automatización, ciberseguridad y adopción de tecnologías emergentes para negocios.',
+                t: 'Desarrollar soluciones tecnológicas, estrategias de transformación digital o planes de implementación tecnológica que impulsen el negocio.',
+                co: 'Necesidad tecnológica: [SOFTWARE, AUTOMATIZACIÓN, DIGITALIZACIÓN, SEGURIDAD]. Tipo de negocio: [SECTOR]. Situación actual: [SISTEMAS, PROCESOS]. Presupuesto: [MONTO]. Recursos técnicos: [EQUIPO, INFRAESTRUCTURA]. Objetivo: [EFICIENCIA, CRECIMIENTO, INNOVACIÓN]. Necesidad específica: [SOLUCIÓN, ESTRATEGIA, IMPLEMENTACIÓN].',
+                f: 'Solución tecnológica estructurada: 1) Análisis de necesidades y situación actual, 2) Propuesta de solución tecnológica, 3) Arquitectura o flujo del sistema, 4) Plan de implementación y migración, 5) Capacitación y soporte. Incluir consideraciones técnicas y prácticas.'
+            },
+            general: {
+                per: 'Eres un experto consultor multidisciplinario con amplia experiencia en asesoría empresarial y desarrollo de soluciones para emprendedores.',
+                t: 'Desarrollar soluciones estratégicas y prácticas para el desafío o necesidad empresarial planteada.',
+                co: 'Proporciona todo el contexto necesario: tipo de negocio, situación actual, desafíos, objetivos, restricciones, recursos disponibles, audiencia objetivo y cualquier información relevante.',
+                f: 'Define el formato deseado: informe ejecutivo, plan de acción, tabla comparativa, lista de pasos, presentación, código, diseño, etc. Especifica el nivel de detalle requerido.'
+            }
+        };
+
+        const WORKFLOW_TEMPLATES = {
+            vacio: [],
+            atencionCliente: [
+                { id: 1, type: 'trigger', title: 'Cliente contacta', description: 'Solicitud llega por WhatsApp/Web/Llamada' },
+                { id: 2, type: 'ia', title: 'IA clasifica solicitud', description: 'Identifica servicio y urgencia' },
+                { id: 3, type: 'ia', title: 'IA extrae datos', description: 'Ubicación, inmueble, urgencia' },
+                { id: 4, type: 'ia', title: 'IA genera cotización', description: 'Calcula costo basado en históricos' },
+                { id: 5, type: 'persona', title: 'Técnico revisa', description: 'Valida casos complejos' },
+                { id: 6, type: 'salida', title: 'Envío de propuesta', description: 'PDF con cotización al cliente' }
+            ],
+            documentacion: [
+                { id: 1, type: 'trigger', title: 'Servicio completado', description: 'Técnico finaliza trabajo en campo' },
+                { id: 2, type: 'persona', title: 'Técnico sube evidencias', description: 'Fotos, datos, firma desde app móvil' },
+                { id: 3, type: 'ia', title: 'IA genera documentos', description: 'Certificado, informe, factura' },
+                { id: 4, type: 'ia', title: 'IA valida cumplimiento', description: 'Verifica vs normativa ambiental' },
+                { id: 5, type: 'programa', title: 'Sistema almacena', description: 'Base de datos + archivo digital' },
+                { id: 6, type: 'salida', title: 'Envío al cliente', description: 'Email automático con archivos' }
+            ],
+            mantenimiento: [
+                { id: 1, type: 'trigger', title: 'Fecha programada', description: 'Sistema detecta mantenimiento próximo' },
+                { id: 2, type: 'ia', title: 'IA analiza historial', description: 'Revisa servicios previos del cliente' },
+                { id: 3, type: 'ia', title: 'IA genera recordatorio', description: 'Mensaje personalizado con beneficios' },
+                { id: 4, type: 'programa', title: 'Sistema notifica', description: 'WhatsApp/Email al cliente' },
+                { id: 5, type: 'persona', title: 'Cliente responde', description: 'Acepta o reprograma' },
+                { id: 6, type: 'programa', title: 'Sistema agenda', description: 'Asigna fecha y equipo' },
+                { id: 7, type: 'salida', title: 'Confirmación', description: 'Detalles del servicio programado' }
+            ],
+            reclutamiento: [
+                { id: 1, type: 'trigger', title: 'Nueva vacante abierta', description: 'Solicitud de contratación aprobada' },
+                { id: 2, type: 'ia', title: 'IA redacta oferta', description: 'Genera descripción del puesto' },
+                { id: 3, type: 'programa', title: 'Publicación automática', description: 'Portales de empleo + redes' },
+                { id: 4, type: 'ia', title: 'IA filtra CVs', description: 'Scoring de candidatos' },
+                { id: 5, type: 'persona', title: 'RRHH preselecciona', description: 'Valida top 10 candidatos' },
+                { id: 6, type: 'programa', title: 'Sistema agenda', description: 'Entrevistas automáticas' },
+                { id: 7, type: 'salida', title: 'Informe final', description: 'Top 3 candidatos recomendados' }
+            ],
+            facturacion: [
+                { id: 1, type: 'trigger', title: 'Servicio entregado', description: 'Confirmación de finalización' },
+                { id: 2, type: 'ia', title: 'IA calcula totales', description: 'Suma servicios + impuestos' },
+                { id: 3, type: 'programa', title: 'Sistema genera factura', description: 'PDF/XML según normativa' },
+                { id: 4, type: 'ia', title: 'IA valida datos', description: 'Verifica información fiscal' },
+                { id: 5, type: 'programa', title: 'Envío automático', description: 'Email al cliente + DIAN' },
+                { id: 6, type: 'salida', title: 'Registro contable', description: 'Asiento en libro mayor' }
+            ]
+        };
+
+        // Iconos SVG simplificados
+        const Icon = ({ name, className = "w-5 h-5" }) => {
+            const icons = {
+                check: <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>,
+                copy: <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>,
+                download: <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>,
+                upload: <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>,
+                save: <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" /></svg>,
+                external: <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>,
+                plus: <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>,
+                trash: <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>,
+                refresh: <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>,
+                up: <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" /></svg>,
+                down: <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>,
+                sparkles: <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>
+            };
+            return icons[name] || null;
+        };
+
+        function App() {
+            const [activeTab, setActiveTab] = useState('prompts');
+            const [per, setPer] = useState('');
+            const [tasks, setTasks] = useState('');
+            const [context, setContext] = useState('');
+            const [format, setFormat] = useState('');
+            const [generatedPrompt, setGeneratedPrompt] = useState('');
+            const [aiLinks, setAiLinks] = useState(DEFAULT_AI_LINKS);
+            const [copied, setCopied] = useState(false);
+            const [workflowCopied, setWorkflowCopied] = useState(false);
+            const [exporting, setExporting] = useState(false);
+            
+            // Workflow state
+            const [nodes, setNodes] = useState([]);
+            const [nextNodeId, setNextNodeId] = useState(1);
+            const workflowPreviewRef = useRef(null);
+            const promptFileInputRef = useRef(null);
+            const workflowFileInputRef = useRef(null);
+
+            // Cargar datos guardados
+            useEffect(() => {
+                const saved = localStorage.getItem('gestionIA');
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    setPer(data.per || '');
+                    setTasks(data.tasks || '');
+                    setContext(data.context || '');
+                    setFormat(data.format || '');
+                    
+                    // IMPORTANTE: Siempre asegurar que haya 9 IAs
+                    if (data.aiLinks && data.aiLinks.length === 9) {
+                        setAiLinks(data.aiLinks);
+                    } else {
+                        // Si tiene menos de 9, usar los por defecto
+                        setAiLinks(DEFAULT_AI_LINKS);
+                    }
+                    
+                    setNodes(data.nodes || []);
+                    setNextNodeId(data.nextNodeId || 1);
+                } else {
+                    // Primera vez, usar los por defecto
+                    setAiLinks(DEFAULT_AI_LINKS);
+                }
+                // Ocultar loader
+                setTimeout(() => {
+                    document.getElementById('loader').classList.add('hidden');
+                }, 500);
+            }, []);
+
+            // Guardar direcciones permanentemente
+            const saveAiLinks = () => {
+                const saved = localStorage.getItem('gestionIA');
+                const data = saved ? JSON.parse(saved) : {};
+                data.aiLinks = aiLinks;
+                localStorage.setItem('gestionIA', JSON.stringify(data));
+                alert('✅ Direcciones guardadas correctamente');
+            };
+
+            // Restaurar direcciones por defecto
+            const resetAiLinks = () => {
+                if (confirm('¿Deseas restaurar las direcciones por defecto?')) {
+                    setAiLinks(DEFAULT_AI_LINKS);
+                    const saved = localStorage.getItem('gestionIA');
+                    const data = saved ? JSON.parse(saved) : {};
+                    data.aiLinks = DEFAULT_AI_LINKS;
+                    localStorage.setItem('gestionIA', JSON.stringify(data));
+                    alert('✅ Direcciones restauradas');
+                }
+            };
+
+            // Guardar datos automáticamente (excepto aiLinks que se guardan manualmente)
+            useEffect(() => {
+                const data = { per, tasks, context, format, nodes, nextNodeId };
+                const saved = localStorage.getItem('gestionIA');
+                const savedData = saved ? JSON.parse(saved) : {};
+                // Mantener aiLinks si ya existen
+                if (savedData.aiLinks) {
+                    data.aiLinks = savedData.aiLinks;
+                }
+                localStorage.setItem('gestionIA', JSON.stringify(data));
+            }, [per, tasks, context, format, nodes, nextNodeId]);
+
+            const generatePrompt = () => {
+                const prompt = `**PERFIL DE PERSONA EXPERTA:**
+${per}
+
+**TAREAS:**
+${tasks}
+
+**CONTEXTO:**
+${context}
+
+**FORMATO DE SALIDA:**
+${format}`;
+                setGeneratedPrompt(prompt);
+            };
+
+            const copyToClipboard = (text) => {
+                navigator.clipboard.writeText(text);
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+            };
+
+            const clearPrompt = () => {
+                if (confirm('¿Estás seguro de que deseas limpiar todo el prompt?')) {
+                    setPer('');
+                    setTasks('');
+                    setContext('');
+                    setFormat('');
+                    setGeneratedPrompt('');
+                }
+            };
+
+            const savePrompt = () => {
+                const fileName = prompt('Nombre del archivo:', 'mi-prompt-' + new Date().toISOString().split('T')[0]);
+                if (!fileName) return;
+
+                const promptData = {
+                    per,
+                    tasks,
+                    context,
+                    format,
+                    generatedPrompt,
+                    savedAt: new Date().toISOString()
+                };
+
+                const blob = new Blob([JSON.stringify(promptData, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = fileName + '.json';
+                link.click();
+                URL.revokeObjectURL(url);
+            };
+
+            const openPrompt = (event) => {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const promptData = JSON.parse(e.target.result);
+                        setPer(promptData.per || '');
+                        setTasks(promptData.tasks || '');
+                        setContext(promptData.context || '');
+                        setFormat(promptData.format || '');
+                        setGeneratedPrompt(promptData.generatedPrompt || '');
+                        alert('Prompt cargado correctamente');
+                    } catch (error) {
+                        alert('Error al cargar el archivo. Asegúrate de que sea un archivo JSON válido.');
+                    }
+                };
+                reader.readAsText(file);
+                event.target.value = '';
+            };
+
+            const updateAiLink = (index, value) => {
+                const newLinks = [...aiLinks];
+                newLinks[index].url = value;
+                setAiLinks(newLinks);
+            };
+
+            const applyTemplate = (templateKey) => {
+                const template = PROMPT_TEMPLATES[templateKey];
+                setPer(template.per);
+                setTasks(template.t);
+                setContext(template.co);
+                setFormat(template.f);
+                setGeneratedPrompt('');
+            };
+
+            // Workflow functions
+            const addNode = () => {
+                const newNode = {
+                    id: nextNodeId,
+                    type: 'trigger',
+                    title: 'Nuevo nodo',
+                    description: ''
+                };
+                setNodes([...nodes, newNode]);
+                setNextNodeId(nextNodeId + 1);
+            };
+
+            const updateNode = (id, field, value) => {
+                setNodes(nodes.map(node => 
+                    node.id === id ? { ...node, [field]: value } : node
+                ));
+            };
+
+            const deleteNode = (id) => {
+                setNodes(nodes.filter(node => node.id !== id));
+            };
+
+            const clearAllNodes = () => {
+                if (confirm('¿Estás seguro de que deseas eliminar todos los nodos?')) {
+                    setNodes([]);
+                    setNextNodeId(1);
+                }
+            };
+
+            const moveNode = (id, direction) => {
+                const index = nodes.findIndex(node => node.id === id);
+                if (index === -1) return;
+                if (direction === 'up' && index === 0) return;
+                if (direction === 'down' && index === nodes.length - 1) return;
+
+                const newNodes = [...nodes];
+                const targetIndex = direction === 'up' ? index - 1 : index + 1;
+                [newNodes[index], newNodes[targetIndex]] = [newNodes[targetIndex], newNodes[index]];
+                setNodes(newNodes);
+            };
+
+            const applyWorkflowTemplate = (templateKey) => {
+                const template = WORKFLOW_TEMPLATES[templateKey];
+                setNodes(template);
+                setNextNodeId(template.length > 0 ? Math.max(...template.map(n => n.id)) + 1 : 1);
+            };
+
+            const exportWorkflowText = () => {
+                let text = 'WORKFLOW DISEÑADO\n\n';
+                nodes.forEach((node, index) => {
+                    text += `${index + 1}. [${node.type.toUpperCase()}] ${node.title}\n`;
+                    if (node.description) {
+                        text += `   ${node.description}\n`;
+                    }
+                    if (index < nodes.length - 1) {
+                        text += '   ↓\n';
+                    }
+                });
+                return text;
+            };
+
+            const copyWorkflow = () => {
+                const text = exportWorkflowText();
+                navigator.clipboard.writeText(text);
+                setWorkflowCopied(true);
+                setTimeout(() => setWorkflowCopied(false), 2000);
+            };
+
+            const saveWorkflow = () => {
+                const fileName = prompt('Nombre del archivo:', 'mi-workflow-' + new Date().toISOString().split('T')[0]);
+                if (!fileName) return;
+
+                const workflowData = {
+                    nodes,
+                    nextNodeId,
+                    savedAt: new Date().toISOString()
+                };
+
+                const blob = new Blob([JSON.stringify(workflowData, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = fileName + '.json';
+                link.click();
+                URL.revokeObjectURL(url);
+            };
+
+            const openWorkflow = (event) => {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const workflowData = JSON.parse(e.target.result);
+                        setNodes(workflowData.nodes || []);
+                        setNextNodeId(workflowData.nextNodeId || 1);
+                        alert('Workflow cargado correctamente');
+                    } catch (error) {
+                        alert('Error al cargar el archivo. Asegúrate de que sea un archivo JSON válido.');
+                    }
+                };
+                reader.readAsText(file);
+                event.target.value = '';
+            };
+
+            const exportWorkflowImage = async () => {
+                if (!workflowPreviewRef.current || nodes.length === 0) return;
+                
+                setExporting(true);
+                try {
+                    const canvas = await html2canvas(workflowPreviewRef.current, {
+                        backgroundColor: '#ffffff',
+                        scale: 2
+                    });
+                    const link = document.createElement('a');
+                    link.download = 'workflow-gestion-ia.png';
+                    link.href = canvas.toDataURL();
+                    link.click();
+                } catch (error) {
+                    console.error('Error al exportar:', error);
+                } finally {
+                    setExporting(false);
+                }
+            };
+
+            const getNodeColor = (type) => {
+                const colors = {
+                    trigger: 'bg-purple-100 border-purple-400 text-purple-800',
+                    persona: 'bg-blue-100 border-blue-400 text-blue-800',
+                    programa: 'bg-green-100 border-green-400 text-green-800',
+                    ia: 'bg-orange-100 border-orange-400 text-orange-800',
+                    salida: 'bg-pink-100 border-pink-400 text-pink-800'
+                };
+                return colors[type] || 'bg-gray-100 border-gray-400 text-gray-800';
+            };
+
+            const getNodeEmoji = (type) => {
+                const emojis = {
+                    trigger: '🔔',
+                    persona: '👤',
+                    programa: '💻',
+                    ia: '🤖',
+                    salida: '📤'
+                };
+                return emojis[type] || '⚪';
+            };
+
+            const getNodeTooltip = (type) => {
+                const tooltips = {
+                    trigger: 'Evento que inicia el workflow',
+                    persona: 'Acción humana requerida',
+                    programa: 'Sistema automatizado',
+                    ia: 'Procesamiento con IA',
+                    salida: 'Resultado final del proceso'
+                };
+                return tooltips[type] || '';
+            };
+
+            return (
+                <div className="min-h-screen p-4 md:p-8">
+                    <div className="max-w-7xl mx-auto">
+                        {/* Header */}
+                        <div className="bg-white rounded-2xl shadow-xl p-6 mb-6">
+                            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+                                <div>
+                                    <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                                        GESTIÓN IA
+                                    </h1>
+                                    <p className="text-sm text-gray-500 mt-1">
+                                        Generador de Prompts & Diseñador de Workflows
+                                    </p>
+                                </div>
+                                <div className="text-right">
+                                    <p className="text-xs text-gray-400">Designed by</p>
+                                    <p className="text-sm font-semibold text-gray-700">Hansel Peña Díaz</p>
+                                    <p className="text-xs text-gray-500">Cel: 3143090748</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Tabs */}
+                        <div className="flex gap-2 mb-6">
+                            <button
+                                onClick={() => setActiveTab('prompts')}
+                                className={`flex-1 py-3 px-6 rounded-lg font-semibold transition-all ${
+                                    activeTab === 'prompts'
+                                        ? 'bg-blue-600 text-white shadow-lg'
+                                        : 'bg-white text-gray-600 hover:bg-gray-50'
+                                }`}
+                            >
+                                📝 Generador de Prompts PERTCOF
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('workflows')}
+                                className={`flex-1 py-3 px-6 rounded-lg font-semibold transition-all ${
+                                    activeTab === 'workflows'
+                                        ? 'bg-purple-600 text-white shadow-lg'
+                                        : 'bg-white text-gray-600 hover:bg-gray-50'
+                                }`}
+                            >
+                                🔄 Diseñador de Workflows
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('taller')}
+                                className={`flex-1 py-3 px-6 rounded-lg font-semibold transition-all ${
+                                    activeTab === 'taller'
+                                        ? 'bg-orange-600 text-white shadow-lg'
+                                        : 'bg-white text-gray-600 hover:bg-gray-50'
+                                }`}
+                            >
+                                🎓 Taller PER-T-CO-F
+                            </button>
+                        </div>
+
+                        {/* PESTAÑA: GENERADOR DE PROMPTS */}
+                        {activeTab === 'prompts' && (
+                            <div className="space-y-6 fade-in">
+                                {/* Plantillas y Gestión de Archivos */}
+                                <div className="bg-white rounded-xl shadow-lg p-6">
+                                    <div className="flex flex-wrap justify-between items-center gap-3 mb-4">
+                                        <h3 className="text-lg font-semibold">📚 Plantillas Rápidas</h3>
+                                        <div className="flex flex-wrap gap-2">
+                                            <button
+                                                onClick={savePrompt}
+                                                className="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:shadow-lg transition-all flex items-center gap-2 text-sm font-semibold"
+                                            >
+                                                <Icon name="save" className="w-4 h-4" />
+                                                Guardar Prompt
+                                            </button>
+                                            <button
+                                                onClick={() => promptFileInputRef.current.click()}
+                                                className="px-4 py-2 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white rounded-lg hover:shadow-lg transition-all flex items-center gap-2 text-sm font-semibold"
+                                            >
+                                                <Icon name="upload" className="w-4 h-4" />
+                                                Abrir Prompt
+                                            </button>
+                                            <input
+                                                ref={promptFileInputRef}
+                                                type="file"
+                                                accept=".json"
+                                                onChange={openPrompt}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-wrap gap-2">
+                                        <button onClick={() => applyTemplate('marketing')} className="px-4 py-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 text-sm font-medium" title="Estrategias de marketing digital y growth hacking">📢 Marketing Digital</button>
+                                        <button onClick={() => applyTemplate('derecho')} className="px-4 py-2 bg-indigo-50 text-indigo-700 rounded-lg hover:bg-indigo-100 text-sm font-medium" title="Asesoría legal empresarial y estructuración jurídica">⚖️ Derecho Empresarial</button>
+                                        <button onClick={() => applyTemplate('contabilidad')} className="px-4 py-2 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100 text-sm font-medium" title="Análisis financiero y optimización tributaria">💰 Contabilidad</button>
+                                        <button onClick={() => applyTemplate('construccion')} className="px-4 py-2 bg-orange-50 text-orange-700 rounded-lg hover:bg-orange-100 text-sm font-medium" title="Gestión de proyectos de construcción">🏗️ Construcción</button>
+                                        <button onClick={() => applyTemplate('arquitectura')} className="px-4 py-2 bg-teal-50 text-teal-700 rounded-lg hover:bg-teal-100 text-sm font-medium" title="Diseño arquitectónico y planificación">🏛️ Arquitectura</button>
+                                        <button onClick={() => applyTemplate('medicina')} className="px-4 py-2 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 text-sm font-medium" title="Gestión de servicios de salud y consultorios">⚕️ Medicina</button>
+                                        <button onClick={() => applyTemplate('deporte')} className="px-4 py-2 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 text-sm font-medium" title="Entrenamiento y gestión deportiva">🏃 Deportes</button>
+                                        <button onClick={() => applyTemplate('multimedia')} className="px-4 py-2 bg-pink-50 text-pink-700 rounded-lg hover:bg-pink-100 text-sm font-medium" title="Producción audiovisual y contenido digital">🎬 Multimedia</button>
+                                        <button onClick={() => applyTemplate('administracion')} className="px-4 py-2 bg-gray-50 text-gray-700 rounded-lg hover:bg-gray-100 text-sm font-medium" title="Gestión operativa y administración">📊 Administración</button>
+                                        <button onClick={() => applyTemplate('gastronomia')} className="px-4 py-2 bg-amber-50 text-amber-700 rounded-lg hover:bg-amber-100 text-sm font-medium" title="Gestión de restaurantes y emprendimiento gastronómico">🍽️ Gastronomía</button>
+                                        <button onClick={() => applyTemplate('emprendimiento')} className="px-4 py-2 bg-emerald-50 text-emerald-700 rounded-lg hover:bg-emerald-100 text-sm font-medium" title="Validación y modelos de negocio">🚀 Emprendimiento</button>
+                                        <button onClick={() => applyTemplate('inversion')} className="px-4 py-2 bg-yellow-50 text-yellow-700 rounded-lg hover:bg-yellow-100 text-sm font-medium" title="Análisis de inversiones y oportunidades">💎 Inversión</button>
+                                        <button onClick={() => applyTemplate('ingenieria')} className="px-4 py-2 bg-cyan-50 text-cyan-700 rounded-lg hover:bg-cyan-100 text-sm font-medium" title="Soluciones técnicas e innovación">🔧 Ingeniería</button>
+                                        <button onClick={() => applyTemplate('atencionCliente')} className="px-4 py-2 bg-sky-50 text-sky-700 rounded-lg hover:bg-sky-100 text-sm font-medium" title="Estrategias de servicio al cliente">🤝 Atención Cliente</button>
+                                        <button onClick={() => applyTemplate('ventas')} className="px-4 py-2 bg-violet-50 text-violet-700 rounded-lg hover:bg-violet-100 text-sm font-medium" title="Estrategias de ventas y televentas">💼 Ventas</button>
+                                        <button onClick={() => applyTemplate('liderazgo')} className="px-4 py-2 bg-rose-50 text-rose-700 rounded-lg hover:bg-rose-100 text-sm font-medium" title="Desarrollo de liderazgo y equipos">👑 Liderazgo</button>
+                                        <button onClick={() => applyTemplate('socialMedia')} className="px-4 py-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 text-sm font-medium" title="Estrategias de redes sociales">📱 Social Media</button>
+                                        <button onClick={() => applyTemplate('ecommerce')} className="px-4 py-2 bg-lime-50 text-lime-700 rounded-lg hover:bg-lime-100 text-sm font-medium" title="Estrategias de e-commerce y ventas online">🛒 E-commerce</button>
+                                        <button onClick={() => applyTemplate('coaching')} className="px-4 py-2 bg-fuchsia-50 text-fuchsia-700 rounded-lg hover:bg-fuchsia-100 text-sm font-medium" title="Programas de coaching y desarrollo personal">🎯 Coaching</button>
+                                        <button onClick={() => applyTemplate('educacion')} className="px-4 py-2 bg-amber-50 text-amber-700 rounded-lg hover:bg-amber-100 text-sm font-medium" title="Diseño de programas educativos">📚 Educación</button>
+                                        <button onClick={() => applyTemplate('tecnologia')} className="px-4 py-2 bg-slate-50 text-slate-700 rounded-lg hover:bg-slate-100 text-sm font-medium" title="Transformación digital y soluciones tecnológicas">💻 Tecnología</button>
+                                        <button onClick={() => applyTemplate('general')} className="px-4 py-2 bg-gray-50 text-gray-700 rounded-lg hover:bg-gray-100 text-sm font-medium" title="Plantilla personalizable">📋 Personalizado</button>
+                                    </div>
+                                </div>
+
+                                {/* Formulario PERTCOF */}
+                                <div className="bg-white rounded-xl shadow-lg p-6">
+                                    <div className="space-y-6">
+                                        {/* PER */}
+                                        <div>
+                                            <div className="flex justify-between items-center mb-2">
+                                                <label className="font-semibold text-gray-700 flex items-center gap-2">
+                                                    <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-bold">PER</span>
+                                                    Perfil de Persona Experta
+                                                </label>
+                                                <span className="text-xs text-gray-400">{per.length} caracteres</span>
+                                            </div>
+                                            <textarea
+                                                value={per}
+                                                onChange={(e) => setPer(e.target.value)}
+                                                placeholder="Ej: Eres un experto en gestión ambiental con 15 años de experiencia..."
+                                                className="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none transition-all resize-none"
+                                                rows="3"
+                                            />
+                                        </div>
+
+                                        {/* T */}
+                                        <div>
+                                            <div className="flex justify-between items-center mb-2">
+                                                <label className="font-semibold text-gray-700 flex items-center gap-2">
+                                                    <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-bold">T</span>
+                                                    Tareas
+                                                </label>
+                                                <span className="text-xs text-gray-400">{tasks.length} caracteres</span>
+                                            </div>
+                                            <textarea
+                                                value={tasks}
+                                                onChange={(e) => setTasks(e.target.value)}
+                                                placeholder="Ej: Diseñar un procedimiento operativo estándar para..."
+                                                className="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-green-500 focus:outline-none transition-all resize-none"
+                                                rows="3"
+                                            />
+                                        </div>
+
+                                        {/* CO */}
+                                        <div>
+                                            <div className="flex justify-between items-center mb-2">
+                                                <label className="font-semibold text-gray-700 flex items-center gap-2">
+                                                    <span className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm font-bold">CO</span>
+                                                    Contexto
+                                                </label>
+                                                <span className="text-xs text-gray-400">{context.length} caracteres</span>
+                                            </div>
+                                            <textarea
+                                                value={context}
+                                                onChange={(e) => setContext(e.target.value)}
+                                                placeholder="Ej: La empresa presta servicios de... Debemos cumplir con..."
+                                                className="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none transition-all resize-none"
+                                                rows="4"
+                                            />
+                                        </div>
+
+                                        {/* F */}
+                                        <div>
+                                            <div className="flex justify-between items-center mb-2">
+                                                <label className="font-semibold text-gray-700 flex items-center gap-2">
+                                                    <span className="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-sm font-bold">F</span>
+                                                    Formato de Salida
+                                                </label>
+                                                <span className="text-xs text-gray-400">{format.length} caracteres</span>
+                                            </div>
+                                            <textarea
+                                                value={format}
+                                                onChange={(e) => setFormat(e.target.value)}
+                                                placeholder="Ej: Lista numerada paso a paso. Incluir: 1) Preparación, 2) Ejecución..."
+                                                className="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-orange-500 focus:outline-none transition-all resize-none"
+                                                rows="3"
+                                            />
+                                        </div>
+
+                                        {/* Botones de acción */}
+                                        <div className="flex flex-wrap gap-3">
+                                            <button
+                                                onClick={generatePrompt}
+                                                className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 rounded-lg font-bold text-lg hover:shadow-xl transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2"
+                                            >
+                                                <Icon name="sparkles" />
+                                                Generar Prompt
+                                            </button>
+                                            <button
+                                                onClick={clearPrompt}
+                                                className="px-6 py-4 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200 transition-all flex items-center gap-2"
+                                            >
+                                                <Icon name="refresh" />
+                                                Limpiar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Prompt Generado */}
+                                {generatedPrompt && (
+                                    <div className="bg-white rounded-xl shadow-lg p-6 fade-in">
+                                        <div className="flex justify-between items-center mb-4">
+                                            <h3 className="text-lg font-semibold">📄 Prompt Generado</h3>
+                                            <button
+                                                onClick={() => copyToClipboard(generatedPrompt)}
+                                                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all flex items-center gap-2"
+                                            >
+                                                {copied ? (
+                                                    <>
+                                                        <Icon name="check" className="w-4 h-4" />
+                                                        ¡Copiado!
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <Icon name="copy" className="w-4 h-4" />
+                                                        Copiar Prompt
+                                                    </>
+                                                )}
+                                            </button>
+                                        </div>
+                                        <textarea
+                                            value={generatedPrompt}
+                                            onChange={(e) => setGeneratedPrompt(e.target.value)}
+                                            className="w-full p-4 bg-gray-50 border-2 border-gray-200 rounded-lg font-mono text-sm resize-none"
+                                            rows="12"
+                                        />
+                                    </div>
+                                )}
+
+                                {/* Botones de IAs */}
+                                <div className="bg-white rounded-xl shadow-lg p-6">
+                                    <div className="flex flex-wrap justify-between items-center gap-3 mb-4">
+                                        <h3 className="text-lg font-semibold">🚀 Probar en IAs</h3>
+                                        <div className="flex flex-wrap gap-2">
+                                            <button
+                                                onClick={saveAiLinks}
+                                                className="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:shadow-lg transition-all flex items-center gap-2 text-sm font-semibold"
+                                            >
+                                                <Icon name="save" className="w-4 h-4" />
+                                                Guardar Direcciones
+                                            </button>
+                                            <button
+                                                onClick={resetAiLinks}
+                                                className="px-4 py-2 bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-lg hover:shadow-lg transition-all flex items-center gap-2 text-sm font-semibold"
+                                            >
+                                                <Icon name="refresh" className="w-4 h-4" />
+                                                Restaurar
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <p className="text-sm text-gray-600 mb-4 bg-blue-50 p-3 rounded-lg">
+                                        💡 <strong>Tip:</strong> Edita las URLs según tu preferencia y haz clic en <strong>"Guardar Direcciones"</strong> para que tus cambios queden permanentes.
+                                    </p>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                        {aiLinks.map((ai, index) => (
+                                            <div key={index} className="space-y-2">
+                                                <input
+                                                    type="text"
+                                                    value={ai.url}
+                                                    onChange={(e) => updateAiLink(index, e.target.value)}
+                                                    className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
+                                                    placeholder="https://..."
+                                                />
+                                                <button
+                                                    onClick={() => window.open(ai.url, '_blank')}
+                                                    className="w-full px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:shadow-lg transition-all flex items-center justify-center gap-2"
+                                                >
+                                                    <Icon name="external" className="w-4 h-4" />
+                                                    Ir a IA {index + 1}
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* PESTAÑA: DISEÑADOR DE WORKFLOWS */}
+                        {activeTab === 'workflows' && (
+                            <div className="space-y-6 fade-in">
+                                {/* Plantillas de Workflows */}
+                                <div className="bg-white rounded-xl shadow-lg p-6">
+                                    <h3 className="text-lg font-semibold mb-3">📚 Plantillas de Workflows</h3>
+                                    <div className="flex flex-wrap gap-2">
+                                        <button onClick={() => applyWorkflowTemplate('vacio')} className="px-4 py-2 bg-gray-50 text-gray-700 rounded-lg hover:bg-gray-100 text-sm font-medium">📋 Vacío</button>
+                                        <button onClick={() => applyWorkflowTemplate('atencionCliente')} className="px-4 py-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 text-sm font-medium">💬 Atención Cliente</button>
+                                        <button onClick={() => applyWorkflowTemplate('documentacion')} className="px-4 py-2 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 text-sm font-medium">📄 Documentación</button>
+                                        <button onClick={() => applyWorkflowTemplate('mantenimiento')} className="px-4 py-2 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100 text-sm font-medium">🔧 Mantenimiento</button>
+                                        <button onClick={() => applyWorkflowTemplate('reclutamiento')} className="px-4 py-2 bg-pink-50 text-pink-700 rounded-lg hover:bg-pink-100 text-sm font-medium">👥 Reclutamiento</button>
+                                        <button onClick={() => applyWorkflowTemplate('facturacion')} className="px-4 py-2 bg-yellow-50 text-yellow-700 rounded-lg hover:bg-yellow-100 text-sm font-medium">💰 Facturación</button>
+                                    </div>
+                                </div>
+
+                                {/* Controles */}
+                                <div className="bg-white rounded-xl shadow-lg p-6">
+                                    <div className="flex flex-wrap gap-3">
+                                        <button
+                                            onClick={addNode}
+                                            className="px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:shadow-lg transition-all flex items-center gap-2 font-semibold"
+                                        >
+                                            <Icon name="plus" />
+                                            Agregar Nodo
+                                        </button>
+                                        {nodes.length > 0 && (
+                                            <>
+                                                <button
+                                                    onClick={copyWorkflow}
+                                                    className="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:shadow-lg transition-all flex items-center gap-2 font-semibold"
+                                                >
+                                                    {workflowCopied ? (
+                                                        <>
+                                                            <Icon name="check" />
+                                                            ¡Copiado!
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <Icon name="copy" />
+                                                            Copiar Texto
+                                                        </>
+                                                    )}
+                                                </button>
+                                                <button
+                                                    onClick={saveWorkflow}
+                                                    className="px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:shadow-lg transition-all flex items-center gap-2 font-semibold"
+                                                >
+                                                    <Icon name="save" />
+                                                    Guardar
+                                                </button>
+                                                <button
+                                                    onClick={exportWorkflowImage}
+                                                    disabled={exporting}
+                                                    className="px-6 py-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:shadow-lg transition-all flex items-center gap-2 font-semibold disabled:opacity-50"
+                                                >
+                                                    <Icon name="download" />
+                                                    {exporting ? 'Exportando...' : 'Exportar Imagen'}
+                                                </button>
+                                                <button
+                                                    onClick={clearAllNodes}
+                                                    className="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all flex items-center gap-2 font-semibold"
+                                                >
+                                                    <Icon name="refresh" />
+                                                    Limpiar Todo
+                                                </button>
+                                            </>
+                                        )}
+                                        <button
+                                            onClick={() => workflowFileInputRef.current.click()}
+                                            className="px-6 py-3 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white rounded-lg hover:shadow-lg transition-all flex items-center gap-2 font-semibold"
+                                        >
+                                            <Icon name="upload" />
+                                            Abrir Workflow
+                                        </button>
+                                        <input
+                                            ref={workflowFileInputRef}
+                                            type="file"
+                                            accept=".json"
+                                            onChange={openWorkflow}
+                                        />
+                                        <div className="flex-1"></div>
+                                        <div className="text-sm text-gray-500 flex items-center gap-2">
+                                            {nodes.length} nodo{nodes.length !== 1 ? 's' : ''}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    {/* Editor de Nodos */}
+                                    <div className="space-y-4">
+                                        <h3 className="text-lg font-semibold bg-white rounded-lg p-4 shadow">✏️ Editor de Nodos</h3>
+                                        {nodes.length > 0 ? (
+                                            nodes.map((node, index) => (
+                                                <div key={node.id} className="bg-white rounded-xl shadow-lg p-4">
+                                                    <div className="flex items-start gap-3">
+                                                        <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                                                            {index + 1}
+                                                        </div>
+                                                        <div className="flex-1 space-y-3">
+                                                            <div className="tooltip-container">
+                                                                <select
+                                                                    value={node.type}
+                                                                    onChange={(e) => updateNode(node.id, 'type', e.target.value)}
+                                                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-sm"
+                                                                >
+                                                                    <option value="trigger">🔔 Trigger / Disparador</option>
+                                                                    <option value="persona">👤 Persona</option>
+                                                                    <option value="programa">💻 Programa</option>
+                                                                    <option value="ia">🤖 IA</option>
+                                                                    <option value="salida">📤 Salida</option>
+                                                                </select>
+                                                                <span className="tooltip-text">{getNodeTooltip(node.type)}</span>
+                                                            </div>
+                                                            <input
+                                                                type="text"
+                                                                value={node.title}
+                                                                onChange={(e) => updateNode(node.id, 'title', e.target.value)}
+                                                                placeholder="Título del nodo"
+                                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-medium"
+                                                            />
+                                                            <textarea
+                                                                value={node.description}
+                                                                onChange={(e) => updateNode(node.id, 'description', e.target.value)}
+                                                                placeholder="Descripción / Acción"
+                                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none text-sm"
+                                                                rows="2"
+                                                            />
+                                                        </div>
+                                                        <div className="flex flex-col gap-1">
+                                                            <button
+                                                                onClick={() => moveNode(node.id, 'up')}
+                                                                disabled={index === 0}
+                                                                className="p-1.5 bg-gray-100 rounded hover:bg-gray-200 disabled:opacity-30 disabled:cursor-not-allowed"
+                                                            >
+                                                                <Icon name="up" className="w-4 h-4" />
+                                                            </button>
+                                                            <button
+                                                                onClick={() => moveNode(node.id, 'down')}
+                                                                disabled={index === nodes.length - 1}
+                                                                className="p-1.5 bg-gray-100 rounded hover:bg-gray-200 disabled:opacity-30 disabled:cursor-not-allowed"
+                                                            >
+                                                                <Icon name="down" className="w-4 h-4" />
+                                                            </button>
+                                                            <button
+                                                                onClick={() => deleteNode(node.id)}
+                                                                className="p-1.5 bg-red-50 text-red-600 rounded hover:bg-red-100"
+                                                            >
+                                                                <Icon name="trash" className="w-4 h-4" />
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <div className="bg-white rounded-xl shadow-lg p-12 text-center">
+                                                <div className="text-6xl mb-4">🔄</div>
+                                                <h3 className="text-xl font-semibold text-gray-400 mb-2">No hay nodos aún</h3>
+                                                <p className="text-gray-500 mb-6">Comienza agregando nodos o usa una plantilla</p>
+                                                <button
+                                                    onClick={addNode}
+                                                    className="px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:shadow-lg transition-all inline-flex items-center gap-2 font-semibold"
+                                                >
+                                                    <Icon name="plus" />
+                                                    Agregar Primer Nodo
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Preview Gráfico */}
+                                    <div className="space-y-4">
+                                        <h3 className="text-lg font-semibold bg-white rounded-lg p-4 shadow">👁️ Vista Previa Gráfica</h3>
+                                        {nodes.length > 0 ? (
+                                            <div ref={workflowPreviewRef} className="workflow-preview shadow-xl">
+                                                <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">Workflow Diseñado</h2>
+                                                {nodes.map((node, index) => (
+                                                    <div key={node.id} className="workflow-node-preview">
+                                                        {index > 0 && <div className="workflow-connector"></div>}
+                                                        <div className={`border-2 rounded-lg p-4 ${getNodeColor(node.type)} relative`}>
+                                                            <div className="node-badge">{getNodeEmoji(node.type)}</div>
+                                                            <div className="text-xs font-semibold uppercase mb-1 opacity-70">{node.type}</div>
+                                                            <div className="font-bold mb-1">{node.title}</div>
+                                                            {node.description && (
+                                                                <div className="text-sm opacity-80">{node.description}</div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <div className="bg-white rounded-xl shadow-lg p-12 text-center">
+                                                <div className="text-6xl mb-4">📊</div>
+                                                <p className="text-gray-500">Agrega nodos para ver el preview gráfico</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Leyenda */}
+                                <div className="bg-white rounded-xl shadow-lg p-6">
+                                    <h3 className="text-sm font-semibold mb-3 text-gray-600">📌 Leyenda de Tipos de Nodo</h3>
+                                    <div className="grid grid-cols-2 md:grid-cols-5 gap-3 text-sm">
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-6 h-6 bg-purple-400 rounded flex items-center justify-center">🔔</div>
+                                            <span>Trigger</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-6 h-6 bg-blue-400 rounded flex items-center justify-center">👤</div>
+                                            <span>Persona</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-6 h-6 bg-green-400 rounded flex items-center justify-center">💻</div>
+                                            <span>Programa</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-6 h-6 bg-orange-400 rounded flex items-center justify-center">🤖</div>
+                                            <span>IA</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-6 h-6 bg-pink-400 rounded flex items-center justify-center">📤</div>
+                                            <span>Salida</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* PESTAÑA: TALLER PER-T-CO-F */}
+                        {activeTab === 'taller' && (
+                            <div className="space-y-6 fade-in" style={{maxHeight: 'calc(100vh - 250px)', overflowY: 'auto'}}>
+                                <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl shadow-lg p-6 text-center">
+                                    <h2 className="text-2xl font-bold mb-2">🎓 Taller PER-T-CO-F</h2>
+                                    <p className="text-orange-50">Mejora de Prompts: De Prompts Defectuosos a Prompts Efectivos</p>
+                                    <p className="text-sm text-orange-100 mt-2">Aprende a diseñar prompts profesionales usando la metodología PER-T-CO-F</p>
+                                </div>
+
+                                <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-6">
+                                    <h3 className="text-lg font-semibold text-blue-900 mb-3">💡 Cómo Usar Este Taller</h3>
+                                    <ol className="list-decimal list-inside space-y-2 text-blue-800">
+                                        <li><strong>Revisa el caso:</strong> Lee el contexto, reto y el prompt defectuoso</li>
+                                        <li><strong>Analiza las pistas:</strong> Usa los tips para entender qué falta</li>
+                                        <li><strong>Completa el formulario:</strong> Escribe tu versión mejorada usando PER-T-CO-F</li>
+                                        <li><strong>Compara con el ejemplo:</strong> Revisa la solución propuesta</li>
+                                        <li><strong>Genera tu prompt:</strong> Usa la pestaña "Generador de Prompts" para crear tu versión final</li>
+                                    </ol>
+                                </div>
+
+                                {/* Aquí incluiríamos todos los 10 casos del taller */}
+                                {/* Por espacio, incluyo el primer caso completo como ejemplo */}
+                                {/* Los demás casos seguirían la misma estructura */}
+                                
+                                <TallerCasos />
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+
+        // Componente del Taller con todos los casos
+        function TallerCasos() {
+            const [visibleEjemplos, setVisibleEjemplos] = useState({});
+            const [promptsGenerados, setPromptsGenerados] = useState({});
+            const [copiado, setCopiado] = useState({});
+
+            const toggleEjemplo = (casoId) => {
+                setVisibleEjemplos(prev => ({
+                    ...prev,
+                    [casoId]: !prev[casoId]
+                }));
+            };
+
+            const copiarEjemplo = async (texto) => {
+                try {
+                    await navigator.clipboard.writeText(texto);
+                    alert('¡Ejemplo copiado al portapapeles!');
+                } catch (err) {
+                    alert('Error al copiar. Por favor selecciona y copia manualmente.');
+                }
+            };
+
+            const generarPrompt = (casoId) => {
+                const per = document.getElementById(`caso${casoId}-per`)?.value.trim() || '';
+                const t = document.getElementById(`caso${casoId}-t`)?.value.trim() || '';
+                const co = document.getElementById(`caso${casoId}-co`)?.value.trim() || '';
+                const f = document.getElementById(`caso${casoId}-f`)?.value.trim() || '';
+
+                if (!per || !t || !co || !f) {
+                    alert('Por favor completa todos los campos (PER, T, CO, F) antes de generar el prompt.');
+                    return;
+                }
+
+                const promptGenerado = `PER: ${per}\n\nT: ${t}\n\nCO: ${co}\n\nF: ${f}`;
+                
+                setPromptsGenerados(prev => ({
+                    ...prev,
+                    [casoId]: promptGenerado
+                }));
+            };
+
+            const copiarPromptGenerado = async (casoId) => {
+                const prompt = promptsGenerados[casoId];
+                if (!prompt) {
+                    alert('Primero genera el prompt haciendo clic en "Generar Prompt"');
+                    return;
+                }
+
+                try {
+                    await navigator.clipboard.writeText(prompt);
+                    setCopiado(prev => ({
+                        ...prev,
+                        [casoId]: true
+                    }));
+                    
+                    setTimeout(() => {
+                        setCopiado(prev => ({
+                            ...prev,
+                            [casoId]: false
+                        }));
+                    }, 2000);
+                } catch (err) {
+                    alert('Error al copiar. Por favor selecciona y copia manualmente.');
+                }
+            };
+
+            // Datos completos de los 10 casos del taller
+            const casos = [
+                {
+                    id: 1,
+                    numero: 1,
+                    titulo: 'Informe Ejecutivo para Directivos',
+                    tag: 'Comunicación / Empresas',
+                    contexto: 'La IA debe ayudar a redactar un informe ejecutivo de 1 página para directivos sobre los resultados de un proyecto.',
+                    reto: 'Mejorar el prompt para que la IA genere un informe ejecutivo claro, sintético y estructurado.',
+                    promptDefectuoso: 'Hazme un informe de este proyecto para los jefes, que quede bien hecho y resumido.',
+                    instrucciones: [
+                        'Identifica PER, T, CO y F en el prompt inicial.',
+                        'Señala qué falta o está vago.',
+                        'Reescribe el prompt usando PERTCOF.'
+                    ],
+                    tips: [
+                        {texto: 'PER: Necesitas un experto en comunicación ejecutiva o en redacción de informes para directivos. Piensa: ¿qué profesional escribe informes ejecutivos?'},
+                        {texto: 'T: La tarea debe ser específica: "redactar", "estructurar", "sintetizar". ¿Qué elementos debe tener un informe ejecutivo? (resumen, resultados, conclusiones, recomendaciones)'},
+                        {texto: 'CO: Faltan detalles importantes: ¿qué tipo de proyecto? ¿qué información tienes disponible? ¿cuál es el objetivo del informe?'},
+                        {texto: 'F: "Bien hecho" es vago. Especifica: ¿qué formato? (1 página, secciones, viñetas, gráficos). ¿Qué estructura? (resumen ejecutivo, resultados, recomendaciones)'},
+                        {texto: 'Palabras clave a usar: "informe ejecutivo", "1 página", "para directivos", "estructurado", "sintético", "resultados clave", "recomendaciones"'}
+                    ],
+                    ejemplo: `PER: Actúa como experto en comunicación ejecutiva con 10 años de experiencia redactando informes para directivos de empresas.
+
+T: Redactar un informe ejecutivo de 1 página que sintetice los resultados del proyecto [describe tu proyecto], estructurado en: resumen ejecutivo, resultados clave, conclusiones principales y recomendaciones.
+
+CO: Soy parte de un equipo que acaba de completar [tipo de proyecto]. Los directivos necesitan un informe conciso para tomar decisiones. Tengo acceso a los datos del proyecto: [menciona información clave disponible]. El tono debe ser profesional, claro y orientado a la acción.
+
+F: Devuelve un informe ejecutivo de máximo 1 página con la siguiente estructura:
+1. Resumen ejecutivo (2-3 párrafos)
+2. Resultados clave (viñetas numeradas)
+3. Conclusiones principales (2-3 puntos)
+4. Recomendaciones (acciones concretas)
+
+Usa lenguaje claro, directo y profesional. Evita jerga técnica innecesaria.`
+                },
+                {
+                    id: 2,
+                    numero: 2,
+                    titulo: 'Campaña de Redes Sociales',
+                    tag: 'Marketing Digital',
+                    contexto: 'Una pequeña marca quiere ideas para una campaña de redes sociales.',
+                    reto: 'Diseñar un prompt que genere un plan de contenidos concreto, realista y accionable.',
+                    promptDefectuoso: 'Genera ideas para redes sociales para una marca que vende cosas por internet.',
+                    instrucciones: [
+                        'Añade un perfil de persona experta adecuado.',
+                        'Define con precisión la tarea y el público objetivo.',
+                        'Especifica el formato de salida (tabla, bullets, calendario, etc.).'
+                    ],
+                    tips: [
+                        {texto: 'PER: ¿Quién crea campañas de redes sociales? (community manager, estratega de marketing digital, especialista en social media)'},
+                        {texto: 'T: La tarea debe incluir: "diseñar", "planificar", "generar". ¿Qué necesita exactamente? (ideas de contenido, calendario, temas, formatos)'},
+                        {texto: 'CO: "Marca que vende cosas por internet" es muy vago. Necesitas: tipo de productos, público objetivo, plataformas a usar, objetivo de la campaña, presupuesto/recursos, duración'},
+                        {texto: 'F: Especifica formato: ¿tabla con fechas? ¿calendario mensual? ¿lista de ideas por tema? ¿incluye descripción de cada post?'},
+                        {texto: 'Preguntas útiles: ¿Qué plataformas? (Instagram, Facebook, TikTok). ¿Qué tipo de contenido? (educativo, entretenido, promocional). ¿Cuántos posts por semana?'}
+                    ],
+                    ejemplo: `PER: Actúa como estratega de marketing digital especializado en campañas de redes sociales con 8 años de experiencia.
+
+T: Diseñar un plan de contenidos para redes sociales que incluya: ideas de posts, calendario mensual, temas por semana y descripción de cada contenido.
+
+CO: Trabajo en una pequeña marca de [tipo de producto, ej: productos orgánicos para el hogar]. Nuestro público objetivo son [describe: edad, intereses, ubicación]. Queremos hacer una campaña en Instagram y Facebook durante el próximo mes. El objetivo es [aumentar engagement, generar ventas, construir marca]. Disponemos de [recursos disponibles: equipo de diseño, presupuesto limitado]. Necesitamos [X] posts por semana.
+
+F: Devuelve un plan en formato de tabla con las siguientes columnas:
+- Fecha
+- Plataforma (Instagram/Facebook)
+- Tipo de contenido (educativo/promocional/entretenido)
+- Tema/Idea del post
+- Descripción breve del contenido
+- Hashtags sugeridos (3-5)
+
+Incluye un mix de contenido: 40% educativo, 30% promocional, 30% entretenido. Los posts deben ser realistas para una marca pequeña.`
+                },
+                {
+                    id: 3,
+                    numero: 3,
+                    titulo: 'Análisis de Contrato Básico',
+                    tag: 'Derecho',
+                    contexto: 'Un estudiante de derecho quiere que la IA le ayude a entender riesgos de un contrato sencillo de prestación de servicios.',
+                    reto: 'Mejorar el prompt para que la IA explique riesgos de forma clara y ordenada, sin dar asesoría legal definitiva.',
+                    promptDefectuoso: 'Léete este contrato y dime si es bueno o malo y qué debería hacer.',
+                    instrucciones: [
+                        'Añade PER adecuado (abogado, pero con límites).',
+                        'Define qué tipo de análisis se necesita (riesgos, cláusulas clave, lenguaje sencillo).',
+                        'Añade advertencia sobre que no reemplaza asesoría legal profesional.'
+                    ],
+                    tips: [
+                        {texto: 'PER: Necesitas un abogado con experiencia en contratos, PERO es importante limitar su rol. ¿Cómo? "Actúa como abogado que explica conceptos educativos, no como asesor legal"'},
+                        {texto: 'T: La tarea debe ser clara: "analizar", "identificar riesgos", "explicar cláusulas". NO debe ser "dar asesoría legal"'},
+                        {texto: 'CO: Describe: tipo de contrato, contexto (estudiante aprendiendo), qué necesita entender específicamente'},
+                        {texto: 'F: Especifica formato: ¿lista de riesgos? ¿explicación de cláusulas? ¿recomendaciones educativas? IMPORTANTE: incluir advertencia legal'},
+                        {texto: 'Advertencia necesaria: Siempre añade que la IA no reemplaza asesoría legal profesional y que es solo para fines educativos'},
+                        {texto: 'Lenguaje: Pide que explique en términos sencillos, sin jerga legal excesiva'}
+                    ],
+                    ejemplo: `PER: Actúa como abogado con 15 años de experiencia en derecho contractual, pero aclarando que esta es una explicación educativa para fines de aprendizaje, no asesoría legal profesional.
+
+T: Analizar el contrato de prestación de servicios que te proporcionaré, identificando: riesgos potenciales, cláusulas clave, términos que requieren atención y explicar cada punto en lenguaje sencillo.
+
+CO: Soy estudiante de derecho aprendiendo a analizar contratos. Tengo un contrato de prestación de servicios [describe brevemente el tipo: freelance, servicios profesionales, etc.]. Necesito entender qué cláusulas podrían ser problemáticas y por qué, explicado de forma educativa.
+
+F: Devuelve el análisis en las siguientes secciones:
+1. Resumen del tipo de contrato (2-3 líneas)
+2. Cláusulas clave identificadas (lista con explicación sencilla de cada una)
+3. Riesgos potenciales identificados (lista de riesgos con explicación breve)
+4. Recomendaciones educativas (qué aspectos revisar con un abogado profesional)
+
+IMPORTANTE: Al inicio de tu respuesta, incluye esta advertencia: "Esta es una explicación educativa. NO reemplaza la asesoría legal profesional. Para asuntos legales importantes, consulta siempre con un abogado licenciado."
+
+Usa lenguaje claro y educativo, evitando jerga legal innecesaria.`
+                },
+                {
+                    id: 4,
+                    numero: 4,
+                    titulo: 'Titulares Periodísticos',
+                    tag: 'Periodismo',
+                    contexto: 'Una comunicadora necesita ayuda para proponer titulares atractivos para una noticia.',
+                    reto: 'Diseñar un prompt que genere varios titulares con distintos enfoques y tonos.',
+                    promptDefectuoso: 'Ponle un buen título a esta noticia para que la gente le haga clic.',
+                    instrucciones: [
+                        'Especifica el rol (editor jefe / redactor senior).',
+                        'Pide varios estilos de titulares (informativo, emocional, creativo, etc.).',
+                        'Define el formato de salida (lista numerada, con breve explicación).'
+                    ],
+                    tips: [
+                        {texto: 'PER: ¿Quién escribe titulares profesionales? (editor jefe, redactor senior, periodista especializado)'},
+                        {texto: 'T: La tarea debe pedir múltiples opciones: "generar", "proponer", "crear". ¿Cuántos titulares? (3-5 mínimo)'},
+                        {texto: 'CO: Describe: tema de la noticia, público objetivo, medio (digital, impreso, redes), tono del medio, longitud deseada'},
+                        {texto: 'F: Especifica formato: ¿lista numerada? ¿con explicación del estilo? ¿para qué plataforma? (web, redes, impreso)'},
+                        {texto: 'Variedad: Pide diferentes estilos: informativo, emocional, creativo, directo, pregunta, cifra/número'},
+                        {texto: 'SEO: Si es para web, menciona palabras clave importantes'}
+                    ],
+                    ejemplo: `PER: Actúa como editor jefe de un medio de comunicación digital con 10 años de experiencia creando titulares efectivos.
+
+T: Generar 5 propuestas de titulares diferentes para la noticia que te proporcionaré, cada una con un estilo y enfoque distinto (informativo, emocional, creativo, directo, pregunta/cifra).
+
+CO: Soy comunicadora trabajando en un medio digital. Tengo una noticia sobre [describe brevemente el tema] que será publicada en nuestra página web y compartida en redes sociales. Nuestro público es [describe audiencia: general, joven, profesional, etc.]. El tono del medio es [profesional/serio/cercano]. Necesito titulares entre [X-Y] palabras.
+
+F: Devuelve 5 titulares en formato de lista numerada. Para cada titular, incluye:
+1. El titular
+2. Estilo aplicado (informativo, emocional, creativo, etc.)
+3. Breve explicación de por qué funciona (1 línea)
+
+Variedad requerida:
+- Al menos uno informativo y directo
+- Al menos uno emocional o que genere curiosidad
+- Al menos uno creativo o innovador
+- Considera SEO si aplica (palabras clave importantes)
+
+Los titulares deben ser claros, precisos y atractivos para generar clicks sin caer en clickbait engañoso.`
+                },
+                {
+                    id: 5,
+                    numero: 5,
+                    titulo: 'Guion para Video Corto',
+                    tag: 'Publicidad / Contenidos',
+                    contexto: 'Se necesita un guion de video de 30–60 segundos para redes sociales.',
+                    reto: 'Mejorar el prompt para que la IA entregue un guion con estructura clara (inicio, desarrollo, cierre) y foco en un mensaje principal.',
+                    promptDefectuoso: 'Haz un guion para un video corto sobre mi producto que sea llamativo.',
+                    instrucciones: [
+                        'Define el rol (guionista publicitario, especialista en videos cortos).',
+                        'Explica el objetivo del video (informar, vender, sensibilizar).',
+                        'Pide la estructura y formato (diálogos, locución, indicaciones visuales).'
+                    ],
+                    tips: [
+                        {texto: 'PER: ¿Quién escribe guiones para redes sociales? (guionista publicitario, creador de contenido, especialista en videos cortos)'},
+                        {texto: 'T: La tarea debe ser específica: "escribir", "crear guion", "desarrollar". ¿Qué estructura necesita? (inicio, desarrollo, cierre)'},
+                        {texto: 'CO: Describe: tipo de producto/servicio, objetivo (vender, informar, entretener), plataforma (Instagram, TikTok, YouTube), duración exacta, público objetivo'},
+                        {texto: 'F: Especifica formato: ¿diálogos? ¿narración? ¿indicaciones visuales? ¿música? Estructura por tiempos (0-10s: inicio, 10-40s: desarrollo, etc.)'},
+                        {texto: 'Elementos clave: Hook inicial (primeros 3 segundos), mensaje principal, call to action (CTA) al final'},
+                        {texto: 'Timing: Para redes sociales, los primeros segundos son críticos para captar atención'}
+                    ],
+                    ejemplo: `PER: Actúa como guionista publicitario especializado en videos cortos para redes sociales con 8 años de experiencia.
+
+T: Crear un guion completo para un video de [30-60] segundos que incluya: estructura narrativa (inicio, desarrollo, cierre), diálogos o locución, indicaciones visuales y timing específico.
+
+CO: Necesito un guion para un video promocional sobre [describe producto/servicio]. El objetivo es [vender/informar/sensibilizar]. Será publicado en [Instagram/TikTok/YouTube]. El público objetivo es [describe: edad, intereses, comportamiento]. El video debe tener [30/45/60] segundos exactos.
+
+F: Devuelve el guion en el siguiente formato:
+
+**Estructura por tiempos:**
+- 0-5s: Hook inicial (captar atención)
+- 5-25s: Desarrollo del mensaje principal
+- 25-30s: Cierre y Call to Action (CTA)
+
+**Guion detallado:**
+Para cada sección, incluye:
+- [TIEMPO] - Descripción visual / Acción
+- [TEXTO/LOCUCIÓN] - Diálogo o narración exacta
+- [INDICACIONES] - Notas sobre música, efectos, transiciones
+
+**Elementos requeridos:**
+1. Hook inicial que capture atención en los primeros 3 segundos
+2. Mensaje principal claro y conciso
+3. CTA específico y directo al final
+4. Indicaciones de ritmo y tono
+
+El guion debe ser visual, dinámico y adaptado a la plataforma [menciona plataforma].`
+                },
+                {
+                    id: 6,
+                    numero: 6,
+                    titulo: 'Revisión de Texto con Foco en Estilo',
+                    tag: 'Redacción / Comunicación',
+                    contexto: 'Una persona tiene un texto ya escrito y quiere mejorar el estilo sin cambiar el contenido.',
+                    reto: 'Diseñar un prompt para que la IA actúe como corrector de estilo, manteniendo ideas pero mejorando claridad y fluidez.',
+                    promptDefectuoso: 'Mejora este texto para que suene más profesional.',
+                    instrucciones: [
+                        'Especifica el rol (corrector de estilo en [idioma]).',
+                        'Define qué puede cambiar (solo estilo, no contenido).',
+                        'Pide ejemplos de cambios y explicación breve.'
+                    ],
+                    tips: [
+                        {texto: 'PER: ¿Quién corrige estilo? (corrector de estilo, editor de textos, redactor profesional, profesor de escritura)'},
+                        {texto: 'T: La tarea debe ser clara: "corregir estilo", "mejorar redacción", "pulir texto". IMPORTANTE: mantener contenido original'},
+                        {texto: 'CO: Describe: tipo de texto (artículo, email, documento), público objetivo, tono deseado (profesional, cercano, formal), idioma'},
+                        {texto: 'F: Especifica formato: ¿texto mejorado + lista de cambios? ¿explicación de cada cambio? ¿versión original vs mejorada lado a lado?'},
+                        {texto: 'Límites claros: Especifica que NO debe cambiar: ideas principales, información factual, mensaje central'},
+                        {texto: 'Áreas a mejorar: Claridad, fluidez, gramática, vocabulario, estructura de oraciones'}
+                    ],
+                    ejemplo: `PER: Actúa como corrector de estilo profesional en español con 12 años de experiencia mejorando textos manteniendo el contenido original.
+
+T: Revisar y mejorar el estilo del texto que te proporcionaré, corrigiendo: claridad, fluidez, gramática, vocabulario y estructura de oraciones, pero manteniendo todas las ideas, información y mensaje originales intactos.
+
+CO: Tengo un texto ya escrito sobre [describe tema brevemente]. Es para [tipo de documento: artículo, email profesional, documento, etc.]. El público objetivo es [describe audiencia]. Necesito que suene más [profesional/cercano/formal/fluido] sin cambiar el contenido ni las ideas principales.
+
+F: Devuelve la revisión en este formato:
+
+**1. Texto Mejorado:**
+[Muestra el texto completo mejorado]
+
+**2. Principales Cambios Realizados:**
+Lista numerada con:
+- Cambio específico realizado (ej: "Reemplacé 'hacer' por 'desarrollar' para mayor precisión")
+- Breve explicación de por qué mejora el texto (1 línea)
+- Ejemplo: "Original: 'hacer una reunión' → Mejorado: 'organizar una reunión'"
+
+**3. Resumen de Mejoras:**
+- Gramática corregida: [número]
+- Claridad mejorada: [áreas específicas]
+- Fluidez: [mejoras en conectores, ritmo]
+
+IMPORTANTE: NO cambies:
+- Ideas principales
+- Información factual
+- Mensaje central
+- Tono general (solo ajusta la expresión)
+
+Solo mejora la forma en que está escrito, no el contenido.`
+                },
+                {
+                    id: 7,
+                    numero: 7,
+                    titulo: 'Asistente para Lluvia de Ideas',
+                    tag: 'Creatividad / Diseño gráfico / Publicidad',
+                    contexto: 'Un equipo creativo necesita ideas iniciales para una campaña visual.',
+                    reto: 'Mejorar el prompt para obtener ideas variadas, con conceptos visuales claros y adaptables a diferentes formatos.',
+                    promptDefectuoso: 'Dame ideas creativas para una campaña con imágenes sobre nuestro producto.',
+                    instrucciones: [
+                        'Define al PER como director creativo o estratega de marca.',
+                        'Pide ideas con descripción breve del concepto visual.',
+                        'Especifica número de ideas y formato de salida.'
+                    ],
+                    tips: [
+                        {texto: 'PER: ¿Quién genera ideas creativas? (director creativo, estratega de marca, diseñador conceptual, copywriter creativo)'},
+                        {texto: 'T: La tarea debe pedir variedad: "generar", "proponer", "desarrollar". ¿Cuántas ideas? (5-10 mínimo para tener opciones)'},
+                        {texto: 'CO: Describe: producto/servicio, público objetivo, plataformas (Instagram, impreso, digital), objetivo (ventas, branding, engagement), presupuesto/recursos, estilo de marca'},
+                        {texto: 'F: Especifica formato: ¿lista con conceptos? ¿descripción de cada idea? ¿elementos visuales? ¿adaptaciones por formato?'},
+                        {texto: 'Variedad: Pide ideas diferentes: enfoques, estilos, tonos, formatos (fotografía, ilustración, video, gráfico)'},
+                        {texto: 'Concepto visual: Cada idea debe incluir: colores, estilos, elementos visuales, mensaje, emociones a transmitir'}
+                    ],
+                    ejemplo: `PER: Actúa como director creativo con 15 años de experiencia en campañas visuales para marcas, especializado en conceptualización y estrategia creativa.
+
+T: Generar 8 ideas creativas diferentes para una campaña visual, cada una con un concepto visual claro, descripción de estilo, elementos visuales y adaptaciones para diferentes formatos.
+
+CO: Trabajo en un equipo creativo desarrollando una campaña visual para [describe producto/servicio]. Nuestro público objetivo es [describe: edad, género, intereses, valores]. La campaña será para [plataformas: Instagram, impreso, web, etc.]. El objetivo principal es [ventas, branding, engagement, sensibilización]. Nuestro presupuesto es [limitado/medio/alto]. El estilo de la marca es [moderno, clásico, minimalista, colorido, etc.].
+
+F: Devuelve 8 ideas en formato de lista numerada. Para cada idea incluye:
+
+**Idea #[número]: [Nombre del Concepto]**
+
+1. **Concepto Central:** Breve descripción del concepto creativo (2-3 líneas)
+2. **Descripción Visual:** 
+   - Estilo visual (fotografía, ilustración, gráfico, mixto)
+   - Paleta de colores sugerida
+   - Elementos visuales clave
+   - Tono y emociones a transmitir
+3. **Mensaje Principal:** El mensaje o idea que comunica
+4. **Adaptaciones por Formato:**
+   - Instagram: [adaptación específica]
+   - Impreso: [adaptación específica]
+   - Web: [adaptación específica]
+5. **Viabilidad:** Recursos necesarios (bajo/medio/alto)
+
+Varía los enfoques: algunas ideas pueden ser emocionales, otras directas, algunas innovadoras, otras clásicas. Todas deben ser viables y adaptables.`
+                },
+                {
+                    id: 8,
+                    numero: 8,
+                    titulo: 'Explicación de Tema Complejo para Público General',
+                    tag: 'Divulgación',
+                    contexto: 'Explicar un tema técnico (por ejemplo, un concepto económico o científico) a público no experto.',
+                    reto: 'Diseñar un prompt que adapte el lenguaje, use ejemplos sencillos y mantenga la precisión básica.',
+                    promptDefectuoso: 'Explícame este tema difícil pero que se entienda fácil.',
+                    instrucciones: [
+                        'Define el rol (divulgador / comunicador científico).',
+                        'Describe el público (adultos sin formación técnica, adolescentes, etc.).',
+                        'Pide metáforas, ejemplos y un resumen final.'
+                    ],
+                    tips: [
+                        {texto: 'PER: ¿Quién explica temas complejos de forma simple? (divulgador científico, comunicador educativo, pedagogo, periodista científico)'},
+                        {texto: 'T: La tarea debe ser clara: "explicar", "traducir", "adaptar". ¿Qué nivel de detalle? (básico, intermedio, resumido)'},
+                        {texto: 'CO: Describe: tema específico, público objetivo (edad, formación, intereses), contexto (por qué necesitan entenderlo), nivel de conocimiento previo'},
+                        {texto: 'F: Especifica formato: ¿estructura con introducción, desarrollo, conclusión? ¿con ejemplos? ¿metáforas? ¿comparaciones?'},
+                        {texto: 'Lenguaje: Evitar jerga técnica, usar analogías cotidianas, ejemplos del día a día, comparaciones familiares'},
+                        {texto: 'Elementos clave: Introducción que contextualice, explicación paso a paso, ejemplos concretos, metáforas, resumen final'}
+                    ],
+                    ejemplo: `PER: Actúa como divulgador científico con 10 años de experiencia explicando conceptos complejos a público general, especializado en adaptar lenguaje técnico a términos sencillos.
+
+T: Explicar el tema [menciona el tema técnico] de forma clara y accesible, usando lenguaje sencillo, metáforas, ejemplos cotidianos y comparaciones familiares, manteniendo la precisión básica del concepto.
+
+CO: Necesito explicar [tema específico, ej: "cómo funciona la inflación económica"] a un público de [describe: adultos sin formación en economía, adolescentes, público general]. La audiencia tiene [nivel de conocimiento: cero conocimientos previos, conocimientos básicos]. El contexto es [por qué necesitan entenderlo: tomar decisiones financieras, comprender noticias, interés general]. La explicación debe ser [breve/extensa: máximo X párrafos o palabras].
+
+F: Devuelve la explicación en esta estructura:
+
+**1. Introducción Contextual (1-2 párrafos):**
+- ¿Qué es [tema] y por qué es importante?
+- Situación familiar o ejemplo inicial que conecte con el lector
+
+**2. Explicación Principal (3-4 párrafos):**
+- Explicación paso a paso usando lenguaje sencillo
+- Evita términos técnicos (o explícalos si son necesarios)
+- Usa al menos 2 metáforas o analogías con situaciones cotidianas
+
+**3. Ejemplo Concreto:**
+- Un ejemplo real o hipotético que ilustre el concepto
+- Conecta el ejemplo con situaciones que el público conoce
+
+**4. Resumen Final (1 párrafo):**
+- Recapitulación en 3-4 líneas
+- Mensaje clave para recordar
+
+**IMPORTANTE:**
+- NO uses jerga técnica sin explicar
+- Usa comparaciones con la vida cotidiana (comida, transporte, familia, etc.)
+- Mantén la precisión pero prioriza la comprensión
+- Si el tema tiene conceptos previos necesarios, explícalos primero brevemente`
+                },
+                {
+                    id: 9,
+                    numero: 9,
+                    titulo: 'Plan de Estudio Personalizado',
+                    tag: 'Aprendizaje Autónomo',
+                    contexto: 'Una persona quiere aprender una habilidad (por ejemplo: análisis de datos, escritura, diseño UX).',
+                    reto: 'Mejorar el prompt para que la IA genere un plan realista, por semanas, con actividades concretas.',
+                    promptDefectuoso: 'Hazme un plan para aprender esto lo más rápido posible.',
+                    instrucciones: [
+                        'Define PER (mentor experto en esa habilidad).',
+                        'Especifica nivel inicial, tiempo disponible y objetivo.',
+                        'Pide el plan en etapas, con actividades y recursos sugeridos.'
+                    ],
+                    tips: [
+                        {texto: 'PER: ¿Quién diseña planes de aprendizaje? (mentor, instructor, pedagogo, coach de aprendizaje, experto en la habilidad específica)'},
+                        {texto: 'T: La tarea debe ser específica: "diseñar", "crear", "estructurar". ¿Qué tipo de plan? (por semanas, por módulos, progresivo)'},
+                        {texto: 'CO: Describe: habilidad a aprender, nivel inicial (principiante, básico), tiempo disponible por semana, duración total deseada, objetivo final, estilo de aprendizaje preferido, recursos disponibles'},
+                        {texto: 'F: Especifica formato: ¿plan semanal? ¿por módulos? ¿con actividades? ¿recursos? ¿evaluaciones? ¿tiempo estimado por actividad?'},
+                        {texto: 'Realismo: "Lo más rápido posible" no es realista. Pide un plan progresivo y alcanzable'},
+                        {texto: 'Estructura: Introducción, fundamentos, práctica, proyectos, recursos, evaluación'}
+                    ],
+                    ejemplo: `PER: Actúa como mentor experto en [habilidad específica] con 15 años de experiencia enseñando esta habilidad, especializado en diseño de planes de aprendizaje personalizados y progresivos.
+
+T: Diseñar un plan de estudio personalizado para aprender [habilidad específica], estructurado por semanas, con actividades concretas, recursos sugeridos y objetivos claros por etapa.
+
+CO: Quiero aprender [habilidad: análisis de datos, escritura profesional, diseño UX, etc.]. Mi nivel actual es [principiante/cero conocimientos/conocimientos básicos]. Puedo dedicar [X horas] por semana. Tengo [tiempo total disponible: 3 meses, 6 meses, etc.]. Mi objetivo final es [qué quiero lograr: cambiar de carrera, mejorar en mi trabajo actual, proyecto personal, etc.]. Prefiero aprender [por proyectos/práctica/teoría primero]. Tengo acceso a [recursos: cursos online gratuitos, libros, mentores, software, etc.].
+
+F: Devuelve un plan de estudio en este formato:
+
+**Resumen del Plan:**
+- Duración total: [semanas/meses]
+- Horas semanales: [X horas]
+- Nivel objetivo al finalizar: [básico/intermedio/avanzado]
+
+**Estructura por Etapas:**
+
+**ETAPA 1: Fundamentos (Semanas 1-2)**
+- Objetivos de aprendizaje: [qué aprenderá]
+- Actividades semanales:
+  * Semana 1: [actividades específicas con tiempo estimado]
+  * Semana 2: [actividades específicas con tiempo estimado]
+- Recursos recomendados: [libros, cursos, videos, herramientas]
+- Cómo verificar progreso: [mini-proyecto, quiz, práctica]
+
+[Repite para cada etapa]
+
+**ETAPA 2: Práctica Guiada (Semanas 3-6)**
+[Estructura similar]
+
+**ETAPA 3: Proyectos Prácticos (Semanas 7-10)**
+[Proyectos reales para aplicar lo aprendido]
+
+**ETAPA 4: Aplicación Avanzada (Semanas 11-12)**
+[Proyecto final o aplicación en contexto real]
+
+**Recursos Adicionales:**
+- Herramientas necesarias
+- Comunidades para unirse
+- Prácticas recomendadas
+
+**Consejos para el Éxito:**
+- Cómo mantener la motivación
+- Errores comunes a evitar
+- Cómo medir tu progreso
+
+IMPORTANTE: El plan debe ser realista, progresivo y adaptado al tiempo disponible. Prioriza la práctica sobre la teoría.`
+                },
+                {
+                    id: 10,
+                    numero: 10,
+                    titulo: 'Crítica y Mejora de un Prompt Existente',
+                    tag: 'Meta-entrenamiento',
+                    contexto: 'El estudiante ya tiene un prompt que "más o menos funciona", pero quiere mejorarlo.',
+                    reto: 'Diseñar un prompt para que la IA critique y sugiera mejoras al prompt original usando criterios claros.',
+                    promptDefectuoso: 'Analiza este prompt y mejóralo para que funcione mejor.',
+                    instrucciones: [
+                        'Pide que la IA actúe como "experta en diseño de prompts".',
+                        'Solicita análisis por partes: PER, T, CO, F y otros criterios (claridad, ambigüedad, etc.).',
+                        'Pide una versión mejorada del prompt y explicación de los cambios.'
+                    ],
+                    tips: [
+                        {texto: 'PER: Es muy específico: necesitas un experto en diseño de prompts, ingeniería de prompts o metodologías como PER-T-CO-F'},
+                        {texto: 'T: La tarea debe ser doble: "analizar" y "mejorar". ¿Qué criterios usar? (PER-T-CO-F, claridad, especificidad, contexto)'},
+                        {texto: 'CO: Describe: el prompt original, para qué se usa, qué resultados obtiene actualmente, qué problemas tiene'},
+                        {texto: 'F: Especifica formato: ¿análisis detallado? ¿versión mejorada? ¿explicación de cambios? ¿criterios evaluados?'},
+                        {texto: 'Criterios de evaluación: PER (¿está claro?), T (¿es específica?), CO (¿hay suficiente contexto?), F (¿está definido?), claridad general, ambigüedades'},
+                        {texto: 'Mejoras: Debe mostrar: qué faltaba, qué estaba vago, qué se añadió, por qué mejora'}
+                    ],
+                    ejemplo: `PER: Actúa como experta en diseño de prompts e ingeniería de prompts, especializada en metodologías como PER-T-CO-F, con experiencia evaluando y mejorando prompts para obtener mejores resultados con IAs generativas.
+
+T: Analizar el prompt que te proporcionaré usando la metodología PER-T-CO-F y criterios de calidad (claridad, especificidad, contexto, formato), identificar debilidades y ambigüedades, y luego proponer una versión mejorada del prompt con explicación detallada de los cambios realizados.
+
+CO: Tengo un prompt que uso para [describe para qué lo usas: generar contenido, analizar datos, crear textos, etc.]. Actualmente el prompt funciona "más o menos" pero [describe problemas: es vago, no da resultados consistentes, falta información, etc.]. El prompt original es: "[pega tu prompt aquí]". Me gustaría mejorarlo siguiendo la metodología PER-T-CO-F.
+
+F: Devuelve el análisis y mejora en este formato:
+
+**1. ANÁLISIS DEL PROMPT ORIGINAL:**
+
+**PER (Perfil de Persona Experta):**
+- ¿Está definido? [Sí/No/Parcialmente]
+- Análisis: [qué está bien, qué falta, qué está vago]
+
+**T (Tarea):**
+- ¿Está clara? [Sí/No/Parcialmente]
+- Análisis: [qué está bien, qué falta, qué está vago]
+
+**CO (Contexto):**
+- ¿Hay suficiente contexto? [Sí/No/Parcialmente]
+- Análisis: [qué información falta, qué está vago]
+
+**F (Formato de Salida):**
+- ¿Está especificado? [Sí/No/Parcialmente]
+- Análisis: [qué está bien, qué falta]
+
+**Otros Criterios:**
+- Claridad general: [evaluación]
+- Ambigüedades detectadas: [lista de ambigüedades]
+- Falta de información: [qué información importante falta]
+- Problemas detectados: [lista de problemas]
+
+**2. PROMPT MEJORADO:**
+
+[Incluye aquí el prompt completo mejorado usando PER-T-CO-F]
+
+**3. EXPLICACIÓN DE MEJORAS:**
+
+Para cada cambio realizado, explica:
+- **Cambio:** [qué se cambió o añadió]
+- **Razón:** [por qué mejora el prompt]
+- **Impacto esperado:** [qué mejor resultado debería dar]
+
+**4. RECOMENDACIONES ADICIONALES:**
+- Sugerencias para usar el prompt mejorado
+- Variables que puedes ajustar según tus necesidades
+- Cómo iterar y seguir mejorando
+
+Usa la metodología PER-T-CO-F estrictamente para estructurar el prompt mejorado.`
+                }
+            ];
+
+            return (
+                <div className="space-y-6">
+                    {casos.map(caso => (
+                        <div key={caso.id} className="caso-section">
+                            <div className="caso-header">
+                                <div style={{display: 'flex', alignItems: 'center', flex: 1}}>
+                                    <div className="caso-number">{caso.numero}</div>
+                                    <div className="caso-title" style={{fontSize: '1.35rem', fontWeight: 700}}>{caso.titulo}</div>
+                                </div>
+                                <span style={{background: '#e0e7ff', color: '#3b82f6', padding: '0.25rem 0.75rem', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 600}}>{caso.tag}</span>
+                            </div>
+
+                            <div className="caso-content">
+                                <div className="contexto-box">
+                                    <strong>📋 Contexto:</strong> {caso.contexto}
+                                </div>
+
+                                <div className="reto-box">
+                                    <strong>🎯 Reto:</strong> {caso.reto}
+                                </div>
+
+                                <div className="prompt-defectuoso">
+                                    "{caso.promptDefectuoso}"
+                                </div>
+
+                                <div className="instrucciones-box">
+                                    <h4 style={{color: '#3b82f6', marginBottom: '0.75rem', fontSize: '1rem'}}>
+                                        <i className="fas fa-list-ol"></i> Instrucciones de Trabajo
+                                    </h4>
+                                    <ol>
+                                        {caso.instrucciones.map((inst, idx) => (
+                                            <li key={idx}>{inst}</li>
+                                        ))}
+                                    </ol>
+                                </div>
+
+                                <div className="tips-box">
+                                    <h4 style={{color: '#10b981', marginBottom: '0.75rem', fontSize: '1rem'}}>
+                                        <i className="fas fa-lightbulb"></i> Pistas y Tips
+                                    </h4>
+                                    <ul className="tips-list">
+                                        {caso.tips.map((tip, idx) => (
+                                            <li key={idx} dangerouslySetInnerHTML={{__html: tip.texto}} />
+                                        ))}
+                                    </ul>
+                                </div>
+
+                                <div className="space-y-4 mt-4">
+                                    <div>
+                                        <label className="flex items-center gap-2 font-semibold text-gray-700 mb-2">
+                                            <span className="pertcof-badge per">PER</span>
+                                            Perfil de Persona Experta
+                                        </label>
+                                        <textarea 
+                                            id={`caso${caso.id}-per`}
+                                            className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none" 
+                                            rows="3"
+                                            placeholder="¿Qué experto necesita este prompt?"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="flex items-center gap-2 font-semibold text-gray-700 mb-2">
+                                            <span className="pertcof-badge t">T</span>
+                                            Tarea
+                                        </label>
+                                        <textarea 
+                                            id={`caso${caso.id}-t`}
+                                            className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none" 
+                                            rows="3"
+                                            placeholder="¿Qué tarea específica debe realizar la IA?"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="flex items-center gap-2 font-semibold text-gray-700 mb-2">
+                                            <span className="pertcof-badge co">CO</span>
+                                            Contexto
+                                        </label>
+                                        <textarea 
+                                            id={`caso${caso.id}-co`}
+                                            className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none" 
+                                            rows="3"
+                                            placeholder="¿Qué información contextual necesita la IA?"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="flex items-center gap-2 font-semibold text-gray-700 mb-2">
+                                            <span className="pertcof-badge f">F</span>
+                                            Formato de Salida
+                                        </label>
+                                        <textarea 
+                                            id={`caso${caso.id}-f`}
+                                            className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none" 
+                                            rows="3"
+                                            placeholder="¿Cómo debe estructurarse la respuesta?"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="flex gap-3 mt-4 flex-wrap">
+                                    <button 
+                                        onClick={() => generarPrompt(caso.id)}
+                                        className="px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:shadow-lg transition-all flex items-center gap-2 font-semibold"
+                                    >
+                                        <i className="fas fa-magic"></i> Generar Prompt
+                                    </button>
+                                    <button 
+                                        onClick={() => toggleEjemplo(caso.id)}
+                                        className="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all flex items-center gap-2 font-semibold"
+                                    >
+                                        <i className="fas fa-eye"></i> Ver Ejemplo de Solución
+                                    </button>
+                                </div>
+
+                                {promptsGenerados[caso.id] && (
+                                    <div className="mt-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-4">
+                                        <div className="flex items-center justify-between mb-3">
+                                            <h5 className="text-lg font-semibold text-blue-900">
+                                                <i className="fas fa-check-circle text-green-600"></i> Tu Prompt Generado:
+                                            </h5>
+                                            <button 
+                                                onClick={() => copiarPromptGenerado(caso.id)}
+                                                className={`px-4 py-2 rounded-lg transition-all flex items-center gap-2 text-sm font-semibold ${
+                                                    copiado[caso.id] 
+                                                        ? 'bg-green-600 text-white' 
+                                                        : 'bg-blue-600 text-white hover:bg-blue-700'
+                                                }`}
+                                            >
+                                                {copiado[caso.id] ? (
+                                                    <>
+                                                        <i className="fas fa-check"></i> ¡Copiado!
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <i className="fas fa-copy"></i> Copiar Prompt
+                                                    </>
+                                                )}
+                                            </button>
+                                        </div>
+                                        <div className="ejemplo-prompt bg-white">{promptsGenerados[caso.id]}</div>
+                                        <p className="text-sm text-blue-700 mt-3 italic">
+                                            💡 Copia este prompt y pégalo en la pestaña "Generador de Prompts PERTCOF" para probarlo o en cualquier plataforma de IA.
+                                        </p>
+                                    </div>
+                                )}
+
+                                {visibleEjemplos[caso.id] && (
+                                    <div className="ejemplo-box show">
+                                        <h5 style={{color: '#3b82f6', marginBottom: '0.75rem', fontSize: '0.95rem', fontWeight: 600}}>
+                                            <i className="fas fa-check-circle"></i> Ejemplo de Prompt Mejorado:
+                                        </h5>
+                                        <div className="ejemplo-prompt">{caso.ejemplo}</div>
+                                        <button 
+                                            onClick={() => copiarEjemplo(caso.ejemplo)}
+                                            className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all text-sm"
+                                        >
+                                            <i className="fas fa-copy"></i> Copiar Ejemplo
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    ))}
+                    
+                    {/* Mensaje final del taller */}
+                    <div className="bg-green-50 border-2 border-green-200 rounded-xl p-6">
+                        <h4 className="text-lg font-semibold text-green-900 mb-3">✅ Taller Completo</h4>
+                        <p className="text-green-800 mb-2">
+                            Has completado los <strong>10 casos prácticos</strong> del taller PER-T-CO-F. 
+                            Ahora puedes usar la pestaña <strong>"Generador de Prompts PERTCOF"</strong> para crear 
+                            tus propios prompts profesionales basados en lo aprendido.
+                        </p>
+                        <p className="text-sm text-green-700">
+                            💡 <strong>Tip:</strong> Guarda tus prompts mejorados usando el botón "Guardar Prompt" en la pestaña del generador.
+                        </p>
+                    </div>
+                </div>
+            );
+        }
+
+        // Render
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</body>
+</html>

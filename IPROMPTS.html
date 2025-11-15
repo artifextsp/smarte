@@ -1,0 +1,2528 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Curso de Ingeniería de Prompts - PERTCOF, 3-O y DCR</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+            color: white;
+            padding: 50px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.8em;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header .subtitle {
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            opacity: 0.95;
+        }
+
+        /* Navigation */
+        .main-nav {
+            background: white;
+            padding: 20px 30px;
+            border-bottom: 3px solid #e0e0e0;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .nav-btn {
+            padding: 15px 30px;
+            background: #f5f5f5;
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.05em;
+            transition: all 0.3s;
+            color: #333;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .nav-btn.active {
+            background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+            color: white;
+            border-color: #1565c0;
+        }
+
+        /* Landing Page */
+        .landing-page {
+            padding: 60px 40px;
+            text-align: center;
+        }
+
+        .landing-page h2 {
+            font-size: 2.5em;
+            color: #1565c0;
+            margin-bottom: 30px;
+        }
+
+        .techniques-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .technique-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
+            padding: 40px 30px;
+            border-radius: 20px;
+            border: 3px solid #e0e0e0;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .technique-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            border-color: #1976d2;
+        }
+
+        .technique-card h3 {
+            font-size: 2em;
+            margin-bottom: 15px;
+            color: #1976d2;
+        }
+
+        .technique-card.per { border-color: #e53935; }
+        .technique-card.per h3 { color: #e53935; }
+        .technique-card.per:hover { border-color: #e53935; }
+
+        .technique-card.three-o { border-color: #43a047; }
+        .technique-card.three-o h3 { color: #43a047; }
+        .technique-card.three-o:hover { border-color: #43a047; }
+
+        .technique-card.dcr { border-color: #fb8c00; }
+        .technique-card.dcr h3 { color: #fb8c00; }
+        .technique-card.dcr:hover { border-color: #fb8c00; }
+
+        .start-btn {
+            margin-top: 40px;
+            padding: 20px 50px;
+            font-size: 1.3em;
+            background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .start-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(25, 118, 210, 0.4);
+        }
+
+        /* Module Sections */
+        .module-section {
+            display: none;
+            padding: 40px;
+        }
+
+        .module-section.active {
+            display: block;
+        }
+
+        .module-header {
+            background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .module-header h2 {
+            font-size: 2.2em;
+            color: #1565c0;
+            margin-bottom: 15px;
+        }
+
+        .module-header p {
+            font-size: 1.1em;
+            line-height: 1.8;
+            color: #555;
+        }
+
+        /* Theory Section */
+        .theory-section {
+            background: #fffde7;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border-left: 5px solid #fbc02d;
+        }
+
+        .theory-section h3 {
+            color: #f57c00;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .component-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 5px solid #1976d2;
+        }
+
+        .component-card h4 {
+            color: #1976d2;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+
+        /* Exercise Section */
+        .exercise-section {
+            background: #e8f5e9;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .exercise-section h3 {
+            color: #2e7d32;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .level-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .level-btn {
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid #4caf50;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .level-btn:hover {
+            background: #4caf50;
+            color: white;
+        }
+
+        .level-btn.active {
+            background: #4caf50;
+            color: white;
+        }
+
+        .exercise-selector {
+            margin-bottom: 20px;
+        }
+
+        .exercise-selector select {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1em;
+            border: 2px solid #4caf50;
+            border-radius: 10px;
+            background: white;
+        }
+
+        .exercise-description {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            line-height: 1.8;
+        }
+
+        /* Form Sections */
+        .form-container {
+            background: #f5f5f5;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .form-section {
+            margin-bottom: 25px;
+            padding: 25px;
+            background: white;
+            border-radius: 10px;
+            border-left: 5px solid;
+        }
+
+        .form-section.per { border-color: #e53935; }
+        .form-section.e { border-color: #1976d2; }
+        .form-section.r { border-color: #7b1fa2; }
+        .form-section.t { border-color: #43a047; }
+        .form-section.co { border-color: #fb8c00; }
+        .form-section.f { border-color: #00897b; }
+
+        .form-section label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .form-section.per label { color: #e53935; }
+        .form-section.e label { color: #1976d2; }
+        .form-section.r label { color: #7b1fa2; }
+        .form-section.t label { color: #43a047; }
+        .form-section.co label { color: #fb8c00; }
+        .form-section.f label { color: #00897b; }
+
+        .form-section textarea, .form-section input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: inherit;
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-section textarea:focus, .form-section input:focus {
+            outline: none;
+            border-color: #1976d2;
+            box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            font-weight: bold;
+            color: white;
+            margin-left: 8px;
+        }
+
+        .badge.per { background: #e53935; }
+        .badge.e { background: #1976d2; }
+        .badge.r { background: #7b1fa2; }
+        .badge.t { background: #43a047; }
+        .badge.co { background: #fb8c00; }
+        .badge.f { background: #00897b; }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            flex: 1;
+            min-width: 150px;
+            padding: 18px 30px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(25, 118, 210, 0.4);
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+
+        /* Results Panel */
+        .results-panel {
+            margin-top: 30px;
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            color: white;
+            display: none;
+        }
+
+        .results-panel.show {
+            display: block;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .score-display {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .score-circle {
+            display: inline-block;
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            background: white;
+            color: #667eea;
+            line-height: 160px;
+            font-size: 3.5em;
+            font-weight: bold;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .criteria-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .criterion-card {
+            background: rgba(255,255,255,0.2);
+            padding: 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .criterion-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .criterion-name {
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .criterion-score {
+            font-size: 1.4em;
+            font-weight: bold;
+            background: white;
+            color: #667eea;
+            padding: 8px 18px;
+            border-radius: 25px;
+        }
+
+        .feedback-section {
+            margin-top: 30px;
+            padding: 25px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+        }
+
+        .feedback-section h3 {
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+
+        .feedback-section ul {
+            list-style-position: inside;
+            line-height: 2;
+        }
+
+        .level-badge {
+            display: inline-block;
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        .level-excelente { background: #ffd700; color: #333; }
+        .level-muy-bueno { background: #4CAF50; color: white; }
+        .level-aceptable { background: #2196F3; color: white; }
+        .level-debil { background: #FF9800; color: white; }
+        .level-incorrecto { background: #f44336; color: white; }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Tooltip y ayudas */
+        .help-icon {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #1976d2;
+            color: white;
+            text-align: center;
+            line-height: 20px;
+            font-size: 0.85em;
+            cursor: help;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: left;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -125px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .hint-box {
+            background: #e3f2fd;
+            border-left: 4px solid #1976d2;
+            padding: 15px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        .hint-box strong {
+            color: #1565c0;
+        }
+
+        /* Campo de prompt completo */
+        .prompt-preview {
+            background: #f5f5f5;
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border: 2px solid #1976d2;
+        }
+
+        .prompt-preview h3 {
+            color: #1565c0;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .prompt-preview textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.95em;
+            line-height: 1.6;
+            resize: vertical;
+            background: white;
+        }
+
+        .copy-btn {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .copy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(25, 118, 210, 0.4);
+        }
+
+        /* Respuesta perfecta */
+        .perfect-answer {
+            background: #fff9c4;
+            border-left: 5px solid #fbc02d;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .perfect-answer.show {
+            display: block;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .perfect-answer h4 {
+            color: #f57c00;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .perfect-answer-content {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+            line-height: 1.8;
+        }
+
+        .show-answer-btn {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background: #fbc02d;
+            color: #333;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .show-answer-btn:hover {
+            background: #f9a825;
+            transform: translateY(-2px);
+        }
+
+        .live-preview-label {
+            font-size: 0.9em;
+            color: #666;
+            font-style: italic;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .techniques-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .main-nav {
+                flex-direction: column;
+            }
+
+            .nav-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 Curso de Ingeniería de Prompts</h1>
+            <div class="subtitle">Domina PERTCOF, Técnica de las Tres O y DCR</div>
+        </div>
+
+        <div class="main-nav">
+            <button class="nav-btn active" data-section="landing">🏠 Inicio</button>
+            <button class="nav-btn" data-section="pertcof">📘 PERTCOF</button>
+            <button class="nav-btn" data-section="three-o">🟧 Tres O</button>
+            <button class="nav-btn" data-section="dcr">🟩 DCR</button>
+            <button class="nav-btn" data-section="progress">📊 Mi Progreso</button>
+        </div>
+
+        <!-- Landing Page -->
+        <div id="landing" class="module-section active landing-page">
+            <h2>Bienvenido al Curso de Ingeniería de Prompts</h2>
+            <p style="font-size: 1.2em; margin-bottom: 40px; line-height: 1.8; color: #555;">
+                Aprende a diseñar prompts profesionales y efectivos para IA. Este curso está diseñado para 
+                profesionales de todas las áreas que deseen dominar el arte de la comunicación con sistemas de IA.
+            </p>
+
+            <div class="techniques-grid">
+                <div class="technique-card per" onclick="showSection('pertcof')">
+                    <h3>PERTCOF</h3>
+                    <p style="line-height: 1.8; margin-bottom: 15px;">
+                        Técnica estructurada para diseñar prompts profesionales, claros y efectivos.
+                    </p>
+                    <ul style="text-align: left; line-height: 2; margin-top: 15px;">
+                        <li><strong>P</strong>ersona experta</li>
+                        <li><strong>E</strong>ncargo</li>
+                        <li><strong>R</strong>azón (opcional)</li>
+                        <li><strong>T</strong>ono</li>
+                        <li><strong>CO</strong>ntexto</li>
+                        <li><strong>F</strong>ormato + Filtros</li>
+                    </ul>
+                </div>
+
+                <div class="technique-card three-o" onclick="showSection('three-o')">
+                    <h3>Técnica de las Tres O</h3>
+                    <p style="line-height: 1.8; margin-bottom: 15px;">
+                        Identifica problemas claramente usando tres elementos esenciales.
+                    </p>
+                    <ul style="text-align: left; line-height: 2; margin-top: 15px;">
+                        <li><strong>O</strong>bjeto</li>
+                        <li><strong>O</strong>bjetivo</li>
+                        <li><strong>O</strong>bstáculo</li>
+                    </ul>
+                    <p style="margin-top: 15px; font-style: italic;">
+                        La forma más clara de explicarle a la IA qué problema resolver.
+                    </p>
+                </div>
+
+                <div class="technique-card dcr" onclick="showSection('dcr')">
+                    <h3>Técnica DCR</h3>
+                    <p style="line-height: 1.8; margin-bottom: 15px;">
+                        Método para análisis profundo en tres fases.
+                    </p>
+                    <ul style="text-align: left; line-height: 2; margin-top: 15px;">
+                        <li><strong>D</strong>escomponer</li>
+                        <li><strong>C</strong>omprender</li>
+                        <li><strong>R</strong>ecomponer</li>
+                    </ul>
+                    <p style="margin-top: 15px; font-style: italic;">
+                        Separa, entiende y explica cómo funciona el todo.
+                    </p>
+                </div>
+            </div>
+
+            <button class="start-btn" onclick="showSection('pertcof')">🚀 Comenzar Entrenamiento</button>
+        </div>
+
+        <!-- PERTCOF Module -->
+        <div id="pertcof" class="module-section">
+            <div class="module-header">
+                <h2>📘 Módulo 1: PERTCOF</h2>
+                <p>
+                    PERTCOF es una técnica estructurada para diseñar prompts profesionales, claros y efectivos. 
+                    Aprende cada componente y practica con ejercicios interactivos.
+                </p>
+            </div>
+
+            <!-- Theory Section -->
+            <div class="theory-section">
+                <h3>📚 Teoría PERTCOF</h3>
+                
+                <div class="component-card">
+                    <h4><span class="badge per">P</span> Persona Experta</h4>
+                    <p>Define desde qué perspectiva debe responder la IA: abogado, contador, ingeniero, docente, etc. 
+                    Especifica credenciales, años de experiencia y especialización cuando sea relevante.</p>
+                </div>
+
+                <div class="component-card">
+                    <h4><span class="badge e">E</span> Encargo</h4>
+                    <p>Qué exactamente debe producir la IA: un informe, una tabla, un análisis, un resumen, un plan, etc. 
+                    Sé específico y usa verbos de acción claros (crear, diseñar, analizar, calcular).</p>
+                </div>
+
+                <div class="component-card">
+                    <h4><span class="badge r">R</span> Razón (opcional pero útil)</h4>
+                    <p>Por qué se requiere ese resultado. Esto ayuda a la IA a entender el propósito y ajustar su enfoque.</p>
+                </div>
+
+                <div class="component-card">
+                    <h4><span class="badge t">T</span> Tono</h4>
+                    <p>Formal, académico, técnico, sencillo, narrativo, conversacional. Define el estilo comunicativo 
+                    que debe usar la IA en su respuesta.</p>
+                </div>
+
+                <div class="component-card">
+                    <h4><span class="badge co">CO</span> Contexto</h4>
+                    <p>Toda la información relevante que la IA necesita para ajustar la tarea al caso real. Incluye detalles 
+                    técnicos, situación actual, recursos disponibles, restricciones, normativas, etc.</p>
+                </div>
+
+                <div class="component-card">
+                    <h4><span class="badge f">F</span> Formato de Salida + Filtros</h4>
+                    <p>Tabla, lista, matriz, JSON, guion, plan, instructivo, email, etc. Incluye también limitaciones y 
+                    criterios: número de palabras, profundidad, ejemplos, pasos, precisión, audiencia objetivo.</p>
+                </div>
+            </div>
+
+            <!-- Exercise Section -->
+            <div class="exercise-section">
+                <h3>🎯 Ejercicios Prácticos</h3>
+                
+                <div class="level-selector">
+                    <button class="level-btn active" data-level="basico">Básico (1-10)</button>
+                    <button class="level-btn" data-level="intermedio">Intermedio (11-20)</button>
+                    <button class="level-btn" data-level="avanzado">Avanzado (21-30)</button>
+                </div>
+
+                <div class="exercise-selector">
+                    <select id="pertcofExerciseSelect">
+                        <option value="0">-- Selecciona un ejercicio --</option>
+                    </select>
+                </div>
+
+                <div class="exercise-description" id="pertcofExerciseDescription">
+                    <p style="color: #666;">Selecciona un ejercicio para comenzar</p>
+                </div>
+
+                <!-- Botón para ver respuesta perfecta -->
+                <div style="margin-bottom: 20px;">
+                    <button class="show-answer-btn" onclick="togglePerfectAnswer('pertcof')">
+                        💡 Ver Respuesta Perfecta de Ejemplo
+                    </button>
+                    <div class="perfect-answer" id="pertcofPerfectAnswer">
+                        <h4>⭐ Respuesta Perfecta</h4>
+                        <div class="perfect-answer-content" id="pertcofPerfectContent">
+                            <p>Selecciona un ejercicio para ver la respuesta perfecta.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Container -->
+                <div class="form-container">
+                    <form id="pertcofForm">
+                        <div class="form-section per">
+                            <label>
+                                <span class="badge per">P</span> Persona Experta
+                                <span class="tooltip">
+                                    <span class="help-icon">?</span>
+                                    <span class="tooltiptext">Define el rol profesional específico de la IA. Incluye especialización, años de experiencia y credenciales cuando sea relevante.</span>
+                                </span>
+                            </label>
+                            <div class="hint-box">
+                                <strong>💡 Pista:</strong> Especifica el tipo exacto de experto (abogado, ingeniero, consultor, etc.) con sus credenciales y años de experiencia. Esto ayuda a la IA a adoptar el enfoque correcto.
+                            </div>
+                            <input type="text" name="persona" placeholder="Ejemplo: Abogado especializado en derecho laboral con 10 años de experiencia, certificado en derecho del trabajo..." oninput="updatePERTCOFPreview()">
+                        </div>
+
+                        <div class="form-section e">
+                            <label>
+                                <span class="badge e">E</span> Encargo
+                                <span class="tooltip">
+                                    <span class="help-icon">?</span>
+                                    <span class="tooltiptext">La tarea específica que debe realizar la IA. Usa verbos de acción claros y objetivos específicos.</span>
+                                </span>
+                            </label>
+                            <div class="hint-box">
+                                <strong>💡 Pista:</strong> Usa verbos de acción específicos: crear, diseñar, analizar, calcular, elaborar. Sé preciso sobre qué necesitas exactamente.
+                            </div>
+                            <textarea name="encargo" placeholder="Ejemplo: Crear un análisis detallado de las implicaciones legales de una política de trabajo remoto para una empresa..." oninput="updatePERTCOFPreview()"></textarea>
+                        </div>
+
+                        <div class="form-section r">
+                            <label>
+                                <span class="badge r">R</span> Razón (Opcional)
+                                <span class="tooltip">
+                                    <span class="help-icon">?</span>
+                                    <span class="tooltiptext">Explica por qué necesitas este resultado. Aunque es opcional, ayuda mucho a la IA a entender el propósito.</span>
+                                </span>
+                            </label>
+                            <div class="hint-box">
+                                <strong>💡 Pista:</strong> Explica el propósito: ¿para qué usarás este resultado? ¿Qué problema resuelve? Esto orienta mejor a la IA.
+                            </div>
+                            <textarea name="razon" placeholder="Ejemplo: Para asesorar a la empresa sobre cómo implementar trabajo remoto cumpliendo con la normativa laboral colombiana..." oninput="updatePERTCOFPreview()"></textarea>
+                        </div>
+
+                        <div class="form-section t">
+                            <label>
+                                <span class="badge t">T</span> Tono
+                                <span class="tooltip">
+                                    <span class="help-icon">?</span>
+                                    <span class="tooltiptext">Define el estilo comunicativo: formal, académico, técnico, sencillo, narrativo, conversacional, profesional.</span>
+                                </span>
+                            </label>
+                            <div class="hint-box">
+                                <strong>💡 Pista:</strong> Define claramente el tono: formal, académico, técnico, sencillo. Piensa en tu audiencia: ¿quién leerá esto?
+                            </div>
+                            <input type="text" name="tono" placeholder="Ejemplo: Formal y técnico, adecuado para un informe ejecutivo dirigido a gerentes de RRHH..." oninput="updatePERTCOFPreview()">
+                        </div>
+
+                        <div class="form-section co">
+                            <label>
+                                <span class="badge co">CO</span> Contexto Completo
+                                <span class="tooltip">
+                                    <span class="help-icon">?</span>
+                                    <span class="tooltiptext">EL ELEMENTO MÁS IMPORTANTE. Incluye todos los detalles relevantes: situación actual, recursos, restricciones, normativas, ubicación, etc.</span>
+                                </span>
+                            </label>
+                            <div class="hint-box">
+                                <strong>💡 Pista (MUY IMPORTANTE):</strong> Incluye TODO lo relevante: ubicación, tiempo, recursos disponibles, restricciones, situación actual, normativas aplicables, tamaño/alcance, personas involucradas. Mientras más detalles, mejor será el resultado.
+                            </div>
+                            <textarea name="contexto" placeholder="Ejemplo: Empresa de 50 empleados, sector manufacturero, ubicada en Bogotá, Colombia. Normativa laboral colombiana vigente. Buscan implementar trabajo remoto para 20 empleados administrativos. Presupuesto limitado. Necesitan respuesta en 1 semana..." oninput="updatePERTCOFPreview()"></textarea>
+                        </div>
+
+                        <div class="form-section f">
+                            <label>
+                                <span class="badge f">F</span> Formato de Salida + Filtros
+                                <span class="tooltip">
+                                    <span class="help-icon">?</span>
+                                    <span class="tooltiptext">Especifica cómo quieres recibir la respuesta: estructura, formato, extensión, nivel técnico, audiencia objetivo, restricciones.</span>
+                                </span>
+                            </label>
+                            <div class="hint-box">
+                                <strong>💡 Pista:</strong> Define estructura (tabla, lista, informe, etc.), extensión (palabras, páginas), nivel técnico, audiencia objetivo (ejecutivos, técnicos, general) y cualquier restricción específica.
+                            </div>
+                            <textarea name="formato" placeholder="Ejemplo: Informe estructurado de 3 páginas con secciones numeradas: resumen ejecutivo, análisis legal, recomendaciones. Máximo 2000 palabras. Lenguaje técnico pero comprensible para gerentes no abogados..." oninput="updatePERTCOFPreview()"></textarea>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Preview del Prompt Completo -->
+                <div class="prompt-preview">
+                    <h3>📋 Prompt Completo para Copiar y Pegar</h3>
+                    <p class="live-preview-label">Este prompt se actualiza automáticamente mientras escribes</p>
+                    <textarea id="pertcofPromptPreview" readonly placeholder="Completa los campos del formulario para ver aquí tu prompt completo..."></textarea>
+                    <button class="copy-btn" onclick="copyPERTCOFPrompt()">📋 Copiar Prompt</button>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="evaluatePERTCOF()">📊 Evaluar Prompt</button>
+                    <button class="btn btn-secondary" onclick="clearPERTCOFForm()">🔄 Limpiar</button>
+                </div>
+
+                <!-- Results Panel -->
+                <div class="results-panel" id="pertcofResults">
+                    <h2 style="text-align: center; margin-bottom: 25px;">📈 Resultados</h2>
+                    
+                    <div class="score-display">
+                        <div class="score-circle" id="pertcofScore">0/40</div>
+                        <div class="level-badge" id="pertcofLevel">Nivel</div>
+                    </div>
+
+                    <div class="criteria-grid" id="pertcofCriteria"></div>
+
+                    <div class="feedback-section">
+                        <h3>💡 Cómo Mejorar</h3>
+                        <ul id="pertcofImprovements"></ul>
+                    </div>
+
+                    <div class="feedback-section">
+                        <h3>✅ Fortalezas</h3>
+                        <ul id="pertcofStrengths"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Three O Module -->
+        <div id="three-o" class="module-section">
+            <div class="module-header">
+                <h2>🟧 Módulo 2: Técnica de las Tres O</h2>
+                <p>
+                    Un problema se identifica cuando existe: Objeto, Objetivo y Obstáculo. 
+                    Es la forma más clara de explicarle a la IA qué problema resolver.
+                </p>
+            </div>
+
+            <div class="theory-section">
+                <h3>📚 Teoría de las Tres O</h3>
+                
+                <div class="component-card">
+                    <h4>🔵 Objeto</h4>
+                    <p>Quién o qué es el protagonista del problema. Puede ser una persona, un animal, una organización, 
+                    un sistema, un proceso, etc.</p>
+                </div>
+
+                <div class="component-card">
+                    <h4>🎯 Objetivo</h4>
+                    <p>Qué quiere lograr el objeto. Debe ser claro, específico y medible.</p>
+                </div>
+
+                <div class="component-card">
+                    <h4>🚧 Obstáculo</h4>
+                    <p>Qué impide alcanzar el objetivo. Debe ser explícito y bien definido.</p>
+                </div>
+
+                <div class="component-card" style="background: #e3f2fd; border-left-color: #1976d2;">
+                    <h4>💡 Ejemplo</h4>
+                    <p><strong>Objeto:</strong> El señor Pérez<br>
+                    <strong>Objetivo:</strong> Debe pagar el recibo de la luz<br>
+                    <strong>Obstáculo:</strong> El dinero que tiene no le alcanza<br><br>
+                    <em>El problema queda claramente definido: El señor Pérez no puede pagar el recibo de la luz porque 
+                    no tiene suficiente dinero.</em></p>
+                </div>
+            </div>
+
+            <div class="exercise-section">
+                <h3>🎯 Ejercicios Prácticos</h3>
+                
+                <div class="level-selector">
+                    <button class="level-btn active" data-level="basico">Básico (1-10)</button>
+                    <button class="level-btn" data-level="intermedio">Intermedio (11-20)</button>
+                    <button class="level-btn" data-level="avanzado">Avanzado (21-30)</button>
+                </div>
+
+                <div class="exercise-selector">
+                    <select id="threeOExerciseSelect">
+                        <option value="0">-- Selecciona un ejercicio --</option>
+                    </select>
+                </div>
+
+                <div class="exercise-description" id="threeOExerciseDescription">
+                    <p style="color: #666;">Selecciona un ejercicio para comenzar</p>
+                </div>
+
+                <!-- Botón para ver respuesta perfecta -->
+                <div style="margin-bottom: 20px;">
+                    <button class="show-answer-btn" onclick="togglePerfectAnswer('threeO')">
+                        💡 Ver Respuesta Perfecta de Ejemplo
+                    </button>
+                    <div class="perfect-answer" id="threeOPerfectAnswer">
+                        <h4>⭐ Respuesta Perfecta</h4>
+                        <div class="perfect-answer-content" id="threeOPerfectContent">
+                            <p>Selecciona un ejercicio para ver la respuesta perfecta.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-container">
+                    <form id="threeOForm">
+                        <div class="form-section" style="border-color: #1976d2;">
+                            <label>
+                                🔵 Objeto
+                                <span class="tooltip">
+                                    <span class="help-icon">?</span>
+                                    <span class="tooltiptext">Quién o qué es el protagonista del problema. Puede ser una persona, organización, sistema, proceso, etc.</span>
+                                </span>
+                            </label>
+                            <div class="hint-box">
+                                <strong>💡 Pista:</strong> Identifica claramente quién o qué tiene el problema. Sé específico: no digas solo "empresa", di "la empresa de tecnología X" o "María, la gerente de marketing".
+                            </div>
+                            <textarea name="objeto" placeholder="Ejemplo: María, una profesional de 30 años que trabaja en una empresa de tecnología..."></textarea>
+                        </div>
+
+                        <div class="form-section" style="border-color: #43a047;">
+                            <label>
+                                🎯 Objetivo
+                                <span class="tooltip">
+                                    <span class="help-icon">?</span>
+                                    <span class="tooltiptext">Qué quiere lograr el objeto. Debe ser claro, específico y medible.</span>
+                                </span>
+                            </label>
+                            <div class="hint-box">
+                                <strong>💡 Pista:</strong> Sé muy específico sobre qué quiere lograr. Usa verbos como "lograr", "alcanzar", "conseguir", "necesita", "debe", "quiere". El objetivo debe ser claro y medible.
+                            </div>
+                            <textarea name="objetivo" placeholder="Ejemplo: Aprender a programar en Python para cambiar de carrera a desarrollo de software..."></textarea>
+                        </div>
+
+                        <div class="form-section" style="border-color: #f44336;">
+                            <label>
+                                🚧 Obstáculo
+                                <span class="tooltip">
+                                    <span class="help-icon">?</span>
+                                    <span class="tooltiptext">Qué impide alcanzar el objetivo. Debe ser explícito y bien definido.</span>
+                                </span>
+                            </label>
+                            <div class="hint-box">
+                                <strong>💡 Pista:</strong> Identifica específicamente qué está bloqueando el objetivo. Usa palabras como "impide", "dificulta", "obstaculiza", "falta", "no puede", "restricción". Sé explícito sobre la barrera.
+                            </div>
+                            <textarea name="obstaculo" placeholder="Ejemplo: No tiene tiempo suficiente debido a su trabajo de tiempo completo que le exige 50 horas semanales, además de responsabilidades familiares..."></textarea>
+                        </div>
+
+                        <div class="form-section" style="border-color: #9c27b0;">
+                            <label>
+                                📝 Problema Formulado
+                                <span class="tooltip">
+                                    <span class="help-icon">?</span>
+                                    <span class="tooltiptext">Redacta el problema completo conectando las tres O de manera clara, simple y coherente.</span>
+                                </span>
+                            </label>
+                            <div class="hint-box">
+                                <strong>💡 Pista:</strong> Conecta las tres O de forma fluida. Un buen problema formulado debería sonar natural y ser fácil de entender. Ejemplo: "[Objeto] necesita [Objetivo] pero [Obstáculo] le impide lograrlo."
+                            </div>
+                            <textarea name="problema" placeholder="Ejemplo: María quiere aprender a programar en Python para cambiar de carrera, pero no tiene tiempo suficiente debido a su trabajo de tiempo completo..."></textarea>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="evaluateThreeO()">📊 Evaluar</button>
+                    <button class="btn btn-secondary" onclick="clearThreeOForm()">🔄 Limpiar</button>
+                </div>
+
+                <div class="results-panel" id="threeOResults">
+                    <h2 style="text-align: center; margin-bottom: 25px;">📈 Resultados</h2>
+                    
+                    <div class="score-display">
+                        <div class="score-circle" id="threeOScore">0/25</div>
+                        <div class="level-badge" id="threeOLevel">Nivel</div>
+                    </div>
+
+                    <div class="criteria-grid" id="threeOCriteria"></div>
+
+                    <div class="feedback-section">
+                        <h3>💡 Cómo Mejorar</h3>
+                        <ul id="threeOImprovements"></ul>
+                    </div>
+
+                    <div class="feedback-section">
+                        <h3>✅ Fortalezas</h3>
+                        <ul id="threeOStrengths"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DCR Module -->
+        <div id="dcr" class="module-section">
+            <div class="module-header">
+                <h2>🟩 Módulo 3: Técnica DCR</h2>
+                <p>
+                    Método para análisis profundo basado en tres fases: Descomponer, Comprender y Recomponer. 
+                    Perfecto para entender sistemas, procesos y objetos complejos.
+                </p>
+            </div>
+
+            <div class="theory-section">
+                <h3>📚 Teoría DCR</h3>
+                
+                <div class="component-card">
+                    <h4>🔨 D - Descomponer</h4>
+                    <p>Separa el objeto de estudio en sus partes relevantes. Identifica todos los componentes esenciales 
+                    sin omitir elementos importantes.</p>
+                </div>
+
+                <div class="component-card">
+                    <h4>🧠 C - Comprender</h4>
+                    <p>Entiende la función, interacción y propósito de cada parte. Analiza cómo fluyen los procesos, 
+                    por qué cada componente existe y cómo se relaciona con los demás.</p>
+                </div>
+
+                <div class="component-card">
+                    <h4>🔄 R - Recomponer</h4>
+                    <p>Explica cómo funciona el todo a partir de la relación entre sus partes. Sintetiza el análisis 
+                    en una explicación coherente del funcionamiento completo.</p>
+                </div>
+
+                <div class="component-card" style="background: #e3f2fd; border-left-color: #1976d2;">
+                    <h4>💡 Ejemplo: Marcador Borrable</h4>
+                    <p><strong>Descomponer:</strong> cuerpo, punta, esponja, tapa, acople<br>
+                    <strong>Comprender:</strong> cómo fluye la tinta, por qué es metálico, cómo funciona la gravedad, 
+                    función de cada componente<br>
+                    <strong>Recomponer:</strong> Explicación del funcionamiento total del marcador: la tinta fluye por 
+                    gravedad desde el cuerpo hasta la punta, la esponja ayuda a regular el flujo, la tapa previene la 
+                    evaporación cuando no se usa, y el acople permite su fácil manejo.</p>
+                </div>
+            </div>
+
+            <div class="exercise-section">
+                <h3>🎯 Ejercicios Prácticos</h3>
+                
+                <div class="level-selector">
+                    <button class="level-btn active" data-level="basico">Básico (1-10)</button>
+                    <button class="level-btn" data-level="intermedio">Intermedio (11-20)</button>
+                    <button class="level-btn" data-level="avanzado">Avanzado (21-30)</button>
+                </div>
+
+                <div class="exercise-selector">
+                    <select id="dcrExerciseSelect">
+                        <option value="0">-- Selecciona un ejercicio --</option>
+                    </select>
+                </div>
+
+                <div class="exercise-description" id="dcrExerciseDescription">
+                    <p style="color: #666;">Selecciona un ejercicio para comenzar</p>
+                </div>
+
+                <!-- Botón para ver respuesta perfecta -->
+                <div style="margin-bottom: 20px;">
+                    <button class="show-answer-btn" onclick="togglePerfectAnswer('dcr')">
+                        💡 Ver Respuesta Perfecta de Ejemplo
+                    </button>
+                    <div class="perfect-answer" id="dcrPerfectAnswer">
+                        <h4>⭐ Respuesta Perfecta</h4>
+                        <div class="perfect-answer-content" id="dcrPerfectContent">
+                            <p>Selecciona un ejercicio para ver la respuesta perfecta.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-container">
+                    <form id="dcrForm">
+                        <div class="form-section" style="border-color: #e53935;">
+                            <label>
+                                🔨 D - Descomponer
+                                <span class="tooltip">
+                                    <span class="help-icon">?</span>
+                                    <span class="tooltiptext">Separa el objeto en sus partes relevantes. Identifica todos los componentes esenciales sin omitir elementos importantes.</span>
+                                </span>
+                            </label>
+                            <div class="hint-box">
+                                <strong>💡 Pista:</strong> Lista todas las partes físicas, funcionales o conceptuales relevantes. No omitas componentes esenciales. Para objetos físicos, piensa en estructura. Para procesos, piensa en etapas. Para sistemas, piensa en módulos.
+                            </div>
+                            <textarea name="descomponer" placeholder="Ejemplo: Cuerpo, punta, esponja interna, tapa, acople metálico, tinta, válvula reguladora..."></textarea>
+                        </div>
+
+                        <div class="form-section" style="border-color: #1976d2;">
+                            <label>
+                                🧠 C - Comprender
+                                <span class="tooltip">
+                                    <span class="help-icon">?</span>
+                                    <span class="tooltiptext">Explica la función, interacción, relaciones y propósito de cada parte identificada.</span>
+                                </span>
+                            </label>
+                            <div class="hint-box">
+                                <strong>💡 Pista:</strong> Para cada parte, explica: ¿qué función cumple? ¿Cómo se relaciona con otras partes? ¿Por qué existe? ¿Cómo fluyen los procesos o materiales? Describe las interacciones entre componentes.
+                            </div>
+                            <textarea name="comprender" placeholder="Ejemplo: El cuerpo almacena la tinta y está diseñado para permitir el flujo por gravedad. La punta distribuye la tinta de manera uniforme. La esponja regula el flujo evitando derrames..."></textarea>
+                        </div>
+
+                        <div class="form-section" style="border-color: #43a047;">
+                            <label>
+                                🔄 R - Recomponer
+                                <span class="tooltip">
+                                    <span class="help-icon">?</span>
+                                    <span class="tooltiptext">Explica cómo funciona el todo de manera coherente, conectando todas las partes en una explicación clara y lógica.</span>
+                                </span>
+                            </label>
+                            <div class="hint-box">
+                                <strong>💡 Pista:</strong> Sintetiza todo en una explicación coherente del funcionamiento completo. Conecta las partes de manera lógica. Explica el flujo o proceso general. Debe ser claro y fácil de entender.
+                            </div>
+                            <textarea name="recomponer" placeholder="Ejemplo: El marcador funciona como un sistema integrado donde la tinta fluye por gravedad desde el cuerpo hasta la punta, regulada por la esponja que previene derrames excesivos..."></textarea>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="evaluateDCR()">📊 Evaluar</button>
+                    <button class="btn btn-secondary" onclick="clearDCRForm()">🔄 Limpiar</button>
+                </div>
+
+                <div class="results-panel" id="dcrResults">
+                    <h2 style="text-align: center; margin-bottom: 25px;">📈 Resultados</h2>
+                    
+                    <div class="score-display">
+                        <div class="score-circle" id="dcrScore">0/25</div>
+                        <div class="level-badge" id="dcrLevel">Nivel</div>
+                    </div>
+
+                    <div class="criteria-grid" id="dcrCriteria"></div>
+
+                    <div class="feedback-section">
+                        <h3>💡 Cómo Mejorar</h3>
+                        <ul id="dcrImprovements"></ul>
+                    </div>
+
+                    <div class="feedback-section">
+                        <h3>✅ Fortalezas</h3>
+                        <ul id="dcrStrengths"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Module -->
+        <div id="progress" class="module-section">
+            <div class="module-header">
+                <h2>📊 Mi Progreso</h2>
+                <p>Revisa tu desempeño en cada técnica y tu historial de ejercicios.</p>
+            </div>
+
+            <div style="padding: 30px;">
+                <div class="theory-section">
+                    <h3>🎯 Progreso General</h3>
+                    <p>Esta sección mostrará tu progreso acumulado en las tres técnicas.</p>
+                    <p style="margin-top: 15px; color: #666;">
+                        <em>Los datos de progreso se guardarán localmente en tu navegador.</em>
+                    </p>
+                </div>
+
+                <div id="progressStats" style="margin-top: 30px;">
+                    <!-- Stats will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                showSection(this.dataset.section);
+            });
+        });
+
+        function showSection(section) {
+            // Hide all sections
+            document.querySelectorAll('.module-section').forEach(s => {
+                s.classList.remove('active');
+            });
+
+            // Show selected section
+            document.getElementById(section).classList.add('active');
+
+            // Update nav buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.section === section);
+            });
+
+            // Load exercises for the section if needed
+            if (section === 'pertcof') {
+                loadPERTCOFExercises('basico');
+            } else if (section === 'three-o') {
+                loadThreeOExercises('basico');
+            } else if (section === 'dcr') {
+                loadDCRExercises('basico');
+            } else if (section === 'progress') {
+                loadProgress();
+            }
+        }
+
+        // Exercise data - PERTCOF (30 exercises)
+        const pertcofExercises = {
+            basico: [
+                { id: 1, title: "Diseñar prompt para resumir un texto", description: "Crea un prompt que solicite a la IA resumir un texto extenso manteniendo los puntos clave.", hints: "PER: Editor profesional. E: Resumir texto. CO: Texto extenso, mantener puntos clave. F: Resumen de 200 palabras, formato párrafo." },
+                { id: 2, title: "Diseñar prompt para explicar un concepto a un niño", description: "Crea un prompt que solicite explicar un concepto técnico de manera sencilla para un niño de 8 años.", hints: "PER: Pedagogo especializado. E: Explicar concepto. CO: Concepto técnico, niño 8 años. F: Explicación narrativa con ejemplos, lenguaje simple." },
+                { id: 3, title: "Diseñar prompt para crear una tabla comparativa", description: "Crea un prompt que solicite una tabla comparativa entre diferentes opciones o productos.", hints: "PER: Analista de datos. E: Crear tabla comparativa. CO: Opciones/productos a comparar. F: Tabla con columnas específicas." },
+                { id: 4, title: "Prompt para redactar un correo profesional", description: "Crea un prompt para redactar un correo electrónico profesional y formal.", hints: "PER: Redactor corporativo. E: Redactar correo. CO: Destinatario, propósito, contexto. F: Correo formal, estructura estándar." },
+                { id: 5, title: "Prompt para generar recomendaciones", description: "Crea un prompt que solicite recomendaciones basadas en criterios específicos.", hints: "PER: Consultor especializado. E: Generar recomendaciones. CO: Situación, criterios. F: Lista numerada con justificación." },
+                { id: 6, title: "Prompt para crear un plan de acción", description: "Crea un prompt para generar un plan de acción paso a paso para alcanzar un objetivo.", hints: "PER: Planificador estratégico. E: Crear plan de acción. CO: Objetivo, recursos, restricciones. F: Lista de pasos con tiempos." },
+                { id: 7, title: "Prompt para analizar un problema", description: "Crea un prompt que solicite un análisis detallado de un problema identificado.", hints: "PER: Analista de problemas. E: Analizar problema. CO: Problema específico, contexto. F: Análisis estructurado con causas y efectos." },
+                { id: 8, title: "Prompt para generar ideas creativas", description: "Crea un prompt que solicite ideas creativas para una situación específica.", hints: "PER: Creativo publicitario. E: Generar ideas. CO: Situación, restricciones. F: Lista de 10 ideas con descripción breve." },
+                { id: 9, title: "Prompt para crear un cuestionario", description: "Crea un prompt que solicite diseñar un cuestionario para recopilar información específica.", hints: "PER: Investigador de mercados. E: Crear cuestionario. CO: Objetivo, audiencia. F: Formato de preguntas con opciones." },
+                { id: 10, title: "Prompt para traducir y adaptar contenido", description: "Crea un prompt para traducir contenido y adaptarlo a otro contexto cultural.", hints: "PER: Traductor cultural. E: Traducir y adaptar. CO: Contenido original, cultura destino. F: Contenido traducido y adaptado." }
+            ],
+            intermedio: [
+                { id: 11, title: "Crear prompt para analizar un caso jurídico", description: "Diseña un prompt que solicite análisis jurídico detallado de un caso específico.", hints: "PER: Abogado especializado. E: Analizar caso jurídico. CO: Caso, normativa aplicable. F: Análisis legal estructurado." },
+                { id: 12, title: "Crear prompt para generar un plan de estudios", description: "Diseña un prompt para crear un plan de estudios completo para un curso.", hints: "PER: Pedagogo curricular. E: Crear plan de estudios. CO: Curso, duración, audiencia. F: Plan estructurado con módulos." },
+                { id: 13, title: "Prompt para reescribir en diferentes tonos", description: "Crea un prompt que solicite reescribir un texto en varios tonos diferentes.", hints: "PER: Redactor versátil. E: Reescribir en múltiples tonos. CO: Texto original. F: Varias versiones con tonos distintos." },
+                { id: 14, title: "Prompt para evaluar un proceso empresarial", description: "Diseña un prompt para evaluar y mejorar un proceso empresarial.", hints: "PER: Consultor de procesos. E: Evaluar proceso. CO: Proceso actual, objetivos. F: Análisis con recomendaciones." },
+                { id: 15, title: "Prompt para crear estrategia de marketing", description: "Crea un prompt para desarrollar una estrategia de marketing completa.", hints: "PER: Estratega de marketing. E: Crear estrategia. CO: Producto, mercado objetivo. F: Estrategia estructurada con acciones." },
+                { id: 16, title: "Prompt para analizar datos financieros", description: "Diseña un prompt para analizar estados financieros y generar insights.", hints: "PER: Analista financiero. E: Analizar datos financieros. CO: Estados financieros. F: Análisis con gráficos y conclusiones." },
+                { id: 17, title: "Prompt para crear propuesta técnica", description: "Crea un prompt para elaborar una propuesta técnica profesional.", hints: "PER: Ingeniero de proyectos. E: Crear propuesta técnica. CO: Proyecto, requisitos. F: Propuesta estructurada profesional." },
+                { id: 18, title: "Prompt para diseñar flujo de trabajo", description: "Diseña un prompt para crear un flujo de trabajo optimizado.", hints: "PER: Diseñador de procesos. E: Diseñar flujo. CO: Proceso actual, objetivos. F: Diagrama de flujo con pasos." },
+                { id: 19, title: "Prompt para crear manual de procedimientos", description: "Crea un prompt para redactar un manual de procedimientos operativos.", hints: "PER: Documentador técnico. E: Crear manual. CO: Procedimientos a documentar. F: Manual estructurado con formato claro." },
+                { id: 20, title: "Prompt para generar análisis de mercado", description: "Diseña un prompt para realizar un análisis de mercado completo.", hints: "PER: Investigador de mercados. E: Analizar mercado. CO: Sector, región. F: Análisis con datos y conclusiones." }
+            ],
+            avanzado: [
+                { id: 21, title: "Crear macro-prompt complejo", description: "Diseña un prompt maestro que coordine múltiples tareas relacionadas.", hints: "PER: Arquitecto de prompts. E: Coordinar múltiples tareas. CO: Proyecto complejo. F: Prompt maestro estructurado." },
+                { id: 22, title: "Crear sistema de evaluación automática", description: "Diseña un prompt que solicite crear criterios de evaluación automatizados.", hints: "PER: Especialista en evaluación. E: Crear sistema de evaluación. CO: Objetivos de evaluación. F: Rúbrica con criterios." },
+                { id: 23, title: "Prompt para clasificar información compleja", description: "Crea un prompt para clasificar y categorizar información compleja.", hints: "PER: Especialista en clasificación. E: Clasificar información. CO: Información a clasificar. F: Sistema de clasificación estructurado." },
+                { id: 24, title: "Prompt para generar contenido interactivo", description: "Diseña un prompt para crear contenido educativo interactivo.", hints: "PER: Diseñador educativo. E: Crear contenido interactivo. CO: Tema, audiencia. F: Contenido con actividades." },
+                { id: 25, title: "Prompt para simular escenarios", description: "Crea un prompt que solicite simular diferentes escenarios posibles.", hints: "PER: Analista de escenarios. E: Simular escenarios. CO: Situación base. F: Múltiples escenarios con análisis." },
+                { id: 26, title: "Prompt para optimizar procesos", description: "Diseña un prompt para identificar y optimizar cuellos de botella en procesos.", hints: "PER: Consultor de optimización. E: Optimizar procesos. CO: Proceso actual. F: Análisis con mejoras propuestas." },
+                { id: 27, title: "Prompt para crear algoritmo de decisión", description: "Crea un prompt que solicite diseñar un algoritmo de toma de decisiones.", hints: "PER: Ingeniero de sistemas. E: Crear algoritmo. CO: Criterios de decisión. F: Algoritmo estructurado." },
+                { id: 28, title: "Prompt para generar estrategia multinivel", description: "Diseña un prompt para crear una estrategia con múltiples niveles de acción.", hints: "PER: Estratega senior. E: Crear estrategia multinivel. CO: Objetivos estratégicos. F: Estrategia con niveles jerárquicos." },
+                { id: 29, title: "Prompt para diseñar sistema de monitoreo", description: "Crea un prompt para diseñar un sistema de monitoreo y alertas.", hints: "PER: Especialista en sistemas. E: Diseñar sistema monitoreo. CO: Qué monitorear, criterios. F: Sistema con métricas y alertas." },
+                { id: 30, title: "Prompt para crear framework personalizado", description: "Diseña un prompt para crear un framework metodológico personalizado.", hints: "PER: Metodólogo. E: Crear framework. CO: Área de aplicación. F: Framework estructurado con principios." }
+            ]
+        };
+
+        // Three O Exercises (30 exercises)
+        const threeOExercises = {
+            basico: [
+                { id: 1, story: "María quiere aprender a programar pero no tiene tiempo debido a su trabajo de tiempo completo.", objeto: "María", objetivo: "Aprender a programar", obstaculo: "No tiene tiempo por su trabajo de tiempo completo" },
+                { id: 2, story: "La empresa necesita aumentar sus ventas pero no tiene presupuesto para publicidad.", objeto: "La empresa", objetivo: "Aumentar ventas", obstaculo: "No tiene presupuesto para publicidad" },
+                { id: 3, story: "Juan necesita presentar un informe mañana pero la información está incompleta.", objeto: "Juan", objetivo: "Presentar informe mañana", obstaculo: "La información está incompleta" },
+                { id: 4, story: "El equipo quiere lanzar el producto en 2 semanas pero aún faltan pruebas de calidad.", objeto: "El equipo", objetivo: "Lanzar producto en 2 semanas", obstaculo: "Faltan pruebas de calidad" },
+                { id: 5, story: "Ana quiere mejorar su inglés pero no puede pagar clases particulares.", objeto: "Ana", objetivo: "Mejorar su inglés", obstaculo: "No puede pagar clases particulares" },
+                { id: 6, story: "El proyecto requiere aprobación del cliente pero el cliente no responde los correos.", objeto: "El proyecto", objetivo: "Obtener aprobación del cliente", obstaculo: "El cliente no responde correos" },
+                { id: 7, story: "Carlos quiere hacer ejercicio regularmente pero se siente muy cansado después del trabajo.", objeto: "Carlos", objetivo: "Hacer ejercicio regularmente", obstaculo: "Se siente muy cansado después del trabajo" },
+                { id: 8, story: "La organización necesita contratar 5 personas pero el proceso de selección es muy lento.", objeto: "La organización", objetivo: "Contratar 5 personas", obstaculo: "El proceso de selección es muy lento" },
+                { id: 9, story: "Laura quiere vender su casa pero el mercado está saturado con muchas propiedades.", objeto: "Laura", objetivo: "Vender su casa", obstaculo: "El mercado está saturado con muchas propiedades" },
+                { id: 10, story: "El sistema necesita actualizarse pero los usuarios no quieren cambios en su flujo de trabajo.", objeto: "El sistema", objetivo: "Actualizarse", obstaculo: "Los usuarios no quieren cambios" }
+            ],
+            intermedio: [
+                { id: 11, story: "Un gerente de proyecto debe entregar un producto innovador en 3 meses, pero el equipo no tiene experiencia en la tecnología requerida.", objeto: "El gerente de proyecto", objetivo: "Entregar producto innovador en 3 meses", obstaculo: "El equipo no tiene experiencia en la tecnología" },
+                { id: 12, story: "Una startup quiere expandirse internacionalmente, pero las regulaciones de cada país son muy diferentes y complejas.", objeto: "La startup", objetivo: "Expandirse internacionalmente", obstaculo: "Las regulaciones de cada país son diferentes y complejas" },
+                { id: 13, story: "Un docente necesita adaptar su metodología a estudiantes remotos, pero la plataforma tecnológica disponible es limitada.", objeto: "El docente", objetivo: "Adaptar metodología a estudiantes remotos", obstaculo: "La plataforma tecnológica es limitada" },
+                { id: 14, story: "Un hospital debe reducir tiempos de espera de pacientes, pero no puede contratar más personal por restricciones presupuestarias.", objeto: "El hospital", objetivo: "Reducir tiempos de espera", obstaculo: "No puede contratar más personal por restricciones presupuestarias" },
+                { id: 15, story: "Una ONG quiere aumentar su impacto social, pero depende de donaciones voluntarias que son impredecibles.", objeto: "La ONG", objetivo: "Aumentar su impacto social", obstaculo: "Depende de donaciones impredecibles" },
+                { id: 16, story: "Un consultor necesita cerrar 3 nuevos clientes este trimestre, pero su red de contactos está limitada a un solo sector.", objeto: "El consultor", objetivo: "Cerrar 3 nuevos clientes este trimestre", obstaculo: "Su red está limitada a un solo sector" },
+                { id: 17, story: "Una fábrica debe reducir su huella de carbono en 50%, pero los procesos actuales son altamente dependientes de energía no renovable.", objeto: "La fábrica", objetivo: "Reducir huella de carbono en 50%", obstaculo: "Los procesos dependen de energía no renovable" },
+                { id: 18, story: "Un investigador necesita publicar su investigación en una revista de alto impacto, pero el tema es muy especializado y tiene audiencia limitada.", objeto: "El investigador", objetivo: "Publicar en revista de alto impacto", obstaculo: "El tema es muy especializado con audiencia limitada" },
+                { id: 19, story: "Un abogado debe ganar un caso complejo, pero la evidencia disponible es circunstancial y no definitiva.", objeto: "El abogado", objetivo: "Ganar el caso complejo", obstaculo: "La evidencia es circunstancial y no definitiva" },
+                { id: 20, story: "Una empresa familiar quiere profesionalizar sus procesos, pero los miembros fundadores son reacios a cambiar métodos tradicionales.", objeto: "La empresa familiar", objetivo: "Profesionalizar procesos", obstaculo: "Los fundadores son reacios a cambiar métodos tradicionales" }
+            ],
+            avanzado: [
+                { id: 21, description: "Crea un problema usando la técnica de las Tres O relacionado con transformación digital en una empresa tradicional." },
+                { id: 22, description: "Formula un problema usando las Tres O sobre la brecha generacional en equipos de trabajo multigeneracionales." },
+                { id: 23, description: "Define un problema con las Tres O relacionado con sostenibilidad ambiental vs crecimiento económico." },
+                { id: 24, description: "Crea un problema usando las Tres O sobre balance entre innovación y estabilidad operativa." },
+                { id: 25, description: "Formula un problema con las Tres O relacionado con privacidad de datos y personalización de servicios." },
+                { id: 26, description: "Define un problema usando las Tres O sobre escalabilidad de modelos de negocio en mercados emergentes." },
+                { id: 27, description: "Crea un problema con las Tres O relacionado con automatización y preservación de empleos." },
+                { id: 28, description: "Formula un problema usando las Tres O sobre acceso a educación de calidad en contextos de recursos limitados." },
+                { id: 29, description: "Define un problema con las Tres O relacionado con colaboración global y diferencias culturales." },
+                { id: 30, description: "Crea un problema usando las Tres O sobre equilibrio entre agilidad organizacional y control de riesgos." }
+            ]
+        };
+
+        // DCR Exercises (30 exercises)
+        const dcrExercises = {
+            basico: [
+                { id: 1, object: "Bicicleta", description: "Analiza una bicicleta usando la técnica DCR." },
+                { id: 2, object: "Botella de agua", description: "Aplica DCR para analizar una botella de agua reutilizable." },
+                { id: 3, object: "Reloj de pulsera", description: "Descompone, comprende y recomponer un reloj de pulsera analógico." },
+                { id: 4, object: "Silla de oficina", description: "Analiza una silla ergonómica de oficina usando DCR." },
+                { id: 5, object: "Ventilador de escritorio", description: "Aplica la técnica DCR a un ventilador eléctrico de escritorio." },
+                { id: 6, object: "Bolígrafo", description: "Descompone, comprende y recomponer el funcionamiento de un bolígrafo." },
+                { id: 7, object: "Candado", description: "Analiza un candado con llave usando DCR." },
+                { id: 8, object: "Cámara fotográfica básica", description: "Aplica DCR para entender una cámara fotográfica simple." },
+                { id: 9, object: "Termo", description: "Descompone, comprende y recomponer un termo para mantener temperatura." },
+                { id: 10, object: "Paraguas", description: "Analiza un paraguas plegable usando la técnica DCR." }
+            ],
+            intermedio: [
+                { id: 11, object: "Sistema de alarma doméstica", description: "Analiza un sistema de alarma completo usando DCR." },
+                { id: 12, object: "Proceso de contratación de personal", description: "Aplica DCR para analizar un proceso organizacional de contratación." },
+                { id: 13, object: "Ecosistema de aplicación móvil", description: "Descompone, comprende y recomponer un ecosistema de app móvil." },
+                { id: 14, object: "Sistema de facturación electrónica", description: "Analiza un sistema de facturación usando DCR." },
+                { id: 15, object: "Proceso de toma de decisiones en equipo", description: "Aplica DCR para entender un proceso de decisión colaborativa." },
+                { id: 16, object: "Flujo de atención al cliente", description: "Descompone, comprende y recomponer el flujo de atención al cliente." },
+                { id: 17, object: "Sistema de evaluación de desempeño", description: "Analiza un sistema de evaluación usando DCR." },
+                { id: 18, object: "Cadena de suministro básica", description: "Aplica DCR para entender una cadena de suministro simple." },
+                { id: 19, object: "Proceso de onboarding de empleados", description: "Descompone, comprende y recomponer un proceso de integración." },
+                { id: 20, object: "Sistema de gestión de proyectos", description: "Analiza un sistema de gestión de proyectos usando DCR." }
+            ],
+            avanzado: [
+                { id: 21, object: "Ecosistema de innovación empresarial", description: "Aplica DCR para analizar un ecosistema completo de innovación." },
+                { id: 22, object: "Sistema de inteligencia de negocios", description: "Descompone, comprende y recomponer un sistema BI completo." },
+                { id: 23, object: "Arquitectura de transformación digital", description: "Analiza una arquitectura de transformación digital usando DCR." },
+                { id: 24, object: "Modelo de economía circular", description: "Aplica DCR para entender un modelo de economía circular." },
+                { id: 25, object: "Sistema de gobierno corporativo", description: "Descompone, comprende y recomponer un sistema de gobierno." },
+                { id: 26, object: "Ecosistema de aprendizaje organizacional", description: "Analiza un ecosistema de aprendizaje usando DCR." },
+                { id: 27, object: "Sistema de gestión de talento", description: "Aplica DCR para entender un sistema integral de talento." },
+                { id: 28, object: "Arquitectura de datos empresarial", description: "Descompone, comprende y recomponer una arquitectura de datos." },
+                { id: 29, object: "Modelo de sostenibilidad corporativa", description: "Analiza un modelo de sostenibilidad usando DCR." },
+                { id: 30, object: "Sistema de innovación abierta", description: "Aplica DCR para entender un sistema de innovación abierta." }
+            ]
+        };
+
+        // Respuestas perfectas para cada ejercicio
+        const perfectAnswers = {
+            pertcof: {
+                1: `<strong>PERSONA EXPERTA:</strong> Editor profesional con 15 años de experiencia en redacción y síntesis de contenidos académicos y corporativos, especializado en textos extensos y resúmenes ejecutivos.<br><br>
+<strong>ENCARGO:</strong> Crear un resumen ejecutivo manteniendo todos los puntos clave del texto original, destacando las ideas principales y conclusiones relevantes.<br><br>
+<strong>RAZÓN:</strong> Para que ejecutivos ocupados puedan entender el contenido principal sin leer el documento completo de 50 páginas.<br><br>
+<strong>TONO:</strong> Formal y profesional, adecuado para un documento ejecutivo corporativo.<br><br>
+<strong>CONTEXTO:</strong> Texto original de 50 páginas sobre análisis de mercado tecnológico, dirigido a gerentes de nivel C-suite con conocimiento básico del sector. El resumen debe ser autónomo pero puede hacer referencia a secciones específicas del documento completo.<br><br>
+<strong>FORMATO:</strong> Resumen de 200 palabras máximo en formato de párrafo continuo, con tres secciones: contexto, hallazgos principales, y conclusiones. Sin viñetas ni listas.`,
+
+                2: `<strong>PERSONA EXPERTA:</strong> Pedagogo especializado en educación infantil con maestría en didáctica y 12 años de experiencia explicando conceptos complejos a niños de diferentes edades.<br><br>
+<strong>ENCARGO:</strong> Explicar el concepto técnico de forma sencilla, usando analogías, ejemplos cotidianos y lenguaje apropiado para la edad.<br><br>
+<strong>RAZÓN:</strong> Para ayudar al niño a entender un concepto que necesita para su tarea escolar y despertar su curiosidad científica.<br><br>
+<strong>TONO:</strong> Sencillo, cálido y entusiasta, como si fuera una conversación entre un adulto y un niño curioso.<br><br>
+<strong>CONTEXTO:</strong> Concepto técnico sobre [tema]. Niño de 8 años, curioso, le gustan las analogías con animales o juegos. Explicación para tarea escolar. Padre/madre presente para apoyo. Máximo 3 minutos de lectura.<br><br>
+<strong>FORMATO:</strong> Explicación narrativa de 150-200 palabras, comenzando con una analogía del mundo real, luego la explicación simple, y terminando con un ejemplo práctico que el niño pueda relacionar con su vida cotidiana.`
+            },
+            threeO: {
+                1: `<strong>OBJETO:</strong> María, una profesional de 30 años que trabaja en una empresa de tecnología como analista de datos.<br><br>
+<strong>OBJETIVO:</strong> Aprender a programar en Python para poder cambiar de carrera a desarrollo de software y aumentar sus ingresos en un 40%.<br><br>
+<strong>OBSTÁCULO:</strong> No tiene tiempo suficiente debido a su trabajo de tiempo completo que le exige 50 horas semanales, además de responsabilidades familiares con dos hijos pequeños que requieren atención constante.<br><br>
+<strong>PROBLEMA FORMULADO:</strong> María quiere aprender a programar en Python para cambiar de carrera a desarrollo de software, pero no tiene tiempo suficiente debido a su trabajo de tiempo completo (50 horas semanales) y sus responsabilidades familiares con dos hijos pequeños, lo que le impide dedicar el tiempo necesario para estudiar y practicar programación.`
+            },
+            dcr: {
+                1: `<strong>D - DESCOMPONER:</strong><br>
+La bicicleta está compuesta por: cuadro (estructura principal), ruedas delanteras y traseras con llantas y neumáticos, sistema de frenos (palancas en el manillar y pinzas en las ruedas), sistema de transmisión (cadena, piñones, platos, pedales), manillar y tija, asiento y tija de asiento, sistema de dirección (horquilla delantera), sistema de iluminación (opcional), pedales y bielas.<br><br>
+<strong>C - COMPRENDER:</strong><br>
+El cuadro proporciona la estructura base y conecta todos los componentes. Las ruedas permiten el movimiento sobre el suelo mediante rotación. El sistema de frenos transforma energía cinética en calor para detener la bicicleta. La transmisión convierte el movimiento circular de los pedales en movimiento de las ruedas mediante la cadena que conecta los platos con los piñones. El manillar permite dirigir la bicicleta y controlar la dirección. El asiento soporta el peso del ciclista. La horquilla conecta el manillar con la rueda delantera permitiendo el giro.<br><br>
+<strong>R - RECOMPONER:</strong><br>
+La bicicleta funciona como un sistema integrado de conversión de energía humana en movimiento. El ciclista ejerce fuerza en los pedales, que a través de las bielas rotan los platos. La cadena transmite este movimiento circular a los piñones traseros, haciendo girar la rueda trasera. La fricción entre la rueda y el suelo genera el avance. El manillar, conectado a la horquilla y rueda delantera, permite dirigir la trayectoria. Los frenos, cuando se activan, aplican fricción a las llantas transformando la energía cinética en calor para detener el movimiento. Todo el sistema está soportado por el cuadro que mantiene la integridad estructural y distribuye las cargas del ciclista y el terreno.`
+            }
+        };
+
+        // Load exercises functions
+        function loadPERTCOFExercises(level) {
+            const select = document.getElementById('pertcofExerciseSelect');
+            const exercises = pertcofExercises[level];
+            select.innerHTML = '<option value="0">-- Selecciona un ejercicio --</option>';
+            
+            exercises.forEach(ex => {
+                const option = document.createElement('option');
+                option.value = ex.id;
+                option.textContent = `${ex.id}. ${ex.title}`;
+                select.appendChild(option);
+            });
+
+            // Update level buttons
+            document.querySelectorAll('#pertcof .level-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.level === level);
+            });
+        }
+
+        function loadThreeOExercises(level) {
+            const select = document.getElementById('threeOExerciseSelect');
+            const exercises = threeOExercises[level];
+            select.innerHTML = '<option value="0">-- Selecciona un ejercicio --</option>';
+            
+            exercises.forEach(ex => {
+                const option = document.createElement('option');
+                option.value = ex.id;
+                option.textContent = `${ex.id}. ${ex.story || ex.description}`;
+                select.appendChild(option);
+            });
+
+            document.querySelectorAll('#three-o .level-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.level === level);
+            });
+        }
+
+        function loadDCRExercises(level) {
+            const select = document.getElementById('dcrExerciseSelect');
+            const exercises = dcrExercises[level];
+            select.innerHTML = '<option value="0">-- Selecciona un ejercicio --</option>';
+            
+            exercises.forEach(ex => {
+                const option = document.createElement('option');
+                option.value = ex.id;
+                option.textContent = `${ex.id}. ${ex.object}`;
+                select.appendChild(option);
+            });
+
+            document.querySelectorAll('#dcr .level-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.level === level);
+            });
+        }
+
+        // Event listeners for level buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            // PERTCOF level buttons
+            document.querySelectorAll('#pertcof .level-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    loadPERTCOFExercises(this.dataset.level);
+                });
+            });
+
+            // Three O level buttons
+            document.querySelectorAll('#three-o .level-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    loadThreeOExercises(this.dataset.level);
+                });
+            });
+
+            // DCR level buttons
+            document.querySelectorAll('#dcr .level-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    loadDCRExercises(this.dataset.level);
+                });
+            });
+
+            // Exercise select listeners
+            document.getElementById('pertcofExerciseSelect').addEventListener('change', function() {
+                loadPERTCOFExercise(parseInt(this.value));
+            });
+
+            document.getElementById('threeOExerciseSelect').addEventListener('change', function() {
+                loadThreeOExercise(parseInt(this.value));
+            });
+
+            document.getElementById('dcrExerciseSelect').addEventListener('change', function() {
+                loadDCRExercise(parseInt(this.value));
+            });
+
+            // Initialize with basic level
+            loadPERTCOFExercises('basico');
+            loadThreeOExercises('basico');
+            loadDCRExercises('basico');
+        });
+
+        function loadPERTCOFExercise(id) {
+            // Ocultar respuesta perfecta al cambiar de ejercicio
+            document.getElementById('pertcofPerfectAnswer').classList.remove('show');
+            
+            if (id === 0) {
+                document.getElementById('pertcofExerciseDescription').innerHTML = 
+                    '<p style="color: #666;">Selecciona un ejercicio para comenzar</p>';
+                updatePERTCOFPreview();
+                return;
+            }
+
+            let exercise = null;
+            for (const level in pertcofExercises) {
+                exercise = pertcofExercises[level].find(e => e.id === id);
+                if (exercise) break;
+            }
+
+            if (exercise) {
+                document.getElementById('pertcofExerciseDescription').innerHTML = `
+                    <strong>Ejercicio ${exercise.id}:</strong> ${exercise.title}<br><br>
+                    <strong>Descripción:</strong> ${exercise.description}<br><br>
+                    <strong>💡 Pistas PERTCOF:</strong> ${exercise.hints}
+                `;
+            }
+            updatePERTCOFPreview();
+        }
+
+        function loadThreeOExercise(id) {
+            // Ocultar respuesta perfecta al cambiar de ejercicio
+            document.getElementById('threeOPerfectAnswer').classList.remove('show');
+            
+            if (id === 0) {
+                document.getElementById('threeOExerciseDescription').innerHTML = 
+                    '<p style="color: #666;">Selecciona un ejercicio para comenzar</p>';
+                return;
+            }
+
+            let exercise = null;
+            for (const level in threeOExercises) {
+                exercise = threeOExercises[level].find(e => e.id === id);
+                if (exercise) break;
+            }
+
+            if (exercise) {
+                let content = `<strong>Ejercicio ${exercise.id}:</strong><br><br>`;
+                if (exercise.story) {
+                    content += `<strong>Historia:</strong> ${exercise.story}<br><br>`;
+                    content += `<strong>Tu tarea:</strong> Identifica el Objeto, Objetivo y Obstáculo.<br><br>`;
+                    content += `<strong>Respuesta esperada:</strong><br>`;
+                    content += `• <strong>Objeto:</strong> ${exercise.objeto}<br>`;
+                    content += `• <strong>Objetivo:</strong> ${exercise.objetivo}<br>`;
+                    content += `• <strong>Obstáculo:</strong> ${exercise.obstaculo}`;
+                } else {
+                    content += `<strong>Descripción:</strong> ${exercise.description}<br><br>`;
+                    content += `<strong>Tu tarea:</strong> Crea un problema nuevo aplicando la técnica de las Tres O.`;
+                }
+                document.getElementById('threeOExerciseDescription').innerHTML = content;
+            }
+        }
+
+        function loadDCRExercise(id) {
+            // Ocultar respuesta perfecta al cambiar de ejercicio
+            document.getElementById('dcrPerfectAnswer').classList.remove('show');
+            
+            if (id === 0) {
+                document.getElementById('dcrExerciseDescription').innerHTML = 
+                    '<p style="color: #666;">Selecciona un ejercicio para comenzar</p>';
+                return;
+            }
+
+            let exercise = null;
+            for (const level in dcrExercises) {
+                exercise = dcrExercises[level].find(e => e.id === id);
+                if (exercise) break;
+            }
+
+            if (exercise) {
+                document.getElementById('dcrExerciseDescription').innerHTML = `
+                    <strong>Ejercicio ${exercise.id}:</strong> ${exercise.object}<br><br>
+                    <strong>Descripción:</strong> ${exercise.description}<br><br>
+                    <strong>Tu tarea:</strong> Aplica la técnica DCR para analizar este objeto/sistema.
+                `;
+            }
+        }
+
+        // Evaluation functions (simplified - would need full rubric implementation)
+        function evaluatePERTCOF() {
+            const form = document.getElementById('pertcofForm');
+            const data = {
+                persona: form.persona.value.trim(),
+                encargo: form.encargo.value.trim(),
+                razon: form.razon.value.trim(),
+                tono: form.tono.value.trim(),
+                contexto: form.contexto.value.trim(),
+                formato: form.formato.value.trim()
+            };
+
+            if (!data.persona || !data.encargo || !data.tono || !data.contexto || !data.formato) {
+                alert('⚠️ Por favor completa todos los campos obligatorios (PER, E, T, CO, F)');
+                return;
+            }
+
+            // Simple evaluation (full rubric would be more complex)
+            const evaluation = {
+                persona: evaluateCriterion(data.persona, 'persona'),
+                encargo: evaluateCriterion(data.encargo, 'encargo'),
+                razon: evaluateCriterion(data.razon, 'razon', true),
+                tono: evaluateCriterion(data.tono, 'tono'),
+                contexto: evaluateCriterion(data.contexto, 'contexto'),
+                formato: evaluateCriterion(data.formato, 'formato'),
+                coherencia: evaluateCoherence(data)
+            };
+
+            const total = Object.values(evaluation).reduce((sum, e) => sum + e.score, 0);
+            const maxScore = 40;
+            const percentage = (total / maxScore) * 100;
+
+            displayPERTCOFResults(evaluation, total, maxScore, percentage);
+        }
+
+        // Rúbrica PERTCOF completa según documento maestro
+        function evaluateCriterion(value, type, optional = false) {
+            if (!value && !optional) {
+                return { score: 0, feedback: 'No completado. Este elemento es esencial.', color: '#f44336' };
+            }
+
+            if (!value && optional) {
+                return { score: 0, feedback: 'Opcional: no completado', color: '#9e9e9e' };
+            }
+
+            const wordCount = value.split(/\s+/).length;
+            let score = 0;
+            let feedback = '';
+            let color = '#f44336';
+
+            // Evaluación específica por tipo según rúbrica
+            switch(type) {
+                case 'persona':
+                    // Persona experta: evalúa si el rol está claro, pertinente y permite orientar respuesta
+                    if (wordCount < 5) {
+                        score = 1;
+                        feedback = 'Rol muy básico, necesita más especificación';
+                    } else if (wordCount < 15) {
+                        score = 3;
+                        feedback = 'Rol definido pero necesita credenciales o experiencia';
+                        color = '#ff9800';
+                    } else if (wordCount < 30) {
+                        score = 4;
+                        feedback = 'Rol bien definido con credenciales';
+                        color = '#4caf50';
+                    } else {
+                        score = 5;
+                        feedback = 'Excelente: rol claro, pertinente y bien orientado';
+                        color = '#2e7d32';
+                    }
+                    // Check for keywords
+                    const personaKeywords = /experto|especialista|certificado|años|experiencia|ingeniero|abogado|consultor/i;
+                    if (personaKeywords.test(value) && score < 5) score = Math.min(5, score + 1);
+                    break;
+
+                case 'encargo':
+                    // Encargo: evalúa si es claro, preciso, accionable y no ambiguo
+                    if (wordCount < 5) {
+                        score = 1;
+                        feedback = 'Tarea muy vaga o ambigua';
+                    } else if (wordCount < 15) {
+                        score = 3;
+                        feedback = 'Tarea básica, necesita más precisión';
+                        color = '#ff9800';
+                    } else if (wordCount < 35) {
+                        score = 4;
+                        feedback = 'Tarea clara y accionable';
+                        color = '#4caf50';
+                    } else {
+                        score = 5;
+                        feedback = 'Excelente: tarea precisa, clara y accionable';
+                        color = '#2e7d32';
+                    }
+                    // Check for action verbs
+                    const actionVerbs = /crear|diseñar|analizar|elaborar|calcular|generar|desarrollar|construir/i;
+                    if (actionVerbs.test(value) && score < 5) score = Math.min(5, score + 1);
+                    break;
+
+                case 'razon':
+                    // Razón: opcional pero útil
+                    if (wordCount < 5) {
+                        score = 2;
+                        feedback = 'Razón básica';
+                        color = '#ff9800';
+                    } else if (wordCount < 20) {
+                        score = 4;
+                        feedback = 'Razón bien explicada';
+                        color = '#4caf50';
+                    } else {
+                        score = 5;
+                        feedback = 'Excelente justificación del propósito';
+                        color = '#2e7d32';
+                    }
+                    break;
+
+                case 'tono':
+                    // Tono: evalúa si está claramente definido y coherente
+                    if (wordCount < 3) {
+                        score = 1;
+                        feedback = 'Tono no especificado o muy vago';
+                    } else if (wordCount < 8) {
+                        score = 3;
+                        feedback = 'Tono básico, especifica más detalles';
+                        color = '#ff9800';
+                    } else {
+                        score = 5;
+                        feedback = 'Tono bien definido y coherente';
+                        color = '#4caf50';
+                    }
+                    const toneKeywords = /formal|académico|técnico|sencillo|narrativo|conversacional|profesional/i;
+                    if (toneKeywords.test(value) && score < 5) score = Math.min(5, score + 1);
+                    break;
+
+                case 'contexto':
+                    // Contexto: EL MÁS IMPORTANTE - evalúa si incluye información suficiente y relevante
+                    if (wordCount < 20) {
+                        score = 1;
+                        feedback = 'Contexto muy básico o incompleto';
+                    } else if (wordCount < 50) {
+                        score = 3;
+                        feedback = 'Contexto detallado pero puede mejorar';
+                        color = '#ff9800';
+                    } else if (wordCount < 100) {
+                        score = 4;
+                        feedback = 'Contexto completo con buenos detalles';
+                        color = '#4caf50';
+                    } else {
+                        score = 5;
+                        feedback = 'Excelente: contexto exhaustivo con múltiples aspectos';
+                        color = '#2e7d32';
+                    }
+                    // Check for multiple context aspects
+                    const contextAspects = [/ubicación|donde|cuándo|cuando/i, /recursos|herramientas|disponible/i, 
+                                          /restricciones?|limitaciones?|tiempo|presupuesto/i, /situación|problema|estado/i,
+                                          /normativa|regulación|certificación/i];
+                    const aspectCount = contextAspects.filter(p => p.test(value)).length;
+                    if (aspectCount >= 4 && score < 5) score = 5;
+                    else if (aspectCount >= 3 && score < 4) score = 4;
+                    break;
+
+                case 'formato':
+                    // Formato: evalúa si está bien especificado, estructurado y ejecutable
+                    if (wordCount < 5) {
+                        score = 1;
+                        feedback = 'Formato no especificado o muy vago';
+                    } else if (wordCount < 15) {
+                        score = 3;
+                        feedback = 'Formato básico especificado';
+                        color = '#ff9800';
+                    } else if (wordCount < 30) {
+                        score = 4;
+                        feedback = 'Formato bien estructurado';
+                        color = '#4caf50';
+                    } else {
+                        score = 5;
+                        feedback = 'Excelente: formato detallado con filtros y restricciones';
+                        color = '#2e7d32';
+                    }
+                    // Check for format indicators
+                    const formatKeywords = /tabla|lista|matriz|json|párrafo|informe|guion|pasos|estructura|nivel|extensión|palabras/i;
+                    if (formatKeywords.test(value) && score < 5) score = Math.min(5, score + 1);
+                    break;
+            }
+
+            return { score, feedback, color };
+        }
+
+        function evaluateCoherence(data) {
+            // Simple coherence check
+            let score = 3;
+            let feedback = 'Coherencia básica';
+            let color = '#4caf50';
+
+            const allFields = Object.values(data).join(' ').toLowerCase();
+            const hasConsistency = allFields.length > 200 && 
+                                 data.persona && 
+                                 data.encargo && 
+                                 data.contexto;
+
+            if (hasConsistency) {
+                score = 5;
+                feedback = 'Excelente coherencia global';
+                color = '#1b5e20';
+            }
+
+            return { score, feedback, color };
+        }
+
+        function displayPERTCOFResults(evaluation, total, maxScore, percentage) {
+            const panel = document.getElementById('pertcofResults');
+            panel.classList.add('show');
+
+            document.getElementById('pertcofScore').textContent = `${total}/${maxScore}`;
+            
+            const level = getLevel(percentage, maxScore);
+            const levelBadge = document.getElementById('pertcofLevel');
+            levelBadge.textContent = level.name;
+            levelBadge.className = `level-badge ${level.class}`;
+
+            const criteria = {
+                persona: { name: 'PER - Persona Experta', eval: evaluation.persona },
+                encargo: { name: 'E - Encargo', eval: evaluation.encargo },
+                razon: { name: 'R - Razón', eval: evaluation.razon },
+                tono: { name: 'T - Tono', eval: evaluation.tono },
+                contexto: { name: 'CO - Contexto', eval: evaluation.contexto },
+                formato: { name: 'F - Formato', eval: evaluation.formato },
+                coherencia: { name: 'Coherencia Global', eval: evaluation.coherencia }
+            };
+
+            const criteriaGrid = document.getElementById('pertcofCriteria');
+            criteriaGrid.innerHTML = '';
+
+            Object.keys(criteria).forEach(key => {
+                const crit = criteria[key];
+                const card = document.createElement('div');
+                card.className = 'criterion-card';
+                card.innerHTML = `
+                    <div class="criterion-header">
+                        <div class="criterion-name">${crit.name}</div>
+                        <div class="criterion-score" style="background: ${crit.eval.color}; color: white;">
+                            ${crit.eval.score}/5
+                        </div>
+                    </div>
+                    <div class="criterion-feedback">${crit.eval.feedback}</div>
+                `;
+                criteriaGrid.appendChild(card);
+            });
+
+            // Improvements and strengths
+            const improvements = [];
+            const strengths = [];
+
+            Object.keys(evaluation).forEach(key => {
+                if (evaluation[key].score < 3) {
+                    improvements.push(`Mejora el elemento ${key}: ${getImprovementTip(key)}`);
+                } else if (evaluation[key].score >= 4) {
+                    strengths.push(`✅ ${key}: ${evaluation[key].feedback}`);
+                }
+            });
+
+            document.getElementById('pertcofImprovements').innerHTML = 
+                improvements.map(i => `<li>${i}</li>`).join('') || 
+                '<li>¡Excelente trabajo! Tu prompt está muy completo.</li>';
+
+            document.getElementById('pertcofStrengths').innerHTML = 
+                strengths.map(s => `<li>${s}</li>`).join('') || 
+                '<li>Sigue practicando para mejorar.</li>';
+
+            // Save progress
+            saveProgress('pertcof', total, maxScore);
+        }
+
+        function getLevel(percentage, maxScore) {
+            // Según documento maestro: PERTCOF max 40, Tres O y DCR max 25
+            if (maxScore === 40) {
+                // PERTCOF: 36-40 excelente, 30-35 muy bueno, 20-29 aceptable, 10-19 débil, 0-9 incorrecto
+                const score = percentage * maxScore / 100;
+                if (score >= 36) return { name: 'EXCELENTE', class: 'level-excelente' };
+                if (score >= 30) return { name: 'MUY BUENO', class: 'level-muy-bueno' };
+                if (score >= 20) return { name: 'ACEPTABLE', class: 'level-aceptable' };
+                if (score >= 10) return { name: 'DÉBIL', class: 'level-debil' };
+                return { name: 'INCORRECTO', class: 'level-incorrecto' };
+            } else {
+                // Tres O y DCR: 22-25 excelente, 18-21 muy bueno, 12-17 aceptable, 6-11 débil, 0-5 incorrecto
+                const score = percentage * maxScore / 100;
+                if (score >= 22) return { name: 'EXCELENTE', class: 'level-excelente' };
+                if (score >= 18) return { name: 'MUY BUENO', class: 'level-muy-bueno' };
+                if (score >= 12) return { name: 'ACEPTABLE', class: 'level-aceptable' };
+                if (score >= 6) return { name: 'DÉBIL', class: 'level-debil' };
+                return { name: 'INCORRECTO', class: 'level-incorrecto' };
+            }
+        }
+
+        function getImprovementTip(element) {
+            const tips = {
+                persona: 'Especifica tipo de experto, credenciales y experiencia',
+                encargo: 'Usa verbos de acción claros y objetivos específicos',
+                razon: 'Explica el propósito de la tarea',
+                tono: 'Define claramente el estilo comunicativo',
+                contexto: 'Incluye todos los detalles relevantes (es el más importante)',
+                formato: 'Especifica estructura, nivel y extensión',
+                coherencia: 'Asegura que todos los elementos trabajen juntos'
+            };
+            return tips[element] || 'Revisa este elemento';
+        }
+
+        function evaluateThreeO() {
+            const form = document.getElementById('threeOForm');
+            const data = {
+                objeto: form.objeto.value.trim(),
+                objetivo: form.objetivo.value.trim(),
+                obstaculo: form.obstaculo.value.trim(),
+                problema: form.problema.value.trim()
+            };
+
+            if (!data.objeto || !data.objetivo || !data.obstaculo) {
+                alert('⚠️ Por favor completa Objeto, Objetivo y Obstáculo');
+                return;
+            }
+
+            // Simple evaluation
+            const evaluation = {
+                objeto: evaluateThreeOCriterion(data.objeto, 'objeto'),
+                objetivo: evaluateThreeOCriterion(data.objetivo, 'objetivo'),
+                obstaculo: evaluateThreeOCriterion(data.obstaculo, 'obstaculo'),
+                claridad: evaluateClarity(data.problema),
+                coherencia: evaluateThreeOCoherence(data)
+            };
+
+            const total = Object.values(evaluation).reduce((sum, e) => sum + e.score, 0);
+            const maxScore = 25;
+            const percentage = (total / maxScore) * 100;
+
+            displayThreeOResults(evaluation, total, maxScore, percentage);
+        }
+
+        // Rúbrica Tres O completa según documento maestro
+        function evaluateThreeOCriterion(value, type) {
+            if (!value) {
+                return { score: 0, feedback: 'No identificado', color: '#f44336' };
+            }
+
+            const wordCount = value.split(/\s+/).length;
+            let score = 0;
+            let feedback = '';
+            let color = '#f44336';
+
+            // Evaluación según tipo
+            switch(type) {
+                case 'objeto':
+                    // Objeto: evalúa si se identifica correctamente quién o qué es el protagonista
+                    if (wordCount < 2) {
+                        score = 2;
+                        feedback = 'Objeto identificado pero muy básico';
+                        color = '#ff9800';
+                    } else if (wordCount < 10) {
+                        score = 4;
+                        feedback = 'Objeto bien identificado y claro';
+                        color = '#4caf50';
+                    } else {
+                        score = 5;
+                        feedback = 'Excelente: objeto claramente identificado';
+                        color = '#2e7d32';
+                    }
+                    break;
+
+                case 'objetivo':
+                    // Objetivo: evalúa si se explica claramente qué quiere lograr
+                    if (wordCount < 3) {
+                        score = 1;
+                        feedback = 'Objetivo muy vago';
+                    } else if (wordCount < 8) {
+                        score = 3;
+                        feedback = 'Objetivo básico, necesita más claridad';
+                        color = '#ff9800';
+                    } else if (wordCount < 20) {
+                        score = 4;
+                        feedback = 'Objetivo claro y específico';
+                        color = '#4caf50';
+                    } else {
+                        score = 5;
+                        feedback = 'Excelente: objetivo muy claro y bien definido';
+                        color = '#2e7d32';
+                    }
+                    // Check for action verbs indicating clear goal
+                    const goalKeywords = /lograr|alcanzar|conseguir|obtener|necesita|debe|quiere/i;
+                    if (goalKeywords.test(value) && score < 5) score = Math.min(5, score + 1);
+                    break;
+
+                case 'obstaculo':
+                    // Obstáculo: evalúa si se describe de manera explícita qué impide
+                    if (wordCount < 3) {
+                        score = 1;
+                        feedback = 'Obstáculo muy vago o no claro';
+                    } else if (wordCount < 8) {
+                        score = 3;
+                        feedback = 'Obstáculo básico, necesita más especificación';
+                        color = '#ff9800';
+                    } else if (wordCount < 20) {
+                        score = 4;
+                        feedback = 'Obstáculo bien definido';
+                        color = '#4caf50';
+                    } else {
+                        score = 5;
+                        feedback = 'Excelente: obstáculo explícito y bien descrito';
+                        color = '#2e7d32';
+                    }
+                    // Check for words indicating barrier/problem
+                    const barrierKeywords = /impide|dificulta|obstaculiza|problema|no puede|falta|restricción/i;
+                    if (barrierKeywords.test(value) && score < 5) score = Math.min(5, score + 1);
+                    break;
+            }
+
+            return { score, feedback, color };
+        }
+
+        function evaluateClarity(problema) {
+            // Claridad del problema: evalúa si es simple, comprensible, directo y coherente
+            if (!problema || problema.length < 20) {
+                return { score: 2, feedback: 'Problema no formulado o muy básico', color: '#ff9800' };
+            }
+
+            const wordCount = problema.split(/\s+/).length;
+            let score = 3;
+            let feedback = 'Problema aceptable';
+            let color = '#ff9800';
+
+            if (wordCount >= 15 && wordCount < 40) {
+                score = 4;
+                feedback = 'Problema claro y comprensible';
+                color = '#4caf50';
+            } else if (wordCount >= 40) {
+                score = 5;
+                feedback = 'Excelente: problema muy claro, directo y coherente';
+                color = '#2e7d32';
+            }
+
+            return { score, feedback, color };
+        }
+
+        function evaluateThreeOCoherence(data) {
+            // Coherencia narrativa: evalúa correspondencia lógica entre las tres O
+            const hasAll = data.objeto && data.objetivo && data.obstaculo;
+            if (!hasAll) {
+                return { score: 0, feedback: 'Faltan elementos para evaluar coherencia', color: '#f44336' };
+            }
+
+            // Simple coherence check: if all three elements reference each other
+            const allText = Object.values(data).join(' ').toLowerCase();
+            const hasLogicalFlow = allText.length > 30 && 
+                                 (data.objeto && data.objetivo && data.obstaculo);
+
+            if (!hasLogicalFlow) {
+                return { score: 2, feedback: 'Coherencia básica, las tres O no fluyen bien', color: '#ff9800' };
+            }
+
+            return { score: 5, feedback: 'Excelente coherencia narrativa entre las tres O', color: '#2e7d32' };
+        }
+
+        function displayThreeOResults(evaluation, total, maxScore, percentage) {
+            const panel = document.getElementById('threeOResults');
+            panel.classList.add('show');
+
+            document.getElementById('threeOScore').textContent = `${total}/${maxScore}`;
+            
+            const level = getLevel(percentage, maxScore);
+            const levelBadge = document.getElementById('threeOLevel');
+            levelBadge.textContent = level.name;
+            levelBadge.className = `level-badge ${level.class}`;
+
+            const criteria = {
+                objeto: { name: 'Objeto', eval: evaluation.objeto },
+                objetivo: { name: 'Objetivo', eval: evaluation.objetivo },
+                obstaculo: { name: 'Obstáculo', eval: evaluation.obstaculo },
+                claridad: { name: 'Claridad del Problema', eval: evaluation.claridad },
+                coherencia: { name: 'Coherencia Narrativa', eval: evaluation.coherencia }
+            };
+
+            const criteriaGrid = document.getElementById('threeOCriteria');
+            criteriaGrid.innerHTML = '';
+
+            Object.keys(criteria).forEach(key => {
+                const crit = criteria[key];
+                const card = document.createElement('div');
+                card.className = 'criterion-card';
+                card.innerHTML = `
+                    <div class="criterion-header">
+                        <div class="criterion-name">${crit.name}</div>
+                        <div class="criterion-score" style="background: ${crit.eval.color}; color: white;">
+                            ${crit.eval.score}/5
+                        </div>
+                    </div>
+                    <div class="criterion-feedback">${crit.eval.feedback}</div>
+                `;
+                criteriaGrid.appendChild(card);
+            });
+
+            saveProgress('three-o', total, maxScore);
+        }
+
+        function evaluateDCR() {
+            const form = document.getElementById('dcrForm');
+            const data = {
+                descomponer: form.descomponer.value.trim(),
+                comprender: form.comprender.value.trim(),
+                recomponer: form.recomponer.value.trim()
+            };
+
+            if (!data.descomponer || !data.comprender || !data.recomponer) {
+                alert('⚠️ Por favor completa las tres fases: Descomponer, Comprender y Recomponer');
+                return;
+            }
+
+            const evaluation = {
+                descomponer: evaluateDCRCriterion(data.descomponer, 'descomponer'),
+                comprender: evaluateDCRCriterion(data.comprender, 'comprender'),
+                recomponer: evaluateDCRCriterion(data.recomponer, 'recomponer'),
+                profundidad: evaluateDepth(data),
+                coherencia: evaluateDCRCoherence(data)
+            };
+
+            const total = Object.values(evaluation).reduce((sum, e) => sum + e.score, 0);
+            const maxScore = 25;
+            const percentage = (total / maxScore) * 100;
+
+            displayDCRResults(evaluation, total, maxScore, percentage);
+        }
+
+        // Rúbrica DCR completa según documento maestro
+        function evaluateDCRCriterion(value, type) {
+            if (!value) {
+                return { score: 0, feedback: 'No completado', color: '#f44336' };
+            }
+
+            const wordCount = value.split(/\s+/).length;
+            let score = 0;
+            let feedback = '';
+            let color = '#f44336';
+
+            switch(type) {
+                case 'descomponer':
+                    // Descomponer: evalúa si separó correctamente en partes relevantes sin omitir componentes esenciales
+                    if (wordCount < 10) {
+                        score = 1;
+                        feedback = 'Muy pocas partes identificadas o componentes esenciales omitidos';
+                    } else if (wordCount < 25) {
+                        score = 3;
+                        feedback = 'Partes básicas identificadas, puede faltar algún componente';
+                        color = '#ff9800';
+                    } else if (wordCount < 50) {
+                        score = 4;
+                        feedback = 'Bien descompuesto con partes relevantes identificadas';
+                        color = '#4caf50';
+                    } else {
+                        score = 5;
+                        feedback = 'Excelente: separación completa sin omitir componentes esenciales';
+                        color = '#2e7d32';
+                    }
+                    // Check for multiple parts (commas, bullets, etc.)
+                    const partsCount = (value.match(/,|•|\n|y|además|también/gi) || []).length;
+                    if (partsCount >= 3 && score < 5) score = Math.min(5, score + 1);
+                    break;
+
+                case 'comprender':
+                    // Comprender: evalúa si explicó funciones, relaciones, interacciones y propósitos
+                    if (wordCount < 15) {
+                        score = 1;
+                        feedback = 'Comprensión muy básica, falta explicar relaciones';
+                    } else if (wordCount < 40) {
+                        score = 3;
+                        feedback = 'Comprensión básica de funciones, necesita más sobre interacciones';
+                        color = '#ff9800';
+                    } else if (wordCount < 80) {
+                        score = 4;
+                        feedback = 'Bien explicadas funciones e interacciones';
+                        color = '#4caf50';
+                    } else {
+                        score = 5;
+                        feedback = 'Excelente: funciones, relaciones e interacciones muy bien explicadas';
+                        color = '#2e7d32';
+                    }
+                    // Check for relationship indicators
+                    const relationKeywords = /función|interacción|propósito|relación|fluye|conecta|depende/i;
+                    if (relationKeywords.test(value) && score < 5) score = Math.min(5, score + 1);
+                    break;
+
+                case 'recomponer':
+                    // Recomponer: evalúa si explica cómo funciona el todo con claridad, lógica y cohesión
+                    if (wordCount < 20) {
+                        score = 1;
+                        feedback = 'Recomposición muy básica o falta explicar el funcionamiento total';
+                    } else if (wordCount < 50) {
+                        score = 3;
+                        feedback = 'Recomposición aceptable pero necesita más coherencia';
+                        color = '#ff9800';
+                    } else if (wordCount < 100) {
+                        score = 4;
+                        feedback = 'Buena recomposición explicando el funcionamiento del todo';
+                        color = '#4caf50';
+                    } else {
+                        score = 5;
+                        feedback = 'Excelente: recomposición clara, lógica y cohesiva del funcionamiento total';
+                        color = '#2e7d32';
+                    }
+                    // Check for synthesis indicators
+                    const synthesisKeywords = /funciona|funcionamiento|total|todo|completo|conjunto|sistema|proceso/i;
+                    if (synthesisKeywords.test(value) && score < 5) score = Math.min(5, score + 1);
+                    break;
+            }
+
+            return { score, feedback, color };
+        }
+
+        function evaluateDepth(data) {
+            // Profundidad del análisis: evalúa si no se queda en la superficie
+            const totalWords = Object.values(data).reduce((sum, val) => sum + val.split(/\s+/).length, 0);
+            const hasDetailedExplanation = totalWords > 100;
+            const hasMultipleAspects = Object.values(data).filter(v => v.split(/\s+/).length > 30).length >= 2;
+
+            if (totalWords < 50) {
+                return { score: 1, feedback: 'Análisis muy superficial', color: '#f44336' };
+            } else if (totalWords < 100) {
+                return { score: 2, feedback: 'Análisis básico, necesita más profundidad', color: '#ff9800' };
+            } else if (totalWords < 150) {
+                return { score: 3, feedback: 'Profundidad aceptable con observaciones funcionales', color: '#ff9800' };
+            } else if (hasMultipleAspects && hasDetailedExplanation) {
+                return { score: 5, feedback: 'Análisis profundo con observaciones funcionales y explicaciones detalladas', color: '#2e7d32' };
+            } else {
+                return { score: 4, feedback: 'Análisis profundo con buenas observaciones', color: '#4caf50' };
+            }
+        }
+
+        function evaluateDCRCoherence(data) {
+            // Coherencia global: evalúa si es ordenado, bien estructurado, lógico y fácil de entender
+            const hasAll = data.descomponer && data.comprender && data.recomponer;
+            if (!hasAll) {
+                return { score: 0, feedback: 'Faltan fases del análisis', color: '#f44336' };
+            }
+
+            // Check if recomponer references elements from descomponer and comprender
+            const totalWords = Object.values(data).reduce((sum, val) => sum + val.split(/\s+/).length, 0);
+            const isStructured = totalWords > 80 && data.recomponer.length > data.descomponer.length;
+
+            if (!isStructured) {
+                return { score: 2, feedback: 'Análisis básico pero falta estructura y lógica', color: '#ff9800' };
+            }
+
+            return { score: 5, feedback: 'Excelente coherencia global: ordenado, estructurado, lógico y comprensible', color: '#2e7d32' };
+        }
+
+        function displayDCRResults(evaluation, total, maxScore, percentage) {
+            const panel = document.getElementById('dcrResults');
+            panel.classList.add('show');
+
+            document.getElementById('dcrScore').textContent = `${total}/${maxScore}`;
+            
+            const level = getLevel(percentage, maxScore);
+            const levelBadge = document.getElementById('dcrLevel');
+            levelBadge.textContent = level.name;
+            levelBadge.className = `level-badge ${level.class}`;
+
+            const criteria = {
+                descomponer: { name: 'Descomponer', eval: evaluation.descomponer },
+                comprender: { name: 'Comprender', eval: evaluation.comprender },
+                recomponer: { name: 'Recomponer', eval: evaluation.recomponer },
+                profundidad: { name: 'Profundidad del Análisis', eval: evaluation.profundidad },
+                coherencia: { name: 'Coherencia Global', eval: evaluation.coherencia }
+            };
+
+            const criteriaGrid = document.getElementById('dcrCriteria');
+            criteriaGrid.innerHTML = '';
+
+            Object.keys(criteria).forEach(key => {
+                const crit = criteria[key];
+                const card = document.createElement('div');
+                card.className = 'criterion-card';
+                card.innerHTML = `
+                    <div class="criterion-header">
+                        <div class="criterion-name">${crit.name}</div>
+                        <div class="criterion-score" style="background: ${crit.eval.color}; color: white;">
+                            ${crit.eval.score}/5
+                        </div>
+                    </div>
+                    <div class="criterion-feedback">${crit.eval.feedback}</div>
+                `;
+                criteriaGrid.appendChild(card);
+            });
+
+            saveProgress('dcr', total, maxScore);
+        }
+
+        // Funciones de preview y utilidades
+        function updatePERTCOFPreview() {
+            const form = document.getElementById('pertcofForm');
+            const parts = [];
+            
+            if (form.persona.value.trim()) {
+                parts.push(`PERSONA EXPERTA: ${form.persona.value.trim()}`);
+            }
+            if (form.encargo.value.trim()) {
+                parts.push(`ENCARGO: ${form.encargo.value.trim()}`);
+            }
+            if (form.razon.value.trim()) {
+                parts.push(`RAZÓN: ${form.razon.value.trim()}`);
+            }
+            if (form.tono.value.trim()) {
+                parts.push(`TONO: ${form.tono.value.trim()}`);
+            }
+            if (form.contexto.value.trim()) {
+                parts.push(`CONTEXTO: ${form.contexto.value.trim()}`);
+            }
+            if (form.formato.value.trim()) {
+                parts.push(`FORMATO: ${form.formato.value.trim()}`);
+            }
+            
+            const preview = document.getElementById('pertcofPromptPreview');
+            if (parts.length > 0) {
+                preview.value = parts.join('\n\n');
+            } else {
+                preview.value = '';
+            }
+        }
+
+        function copyPERTCOFPrompt() {
+            const preview = document.getElementById('pertcofPromptPreview');
+            preview.select();
+            document.execCommand('copy');
+            
+            const btn = event.target;
+            const originalText = btn.textContent;
+            btn.textContent = '✅ ¡Copiado!';
+            btn.style.background = '#4caf50';
+            
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.style.background = '';
+            }, 2000);
+        }
+
+        function togglePerfectAnswer(technique) {
+            const answerDiv = document.getElementById(technique + 'PerfectAnswer');
+            const contentDiv = document.getElementById(technique + 'PerfectContent');
+            
+            if (!answerDiv || !contentDiv) return;
+            
+            // Obtener ejercicio actual
+            let currentExerciseId = 0;
+            if (technique === 'pertcof') {
+                currentExerciseId = parseInt(document.getElementById('pertcofExerciseSelect').value);
+            } else if (technique === 'threeO') {
+                currentExerciseId = parseInt(document.getElementById('threeOExerciseSelect').value);
+            } else if (technique === 'dcr') {
+                currentExerciseId = parseInt(document.getElementById('dcrExerciseSelect').value);
+            }
+            
+            if (currentExerciseId === 0) {
+                contentDiv.innerHTML = '<p>Por favor selecciona un ejercicio primero para ver la respuesta perfecta.</p>';
+                answerDiv.classList.add('show');
+                return;
+            }
+            
+            // Obtener respuesta perfecta
+            const perfectAnswer = getPerfectAnswer(technique, currentExerciseId);
+            if (perfectAnswer) {
+                contentDiv.innerHTML = perfectAnswer;
+                answerDiv.classList.toggle('show');
+            } else {
+                contentDiv.innerHTML = '<p>Respuesta perfecta no disponible para este ejercicio.</p>';
+                answerDiv.classList.add('show');
+            }
+        }
+
+        function getPerfectAnswer(technique, exerciseId) {
+            if (technique === 'pertcof' && perfectAnswers.pertcof[exerciseId]) {
+                return perfectAnswers.pertcof[exerciseId];
+            } else if (technique === 'threeO' && perfectAnswers.threeO[exerciseId]) {
+                return perfectAnswers.threeO[exerciseId];
+            } else if (technique === 'dcr' && perfectAnswers.dcr[exerciseId]) {
+                return perfectAnswers.dcr[exerciseId];
+            }
+            
+            // Si no hay respuesta perfecta, generar una genérica
+            if (technique === 'pertcof') {
+                return `<p><strong>💡 Sugerencia:</strong> Completa todos los campos del formulario PERTCOF siguiendo las pistas proporcionadas en el ejercicio para crear una respuesta perfecta. Revisa los ejemplos en la teoría del módulo.</p>`;
+            } else if (technique === 'threeO') {
+                return `<p><strong>💡 Sugerencia:</strong> Identifica claramente el Objeto (quién tiene el problema), el Objetivo (qué quiere lograr) y el Obstáculo (qué lo impide). Luego formula el problema conectando las tres O de manera clara y natural.</p>`;
+            } else if (technique === 'dcr') {
+                return `<p><strong>💡 Sugerencia:</strong> Descompone el objeto en sus partes esenciales, luego explica cómo funciona cada parte y cómo interactúan entre sí. Finalmente, recomponer explicando el funcionamiento completo como un sistema integrado.</p>`;
+            }
+            
+            return '<p>Respuesta perfecta no disponible para este ejercicio.</p>';
+        }
+
+        // Clear functions
+        function clearPERTCOFForm() {
+            document.getElementById('pertcofForm').reset();
+            document.getElementById('pertcofResults').classList.remove('show');
+            document.getElementById('pertcofPromptPreview').value = '';
+            document.getElementById('pertcofPerfectAnswer').classList.remove('show');
+        }
+
+        function clearThreeOForm() {
+            document.getElementById('threeOForm').reset();
+            document.getElementById('threeOResults').classList.remove('show');
+            document.getElementById('threeOPerfectAnswer').classList.remove('show');
+        }
+
+        function clearDCRForm() {
+            document.getElementById('dcrForm').reset();
+            document.getElementById('dcrResults').classList.remove('show');
+            document.getElementById('dcrPerfectAnswer').classList.remove('show');
+        }
+
+        // Progress tracking
+        function saveProgress(technique, score, maxScore) {
+            const progress = JSON.parse(localStorage.getItem('courseProgress') || '{}');
+            if (!progress[technique]) {
+                progress[technique] = { attempts: 0, totalScore: 0, maxTotal: 0, bestScore: 0 };
+            }
+            
+            progress[technique].attempts++;
+            progress[technique].totalScore += score;
+            progress[technique].maxTotal += maxScore;
+            if (score > progress[technique].bestScore) {
+                progress[technique].bestScore = score;
+            }
+
+            localStorage.setItem('courseProgress', JSON.stringify(progress));
+        }
+
+        function loadProgress() {
+            const progress = JSON.parse(localStorage.getItem('courseProgress') || '{}');
+            const statsDiv = document.getElementById('progressStats');
+
+            if (Object.keys(progress).length === 0) {
+                statsDiv.innerHTML = '<p>No hay progreso registrado todavía. ¡Comienza a practicar!</p>';
+                return;
+            }
+
+            let html = '<div class="theory-section"><h3>📊 Estadísticas por Técnica</h3>';
+            
+            const techniques = {
+                'pertcof': 'PERTCOF',
+                'three-o': 'Técnica de las Tres O',
+                'dcr': 'DCR'
+            };
+
+            Object.keys(techniques).forEach(key => {
+                if (progress[key]) {
+                    const p = progress[key];
+                    const avgScore = p.maxTotal > 0 ? ((p.totalScore / p.maxTotal) * 100).toFixed(1) : 0;
+                    html += `
+                        <div class="component-card" style="margin-top: 20px;">
+                            <h4>${techniques[key]}</h4>
+                            <p><strong>Intentos:</strong> ${p.attempts}</p>
+                            <p><strong>Mejor puntuación:</strong> ${p.bestScore}</p>
+                            <p><strong>Promedio:</strong> ${avgScore}%</p>
+                        </div>
+                    `;
+                }
+            });
+
+            html += '</div>';
+            statsDiv.innerHTML = html;
+        }
+    </script>
+</body>
+</html>
+

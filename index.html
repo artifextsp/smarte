@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emprende Smart - Curso de IA</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Barra de navegación -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1 class="logo">🎓 Emprende Smart</h1>
+            <div class="nav-buttons">
+                <button id="changeNameBtn" class="btn btn-secondary btn-sm" style="display: none;">
+                    <i class="fas fa-user-edit"></i> Cambiar Nombre
+                </button>
+                <button id="viewModeBtn" class="btn btn-secondary">
+                    <i class="fas fa-eye"></i> Vista Estudiante
+                </button>
+                <button id="adminModeBtn" class="btn btn-primary">
+                    <i class="fas fa-cog"></i> Administración
+                </button>
+                <button id="logoutBtn" class="btn btn-danger" style="display: none;">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Vista de Estudiante -->
+    <div id="studentView" class="view active">
+        <div class="student-name-banner" id="studentNameBanner" style="display: none;">
+            <h1 class="student-name-display" id="studentNameDisplay"></h1>
+        </div>
+        <div class="container">
+            <header class="course-header">
+                <h2>Curso: Emprende Smart con Inteligencia Artificial</h2>
+                <p class="subtitle">Aprende a dominar la IA para tu negocio</p>
+            </header>
+
+            <div id="modulesContainer" class="modules-grid">
+                <!-- Los módulos se cargarán dinámicamente -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Vista de Administración -->
+    <div id="adminView" class="view">
+        <div class="container">
+            <header class="admin-header">
+                <h2><i class="fas fa-cog"></i> Panel de Administración</h2>
+                <p>Gestiona módulos y recursos del curso</p>
+            </header>
+
+            <!-- Sección de Módulos -->
+            <section class="admin-section">
+                <div class="section-header">
+                    <h3><i class="fas fa-folder"></i> Módulos del Curso</h3>
+                    <button id="addModuleBtn" class="btn btn-success">
+                        <i class="fas fa-plus"></i> Nuevo Módulo
+                    </button>
+                </div>
+
+                <div id="modulesAdminContainer" class="admin-list">
+                    <!-- Los módulos se cargarán dinámicamente -->
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Modal para Agregar/Editar Módulo -->
+    <div id="moduleModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Nuevo Módulo</h3>
+                <button class="modal-close" id="closeModuleModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="moduleForm">
+                    <div class="form-group">
+                        <label for="moduleName">Nombre del Módulo</label>
+                        <input type="text" id="moduleName" required placeholder="Ej: Ingeniería de Prompts">
+                    </div>
+                    <div class="form-group">
+                        <label for="moduleIcon">Icono del Módulo (Opcional)</label>
+                        <input type="text" id="moduleIcon" placeholder="📚 o deja vacío para sin icono" maxlength="2">
+                        <small class="form-help">Puedes usar un emoji o dejarlo vacío</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="moduleDescription">Descripción</label>
+                        <textarea id="moduleDescription" rows="3" placeholder="Descripción del módulo..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="moduleOrder">Orden</label>
+                        <input type="number" id="moduleOrder" min="1" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" id="cancelModuleBtn">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Nombre del Estudiante -->
+    <div id="studentNameModal" class="modal">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h3><i class="fas fa-user"></i> Identificación del Estudiante</h3>
+            </div>
+            <div class="modal-body">
+                <form id="studentNameForm">
+                    <div class="form-group">
+                        <label for="studentName">Nombre del Estudiante</label>
+                        <input type="text" id="studentName" required placeholder="Ingresa tu nombre completo" autofocus>
+                        <small class="form-help">Este nombre se mostrará en la parte superior de la pantalla</small>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary btn-block">
+                            <i class="fas fa-check"></i> Continuar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Login -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h3><i class="fas fa-lock"></i> Acceso de Administración</h3>
+            </div>
+            <div class="modal-body">
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="password">Contraseña</label>
+                        <input type="password" id="password" required placeholder="Ingresa la contraseña" autofocus>
+                        <small class="form-help">Ingresa la contraseña para acceder al panel de administración</small>
+                    </div>
+                    <div id="loginError" class="error-message" style="display: none;">
+                        <i class="fas fa-exclamation-circle"></i> Contraseña incorrecta
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary btn-block">
+                            <i class="fas fa-sign-in-alt"></i> Ingresar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Agregar/Editar Capítulo -->
+    <div id="chapterModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="chapterModalTitle">Nuevo Capítulo</h3>
+                <button class="modal-close" id="closeChapterModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="chapterForm">
+                    <input type="hidden" id="chapterModuleId">
+                    <div class="form-group">
+                        <label for="chapterName">Nombre del Capítulo</label>
+                        <input type="text" id="chapterName" required placeholder="Ej: Introducción a la IA">
+                    </div>
+                    <div class="form-group">
+                        <label for="chapterDescription">Descripción (opcional)</label>
+                        <textarea id="chapterDescription" rows="2" placeholder="Descripción del capítulo..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="chapterOrder">Orden dentro del módulo</label>
+                        <input type="number" id="chapterOrder" min="1" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" id="cancelChapterBtn">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Agregar/Editar Recurso -->
+    <div id="resourceModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="resourceModalTitle">Nuevo Recurso</h3>
+                <button class="modal-close" id="closeResourceModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="resourceForm">
+                    <input type="hidden" id="resourceModuleId">
+                    <input type="hidden" id="resourceChapterId">
+                    <div class="form-group">
+                        <label for="resourceTitle">Título del Recurso</label>
+                        <input type="text" id="resourceTitle" required placeholder="Ej: Plataforma de Entrenamiento PER-T-CO-F">
+                    </div>
+                    <div class="form-group">
+                        <label for="resourceUrl">URL o Ruta del Recurso</label>
+                        <input type="text" id="resourceUrl" required placeholder="https://... o pdfs/archivo.pdf">
+                        <small class="form-help" id="urlHelp">Para PDFs: sube el archivo a la carpeta "pdfs" en GitHub y usa "pdfs/nombre.pdf"</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="resourceChapter">Capítulo</label>
+                        <select id="resourceChapter" required>
+                            <option value="">Selecciona un capítulo</option>
+                        </select>
+                        <small class="form-help">El recurso se agregará a este capítulo</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="resourceType">Tipo de Recurso</label>
+                        <select id="resourceType" required>
+                            <option value="link">Enlace Web</option>
+                            <option value="pdf">PDF (Taller/Reto/Actividad)</option>
+                            <option value="video">Video</option>
+                            <option value="document">Documento</option>
+                            <option value="platform">Plataforma</option>
+                            <option value="other">Otro</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="fileUploadGroup" style="display: none;">
+                        <label for="fileUpload">Subir PDF (Opcional)</label>
+                        <input type="file" id="fileUpload" accept=".pdf">
+                        <small class="form-help">Si subes un archivo, se guardará localmente. Para producción, sube el PDF a GitHub en la carpeta "pdfs" y usa la ruta relativa.</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="resourceDescription">Descripción (opcional)</label>
+                        <textarea id="resourceDescription" rows="2" placeholder="Breve descripción del recurso..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="resourceOrder">Orden dentro del capítulo</label>
+                        <input type="number" id="resourceOrder" min="1" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" id="cancelResourceBtn">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+

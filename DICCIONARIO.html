@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Diccionario Visual de Ingeniería de Prompts</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --bg: #f5f5fb;
+      --card-bg: #ffffff;
+      --accent: #1d4ed8;
+      --accent-soft: #dbe5ff;
+      --text-main: #111827;
+      --text-soft: #4b5563;
+      --border-soft: #e5e7eb;
+      --radius-lg: 18px;
+      --shadow-soft: 0 8px 20px rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background: radial-gradient(circle at top, #e0e7ff 0, #f9fafb 45%, #f5f5fb 100%);
+      color: var(--text-main);
+      line-height: 1.6;
+      padding: 2rem 1.25rem 3rem;
+    }
+
+    @media (min-width: 900px) {
+      body {
+        padding: 3rem 5vw 4rem;
+      }
+    }
+
+    .diccionario-container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      background: rgba(37, 99, 235, 0.08);
+      color: var(--accent);
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+    }
+
+    .badge span.icon {
+      font-size: 1rem;
+    }
+
+    .title {
+      font-size: clamp(1.7rem, 3vw, 2.1rem);
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 0.35rem;
+    }
+
+    .subtitle {
+      font-size: 0.98rem;
+      color: var(--text-soft);
+      max-width: 650px;
+      margin: 0.35rem auto 0;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 1.25rem;
+      margin-top: 2rem;
+    }
+
+    @media (min-width: 720px) {
+      .grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-soft);
+      padding: 1.1rem 1.1rem 1.25rem;
+      border: 1px solid var(--border-soft);
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top left, rgba(59, 130, 246, 0.09), transparent 55%);
+      opacity: 0.8;
+      pointer-events: none;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .card-title-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 0.05rem;
+    }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .card-tag {
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-soft);
+    }
+
+    .card-body {
+      position: relative;
+      z-index: 1;
+      font-size: 0.9rem;
+      color: var(--text-soft);
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      margin-top: 0.25rem;
+    }
+
+    .example {
+      font-size: 0.88rem;
+      background: #f9fafb;
+      border-radius: 12px;
+      padding: 0.55rem 0.7rem;
+      border: 1px dashed #e5e7eb;
+    }
+
+    .example strong {
+      font-weight: 600;
+      color: #111827;
+    }
+
+    .footer-note {
+      margin-top: 2.2rem;
+      font-size: 0.86rem;
+      color: var(--text-soft);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <main class="diccionario-container">
+    <header class="header">
+      <div class="badge">
+        <span class="icon">🧠</span>
+        <span>Diccionario Visual de Ingeniería de Prompts</span>
+      </div>
+      <h1 class="title">Glosario básico para empezar a trabajar con IA generativa</h1>
+      <p class="subtitle">
+        Cada tarjeta define un concepto clave, con una explicación sencilla y un ejemplo práctico
+        que puedes usar directamente al trabajar con modelos de inteligencia artificial.
+      </p>
+    </header>
+
+    <section class="grid">
+
+      <!-- 1. Prompt -->
+      <article class="card">
+        <div class="card-header">
+          <div class="card-icon">💬</div>
+          <div class="card-title-wrap">
+            <h2 class="card-title">Prompt</h2>
+            <span class="card-tag">Instrucción a la IA</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <p><span class="label">Definición sencilla</span>
+            Es lo que le dices a la IA para que haga algo: una instrucción o conjunto de instrucciones.
+          </p>
+          <p><span class="label">Idea visual</span>
+            Imagina a una persona frente a un robot, entregándole un papel que dice:
+            “Explícame este texto en palabras simples”.
+          </p>
+          <p class="example">
+            <strong>Ejemplo de prompt:</strong> “Explícame la fotosíntesis como si yo tuviera 10 años.”
+          </p>
+        </div>
+      </article>
+
+      <!-- 2. Ingeniería de prompts -->
+      <article class="card">
+        <div class="card-header">
+          <div class="card-icon">🛠️</div>
+          <div class="card-title-wrap">
+            <h2 class="card-title">Ingeniería de prompts</h2>
+            <span class="card-tag">Diseño de instrucciones</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <p><span class="label">Definición sencilla</span>
+            Es el arte y la técnica de escribir instrucciones que la IA pueda entender de forma clara y precisa.
+          </p>
+          <p><span class="label">Idea visual</span>
+            Una caja de herramientas con etiquetas: Rol, Tarea, Contexto, Formato, Tono.
+          </p>
+          <p class="example">
+            <strong>Ejemplo práctico:</strong> Diseñar un prompt completo para que la IA cree un informe profesional,
+            con rol, objetivo, contexto y formato de salida.
+          </p>
+        </div>
+      </article>
+
+      <!-- 3. Tokens -->
+      <article class="card">
+        <div class="card-header">
+          <div class="card-icon">🔹</div>
+          <div class="card-title-wrap">
+            <h2 class="card-title">Tokens</h2>
+            <span class="card-tag">Piezas de texto</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <p><span class="label">Definición sencilla</span>
+            Son pedacitos de texto que la IA usa para procesar lo que escribes (pueden ser palabras, sílabas o signos).
+          </p>
+          <p><span class="label">Idea visual</span>
+            Una palabra explotada en pedazos: “Fotografía” convertida en “Foto” + “gra” + “fía”.
+          </p>
+          <p class="example">
+            <strong>Ejemplo práctico:</strong> Un prompt muy largo usa más tokens y puede ser más costoso y pesado de procesar.
+          </p>
+        </div>
+      </article>
+
+      <!-- 4. Modelo de lenguaje -->
+      <article class="card">
+        <div class="card-header">
+          <div class="card-icon">🤖</div>
+          <div class="card-title-wrap">
+            <h2 class="card-title">Modelo de lenguaje (LLM)</h2>
+            <span class="card-tag">Cerebro de la IA</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <p><span class="label">Definición sencilla</span>
+            Es la “IA” que entiende y genera lenguaje humano.
+          </p>
+          <p><span class="label">Idea visual</span>
+            Un cerebro digital conectado a montones de textos e imágenes.
+          </p>
+          <p class="example">
+            <strong>Ejemplo práctico:</strong> GPT-4, GPT-5, Claude o Gemini son modelos de lenguaje.
+          </p>
+        </div>
+      </article>
+
+      <!-- 5. Ventana de contexto -->
+      <article class="card">
+        <div class="card-header">
+          <div class="card-icon">📏</div>
+          <div class="card-title-wrap">
+            <h2 class="card-title">Ventana de contexto</h2>
+            <span class="card-tag">Capacidad de memoria</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <p><span class="label">Definición sencilla</span>
+            Es la cantidad total de información (tokens) que la IA puede leer y usar al mismo tiempo.
+          </p>
+          <p><span class="label">Idea visual</span>
+            Una caja con un rótulo: “Hasta 200.000 tokens”.
+          </p>
+          <p class="example">
+            <strong>Ejemplo práctico:</strong> Si tu texto completo cabe dentro de la ventana de contexto,
+            la IA puede analizarlo todo en una sola vez.
+          </p>
+        </div>
+      </article>
+
+      <!-- 6. Contexto -->
+      <article class="card">
+        <div class="card-header">
+          <div class="card-icon">📦</div>
+          <div class="card-title-wrap">
+            <h2 class="card-title">Contexto</h2>
+            <span class="card-tag">Información de fondo</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <p><span class="label">Definición sencilla</span>
+            Es todo lo que la IA necesita saber para darte una respuesta adecuada a tu situación.
+          </p>
+          <p><span class="label">Idea visual</span>
+            Una maleta llena de datos: público, país, nivel, ejemplo, objetivo.
+          </p>
+          <p class="example">
+            <strong>Ejemplo práctico:</strong> “Explica este contrato para un padre de familia que no es abogado.”
+          </p>
+        </div>
+      </article>
+
+      <!-- 7. Rol / Persona experta -->
+      <article class="card">
+        <div class="card-header">
+          <div class="card-icon">🎭</div>
+          <div class="card-title-wrap">
+            <h2 class="card-title">Rol o persona experta</h2>
+            <span class="card-tag">Perspectiva profesional</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <p><span class="label">Definición sencilla</span>
+            Es el personaje profesional que le pides a la IA que interprete.
+          </p>
+          <p><span class="label">Idea visual</span>
+            La IA poniéndose un casco de ingeniero, una bata de médico o una toga de abogado.
+          </p>
+          <p class="example">
+            <strong>Ejemplo práctico:</strong> “Actúa como un docente experto en aprendizaje basado en proyectos.”
+          </p>
+        </div>
+      </article>
+
+      <!-- 8. Formato de salida -->
+      <article class="card">
+        <div class-header>
+          <div class="card-icon">📄</div>
+          <div class="card-title-wrap">
+            <h2 class="card-title">Formato de salida</h2>
+            <span class="card-tag">Cómo quiero la respuesta</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <p><span class="label">Definición sencilla</span>
+            Es la forma en que quieres que la IA entregue la respuesta: lista, tabla, párrafo, JSON, guion, etc.
+          </p>
+          <p><span class="label">Idea visual</span>
+            Tres iconos: una lista, una tabla y unas llaves {}.
+          </p>
+          <p class="example">
+            <strong>Ejemplo práctico:</strong> “Devuélvelo en una tabla de 3 columnas: concepto, ejemplo y explicación.”
+          </p>
+        </div>
+      </article>
+
+      <!-- 9. Tono -->
+      <article class="card">
+        <div class="card-header">
+          <div class="card-icon">🎙️</div>
+          <div class="card-title-wrap">
+            <h2 class="card-title">Tono</h2>
+            <span class="card-tag">Estilo de la voz</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <p><span class="label">Definición sencilla</span>
+            Es el estilo de comunicación que le pides a la IA: formal, técnico, amigable, divertido, etc.
+          </p>
+          <p><span class="label">Idea visual</span>
+            Tres globos de diálogo con texturas diferentes: uno serio, uno relajado, uno técnico.
+          </p>
+          <p class="example">
+            <strong>Ejemplo práctico:</strong> “Explícalo en un tono amigable, como si hablaras con un principiante.”
+          </p>
+        </div>
+      </article>
+
+      <!-- 10. Refinamiento iterativo -->
+      <article class="card">
+        <div class="card-header">
+          <div class="card-icon">🔁</div>
+          <div class="card-title-wrap">
+            <h2 class="card-title">Refinamiento iterativo</h2>
+            <span class="card-tag">Mejorar el prompt</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <p><span class="label">Definición sencilla</span>
+            Es mejorar tu prompt paso a paso, después de ver las respuestas de la IA.
+          </p>
+          <p><span class="label">Idea visual</span>
+            Tres versiones de un mismo texto, cada vez más claro y ordenado.
+          </p>
+          <p class="example">
+            <strong>Ejemplo práctico:</strong> Primero pides un resumen, luego ajustas la longitud,
+            luego cambias el tono y agregas el formato de salida.
+          </p>
+        </div>
+      </article>
+
+      <!-- 11. Few-shot prompting -->
+      <article class="card">
+        <div class="card-header">
+          <div class="card-icon">📚</div>
+          <div class="card-title-wrap">
+            <h2 class="card-title">Few-shot prompting</h2>
+            <span class="card-tag">Aprender por ejemplos</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <p><span class="label">Definición sencilla</span>
+            Es darle a la IA algunos ejemplos para que imite el patrón que tú quieres.
+          </p>
+          <p><span class="label">Idea visual</span>
+            Tres tarjetas de ejemplo y una tarjeta en blanco para que la IA la complete.
+          </p>
+          <p class="example">
+            <strong>Ejemplo práctico:</strong> Le muestras cómo clasificar 3 textos y luego le pides que
+            clasifique el cuarto usando el mismo criterio.
+          </p>
+        </div>
+      </article>
+
+      <!-- 12. Zero-shot prompting -->
+      <article class="card">
+        <div class="card-header">
+          <div class="card-icon">0️⃣</div>
+          <div class="card-title-wrap">
+            <h2 class="card-title">Zero-shot prompting</h2>
+            <span class="card-tag">Sin ejemplos previos</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <p><span class="label">Definición sencilla</span>
+            Es pedir algo a la IA sin darle ningún ejemplo de cómo quieres la respuesta.
+          </p>
+          <p><span class="label">Idea visual</span>
+            Un título grande que dice: “Sin ejemplos”.
+          </p>
+          <p class="example">
+            <strong>Ejemplo práctico:</strong> “Explícame qué es la inflación en Colombia.”
+          </p>
+        </div>
+      </article>
+
+      <!-- 13. Hallucination -->
+      <article class="card">
+        <div class="card-header">
+          <div class="card-icon">⚠️</div>
+          <div class="card-title-wrap">
+            <h2 class="card-title">Alucinación</h2>
+            <span class="card-tag">Error inventado</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <p><span class="label">Definición sencilla</span>
+            Ocurre cuando la IA inventa datos que parecen reales pero son falsos o incorrectos.
+          </p>
+          <p><span class="label">Idea visual</span>
+            Un robot mostrando una información con un signo de interrogación gigante encima.
+          </p>
+          <p class="example">
+            <strong>Ejemplo práctico:</strong> La IA cita un libro o una ley que en realidad no existen.
+          </p>
+        </div>
+      </article>
+
+      <!-- 14. Prompt maestro -->
+      <article class="card">
+        <div class="card-header">
+          <div class="card-icon">📜</div>
+          <div class="card-title-wrap">
+            <h2 class="card-title">Prompt maestro</h2>
+            <span class="card-tag">Regla general de uso</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <p><span class="label">Definición sencilla</span>
+            Es un prompt grande y estructurado que define cómo debe comportarse la IA durante toda la sesión.
+          </p>
+          <p><span class="label">Idea visual</span>
+            Un gran pergamino con varias reglas numeradas.
+          </p>
+          <p class="example">
+            <strong>Ejemplo práctico:</strong> Un texto inicial donde le dices a la IA quién eres, qué estás estudiando
+            y cómo debe responderte siempre.
+          </p>
+        </div>
+      </article>
+
+      <!-- 15. Guardrails -->
+      <article class="card">
+        <div class="card-header">
+          <div class="card-icon">🛡️</div>
+          <div class="card-title-wrap">
+            <h2 class="card-title">Guardrails</h2>
+            <span class="card-tag">Barandas de seguridad</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <p><span class="label">Definición sencilla</span>
+            Son reglas que colocas en el prompt para evitar que la IA se salga del tema o genere contenido inadecuado.
+          </p>
+          <p><span class="label">Idea visual</span>
+            Barandas a los lados de un puente por donde avanza un robot.
+          </p>
+          <p class="example">
+            <strong>Ejemplo práctico:</strong> “No des consejos médicos ni legales. Si te lo piden, sugiere consultar a un profesional.”
+          </p>
+        </div>
+      </article>
+
+      <!-- 16. Validación -->
+      <article class="card">
+        <div class="card-header">
+          <div class="card-icon">✅</div>
+          <div class="card-title-wrap">
+            <h2 class="card-title">Validación</h2>
+            <span class="card-tag">Comprobar calidad</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <p><span class="label">Definición sencilla</span>
+            Es revisar si la respuesta de la IA cumple lo que pediste: objetivo, formato, tono, precisión.
+          </p>
+          <p><span class="label">Idea visual</span>
+            Un sello grande que dice “APROBADO” o “REVISAR”.
+          </p>
+          <p class="example">
+            <strong>Ejemplo práctico:</strong> Verificar que el resumen tenga el número de palabras correcto y que esté en el nivel de lenguaje indicado.
+          </p>
+        </div>
+      </article>
+
+      <!-- 17. Metaprompt -->
+      <article class="card">
+        <div class="card-header">
+          <div class="card-icon">🧩</div>
+          <div class="card-title-wrap">
+            <h2 class="card-title">Metaprompt</h2>
+            <span class="card-tag">Prompt que crea prompts</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <p><span class="label">Definición sencilla</span>
+            Es un prompt que le pide a la IA que genere otros prompts útiles.
+          </p>
+          <p><span class="label">Idea visual</span>
+            Una IA “pariendo” varias tarjetas con nuevos prompts.
+          </p>
+          <p class="example">
+            <strong>Ejemplo práctico:</strong> “Genera 10 prompts para practicar lectura crítica con estudiantes de grado noveno.”
+          </p>
+        </div>
+      </article>
+
+    </section>
+
+    <p class="footer-note">
+      Puedes integrar este diccionario directamente en tu plataforma de entrenamiento como sección de apoyo
+      teórico para el Módulo 1 de Ingeniería de Prompts.
+    </p>
+  </main>
+</body>
+</html>

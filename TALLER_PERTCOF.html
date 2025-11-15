@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taller PER-T-CO-F - Mejora de Prompts - Emprende Smart</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .taller-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header-taller {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .header-taller h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .caso-section {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+            border: 2px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        .caso-section:hover {
+            box-shadow: var(--shadow-lg);
+        }
+
+        .caso-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .caso-number {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+            margin-right: 1rem;
+        }
+
+        .caso-title {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            flex: 1;
+        }
+
+        .caso-tag {
+            background: var(--primary-light);
+            color: var(--primary-color);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .caso-content {
+            margin-bottom: 1.5rem;
+        }
+
+        .contexto-box {
+            background: linear-gradient(to right, #f8fafc, #f1f5f9);
+            border-left: 4px solid var(--primary-color);
+            padding: 1rem;
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+        }
+
+        .reto-box {
+            background: linear-gradient(to right, #fef3c7, #fde68a);
+            border-left: 4px solid var(--warning-color);
+            padding: 1rem;
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+        }
+
+        .prompt-defectuoso {
+            background: linear-gradient(to right, #fee2e2, #fecaca);
+            border-left: 4px solid var(--danger-color);
+            padding: 1rem;
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+            font-style: italic;
+            position: relative;
+        }
+
+        .prompt-defectuoso::before {
+            content: "❌ Prompt Defectuoso";
+            display: block;
+            font-weight: 700;
+            font-style: normal;
+            margin-bottom: 0.5rem;
+            color: var(--danger-color);
+        }
+
+        .instrucciones-box {
+            background: var(--bg-color);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .instrucciones-box h4 {
+            color: var(--primary-color);
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .instrucciones-box ol {
+            margin-left: 1.5rem;
+            line-height: 1.8;
+        }
+
+        .instrucciones-box li {
+            margin-bottom: 0.5rem;
+        }
+
+        .tips-box {
+            background: linear-gradient(to right, #d1fae5, #a7f3d0);
+            border-left: 4px solid var(--success-color);
+            padding: 1.25rem;
+            border-radius: var(--radius);
+            margin-bottom: 1.5rem;
+        }
+
+        .tips-box h4 {
+            color: var(--success-color);
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tips-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .tips-list li {
+            padding: 0.5rem 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .tips-list li::before {
+            content: "💡";
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .form-group-taller {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group-taller label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .pertcof-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .pertcof-badge.per {
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+        }
+
+        .pertcof-badge.t {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .pertcof-badge.co {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        }
+
+        .pertcof-badge.f {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        .form-group-taller textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius);
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: var(--transition);
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-group-taller textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .btn-ver-ejemplo {
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .ejemplo-box {
+            background: linear-gradient(to right, #eff6ff, #dbeafe);
+            border-left: 4px solid var(--primary-color);
+            padding: 1.25rem;
+            border-radius: var(--radius);
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .ejemplo-box.show {
+            display: block;
+        }
+
+        .ejemplo-box h5 {
+            color: var(--primary-color);
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .ejemplo-prompt {
+            background: white;
+            padding: 1rem;
+            border-radius: var(--radius);
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-copiar-ejemplo {
+            margin-top: 0.75rem;
+        }
+
+        .hint-box {
+            background: #f8fafc;
+            border: 1px dashed var(--border-color);
+            border-radius: var(--radius);
+            padding: 0.75rem;
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        .pista-revelar {
+            background: transparent;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            text-decoration: underline;
+            font-size: 0.85rem;
+            padding: 0;
+            margin-top: 0.5rem;
+        }
+
+        .pista-revelar:hover {
+            color: var(--primary-dark);
+        }
+
+        .collapse {
+            display: none;
+        }
+
+        .collapse.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="taller-container">
+        <div class="header-taller">
+            <h1><i class="fas fa-graduation-cap"></i> Taller PER-T-CO-F</h1>
+            <p style="font-size: 1.1rem; opacity: 0.9;">Mejora de Prompts: De Prompts Defectuosos a Prompts Efectivos</p>
+            <p style="font-size: 0.95rem; opacity: 0.8; margin-top: 0.5rem;">Aprende a diseñar prompts profesionales usando la metodología PER-T-CO-F</p>
+        </div>
+
+        <!-- CASO 1 -->
+        <div class="caso-section">
+            <div class="caso-header">
+                <div style="display: flex; align-items: center; flex: 1;">
+                    <div class="caso-number">1</div>
+                    <div class="caso-title">Informe Ejecutivo para Directivos</div>
+                </div>
+                <span class="caso-tag">Comunicación / Empresas</span>
+            </div>
+
+            <div class="caso-content">
+                <div class="contexto-box">
+                    <strong>📋 Contexto:</strong> La IA debe ayudar a redactar un informe ejecutivo de 1 página para directivos sobre los resultados de un proyecto.
+                </div>
+
+                <div class="reto-box">
+                    <strong>🎯 Reto:</strong> Mejorar el prompt para que la IA genere un informe ejecutivo claro, sintético y estructurado.
+                </div>
+
+                <div class="prompt-defectuoso">
+                    "Hazme un informe de este proyecto para los jefes, que quede bien hecho y resumido."
+                </div>
+
+                <div class="instrucciones-box">
+                    <h4><i class="fas fa-list-ol"></i> Instrucciones de Trabajo</h4>
+                    <ol>
+                        <li>Identifica PER, T, CO y F en el prompt inicial.</li>
+                        <li>Señala qué falta o está vago.</li>
+                        <li>Reescribe el prompt usando PERTCOF.</li>
+                    </ol>
+                </div>
+
+                <div class="tips-box">
+                    <h4><i class="fas fa-lightbulb"></i> Pistas y Tips</h4>
+                    <ul class="tips-list">
+                        <li><strong>PER:</strong> Necesitas un experto en comunicación ejecutiva o en redacción de informes para directivos. Piensa: ¿qué profesional escribe informes ejecutivos?</li>
+                        <li><strong>T:</strong> La tarea debe ser específica: "redactar", "estructurar", "sintetizar". ¿Qué elementos debe tener un informe ejecutivo? (resumen, resultados, conclusiones, recomendaciones)</li>
+                        <li><strong>CO:</strong> Faltan detalles importantes: ¿qué tipo de proyecto? ¿qué información tienes disponible? ¿cuál es el objetivo del informe?</li>
+                        <li><strong>F:</strong> "Bien hecho" es vago. Especifica: ¿qué formato? (1 página, secciones, viñetas, gráficos). ¿Qué estructura? (resumen ejecutivo, resultados, recomendaciones)</li>
+                        <li><strong>Palabras clave a usar:</strong> "informe ejecutivo", "1 página", "para directivos", "estructurado", "sintético", "resultados clave", "recomendaciones"</li>
+                    </ul>
+                </div>
+
+                <div class="form-group-taller">
+                    <label>
+                        <span class="pertcof-badge per">PER</span>
+                        Perfil de Persona Experta
+                    </label>
+                    <textarea id="caso1-per" placeholder="¿Qué experto necesita este prompt? (ej: experto en comunicación ejecutiva)"></textarea>
+                    <div class="hint-box">
+                        💡 <strong>Ayuda:</strong> Piensa en quién escribe informes ejecutivos en empresas. ¿Es un consultor? ¿Un director de comunicaciones? ¿Un analista ejecutivo?
+                    </div>
+                </div>
+
+                <div class="form-group-taller">
+                    <label>
+                        <span class="pertcof-badge t">T</span>
+                        Tarea
+                    </label>
+                    <textarea id="caso1-t" placeholder="¿Qué tarea específica debe realizar la IA?"></textarea>
+                    <div class="hint-box">
+                        💡 <strong>Ayuda:</strong> La tarea debe ser clara: "Redactar un informe ejecutivo de 1 página que incluya: resumen, resultados clave, conclusiones y recomendaciones"
+                    </div>
+                </div>
+
+                <div class="form-group-taller">
+                    <label>
+                        <span class="pertcof-badge co">CO</span>
+                        Contexto
+                    </label>
+                    <textarea id="caso1-co" placeholder="¿Qué información contextual necesita la IA?"></textarea>
+                    <div class="hint-box">
+                        💡 <strong>Ayuda:</strong> Describe: tipo de proyecto, objetivo del informe, audiencia (directivos), información disponible, tono profesional
+                    </div>
+                </div>
+
+                <div class="form-group-taller">
+                    <label>
+                        <span class="pertcof-badge f">F</span>
+                        Formato de Salida
+                    </label>
+                    <textarea id="caso1-f" placeholder="¿Cómo debe estructurarse la respuesta?"></textarea>
+                    <div class="hint-box">
+                        💡 <strong>Ayuda:</strong> Especifica: 1 página máximo, secciones numeradas, viñetas para resultados, formato profesional, lenguaje claro y directo
+                    </div>
+                </div>
+
+                <button class="btn btn-secondary btn-ver-ejemplo" onclick="toggleEjemplo('caso1')">
+                    <i class="fas fa-eye"></i> Ver Ejemplo de Solución
+                </button>
+
+                <div id="ejemplo-caso1" class="ejemplo-box">
+                    <h5><i class="fas fa-check-circle"></i> Ejemplo de Prompt Mejorado:</h5>
+                    <div class="ejemplo-prompt" id="ejemplo-caso1-text">PER: Actúa como experto en comunicación ejecutiva con 10 años de experiencia redactando informes para directivos de empresas.
+
+T: Redactar un informe ejecutivo de 1 página que sintetice los resultados del proyecto [describe tu proyecto], estructurado en: resumen ejecutivo, resultados clave, conclusiones principales y recomendaciones.
+
+CO: Soy parte de un equipo que acaba de completar [tipo de proyecto]. Los directivos necesitan un informe conciso para tomar decisiones. Tengo acceso a los datos del proyecto: [menciona información clave disponible]. El tono debe ser profesional, claro y orientado a la acción.
+
+F: Devuelve un informe ejecutivo de máximo 1 página con la siguiente estructura:
+1. Resumen ejecutivo (2-3 párrafos)
+2. Resultados clave (viñetas numeradas)
+3. Conclusiones principales (2-3 puntos)
+4. Recomendaciones (acciones concretas)
+
+Usa lenguaje claro, directo y profesional. Evita jerga técnica innecesaria.</div>
+                    <button class="btn btn-primary btn-sm btn-copiar-ejemplo" onclick="copiarEjemplo('caso1')">
+                        <i class="fas fa-copy"></i> Copiar Ejemplo
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CASO 2 -->
+        <div class="caso-section">
+            <div class="caso-header">
+                <div style="display: flex; align-items: center; flex: 1;">
+                    <div class="caso-number">2</div>
+                    <div class="caso-title">Campaña de Redes Sociales</div>
+                </div>
+                <span class="caso-tag">Marketing Digital</span>
+            </div>
+
+            <div class="caso-content">
+                <div class="contexto-box">
+                    <strong>📋 Contexto:</strong> Una pequeña marca quiere ideas para una campaña de redes sociales.
+                </div>
+
+                <div class="reto-box">
+                    <strong>🎯 Reto:</strong> Diseñar un prompt que genere un plan de contenidos concreto, realista y accionable.
+                </div>
+
+                <div class="prompt-defectuoso">
+                    "Genera ideas para redes sociales para una marca que vende cosas por internet."
+                </div>
+
+                <div class="instrucciones-box">
+                    <h4><i class="fas fa-list-ol"></i> Instrucciones de Trabajo</h4>
+                    <ol>
+                        <li>Añade un perfil de persona experta adecuado.</li>
+                        <li>Define con precisión la tarea y el público objetivo.</li>
+                        <li>Especifica el formato de salida (tabla, bullets, calendario, etc.).</li>
+                    </ol>
+                </div>
+
+                <div class="tips-box">
+                    <h4><i class="fas fa-lightbulb"></i> Pistas y Tips</h4>
+                    <ul class="tips-list">
+                        <li><strong>PER:</strong> ¿Quién crea campañas de redes sociales? (community manager, estratega de marketing digital, especialista en social media)</li>
+                        <li><strong>T:</strong> La tarea debe incluir: "diseñar", "planificar", "generar". ¿Qué necesita exactamente? (ideas de contenido, calendario, temas, formatos)</li>
+                        <li><strong>CO:</strong> "Marca que vende cosas por internet" es muy vago. Necesitas: tipo de productos, público objetivo, plataformas a usar, objetivo de la campaña, presupuesto/recursos, duración</li>
+                        <li><strong>F:</strong> Especifica formato: ¿tabla con fechas? ¿calendario mensual? ¿lista de ideas por tema? ¿incluye descripción de cada post?</li>
+                        <li><strong>Preguntas útiles:</strong> ¿Qué plataformas? (Instagram, Facebook, TikTok). ¿Qué tipo de contenido? (educativo, entretenido, promocional). ¿Cuántos posts por semana?</li>
+                    </ul>
+                </div>
+
+                <div class="form-group-taller">
+                    <label>
+                        <span class="pertcof-badge per">PER</span>
+                        Perfil de Persona Experta
+                    </label>
+                    <textarea id="caso2-per" placeholder="¿Qué experto necesita este prompt?"></textarea>
+                </div>
+
+                <div class="form-group-taller">
+                    <label>
+                        <span class="pertcof-badge t">T</span>
+                        Tarea
+                    </label>
+                    <textarea id="caso2-t" placeholder="¿Qué tarea específica debe realizar la IA?"></textarea>
+                </div>
+
+                <div class="form-group-taller">
+                    <label>
+                        <span class="pertcof-badge co">CO</span>
+                        Contexto
+                    </label>
+                    <textarea id="caso2-co" placeholder="¿Qué información contextual necesita la IA?"></textarea>
+                </div>
+
+                <div class="form-group-taller">
+                    <label>
+                        <span class="pertcof-badge f">F</span>
+                        Formato de Salida
+                    </label>
+                    <textarea id="caso2-f" placeholder="¿Cómo debe estructurarse la respuesta?"></textarea>
+                </div>
+
+                <button class="btn btn-secondary btn-ver-ejemplo" onclick="toggleEjemplo('caso2')">
+                    <i class="fas fa-eye"></i> Ver Ejemplo de Solución
+                </button>
+
+                <div id="ejemplo-caso2" class="ejemplo-box">
+                    <h5><i class="fas fa-check-circle"></i> Ejemplo de Prompt Mejorado:</h5>
+                    <div class="ejemplo-prompt" id="ejemplo-caso2-text">PER: Actúa como estratega de marketing digital especializado en campañas de redes sociales con 8 años de experiencia.
+
+T: Diseñar un plan de contenidos para redes sociales que incluya: ideas de posts, calendario mensual, temas por semana y descripción de cada contenido.
+
+CO: Trabajo en una pequeña marca de [tipo de producto, ej: productos orgánicos para el hogar]. Nuestro público objetivo son [describe: edad, intereses, ubicación]. Queremos hacer una campaña en Instagram y Facebook durante el próximo mes. El objetivo es [aumentar engagement, generar ventas, construir marca]. Disponemos de [recursos disponibles: equipo de diseño, presupuesto limitado]. Necesitamos [X] posts por semana.
+
+F: Devuelve un plan en formato de tabla con las siguientes columnas:
+- Fecha
+- Plataforma (Instagram/Facebook)
+- Tipo de contenido (educativo/promocional/entretenido)
+- Tema/Idea del post
+- Descripción breve del contenido
+- Hashtags sugeridos (3-5)
+
+Incluye un mix de contenido: 40% educativo, 30% promocional, 30% entretenido. Los posts deben ser realistas para una marca pequeña.</div>
+                    <button class="btn btn-primary btn-sm btn-copiar-ejemplo" onclick="copiarEjemplo('caso2')">
+                        <i class="fas fa-copy"></i> Copiar Ejemplo
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CASO 3 -->
+        <div class="caso-section">
+            <div class="caso-header">
+                <div style="display: flex; align-items: center; flex: 1;">
+                    <div class="caso-number">3</div>
+                    <div class="caso-title">Análisis de Contrato Básico</div>
+                </div>
+                <span class="caso-tag">Derecho</span>
+            </div>
+
+            <div class="caso-content">
+                <div class="contexto-box">
+                    <strong>📋 Contexto:</strong> Un estudiante de derecho quiere que la IA le ayude a entender riesgos de un contrato sencillo de prestación de servicios.
+                </div>
+
+                <div class="reto-box">
+                    <strong>🎯 Reto:</strong> Mejorar el prompt para que la IA explique riesgos de forma clara y ordenada, sin dar asesoría legal definitiva.
+                </div>
+
+                <div class="prompt-defectuoso">
+                    "Léete este contrato y dime si es bueno o malo y qué debería hacer."
+                </div>
+
+                <div class="instrucciones-box">
+                    <h4><i class="fas fa-list-ol"></i> Instrucciones de Trabajo</h4>
+                    <ol>
+                        <li>Añade PER adecuado (abogado, pero con límites).</li>
+                        <li>Define qué tipo de análisis se necesita (riesgos, cláusulas clave, lenguaje sencillo).</li>
+                        <li>Añade advertencia sobre que no reemplaza asesoría legal profesional.</li>
+                    </ol>
+                </div>
+
+                <div class="tips-box">
+                    <h4><i class="fas fa-lightbulb"></i> Pistas y Tips</h4>
+                    <ul class="tips-list">
+                        <li><strong>PER:</strong> Necesitas un abogado con experiencia en contratos, PERO es importante limitar su rol. ¿Cómo? "Actúa como abogado que explica conceptos educativos, no como asesor legal"</li>
+                        <li><strong>T:</strong> La tarea debe ser clara: "analizar", "identificar riesgos", "explicar cláusulas". NO debe ser "dar asesoría legal"</li>
+                        <li><strong>CO:</strong> Describe: tipo de contrato, contexto (estudiante aprendiendo), qué necesita entender específicamente</li>
+                        <li><strong>F:</strong> Especifica formato: ¿lista de riesgos? ¿explicación de cláusulas? ¿recomendaciones educativas? IMPORTANTE: incluir advertencia legal</li>
+                        <li><strong>Advertencia necesaria:</strong> Siempre añade que la IA no reemplaza asesoría legal profesional y que es solo para fines educativos</li>
+                        <li><strong>Lenguaje:</strong> Pide que explique en términos sencillos, sin jerga legal excesiva</li>
+                    </ul>
+                </div>
+
+                <div class="form-group-taller">
+                    <label>
+                        <span class="pertcof-badge per">PER</span>
+                        Perfil de Persona Experta
+                    </label>
+                    <textarea id="caso3-per" placeholder="¿Qué experto necesita este prompt? (Recuerda: con límites educativos)"></textarea>
+                </div>
+
+                <div class="form-group-taller">
+                    <label>
+                        <span class="pertcof-badge t">T</span>
+                        Tarea
+                    </label>
+                    <textarea id="caso3-t" placeholder="¿Qué tarea específica debe realizar la IA?"></textarea>
+                </div>
+
+                <div class="form-group-taller">
+                    <label>
+                        <span class="pertcof-badge co">CO</span>
+                        Contexto
+                    </label>
+                    <textarea id="caso3-co" placeholder="¿Qué información contextual necesita la IA?"></textarea>
+                </div>
+
+                <div class="form-group-taller">
+                    <label>
+                        <span class="pertcof-badge f">F</span>
+                        Formato de Salida
+                    </label>
+                    <textarea id="caso3-f" placeholder="¿Cómo debe estructurarse la respuesta? (Incluye advertencia legal)"></textarea>
+                </div>
+
+                <button class="btn btn-secondary btn-ver-ejemplo" onclick="toggleEjemplo('caso3')">
+                    <i class="fas fa-eye"></i> Ver Ejemplo de Solución
+                </button>
+
+                <div id="ejemplo-caso3" class="ejemplo-box">
+                    <h5><i class="fas fa-check-circle"></i> Ejemplo de Prompt Mejorado:</h5>
+                    <div class="ejemplo-prompt" id="ejemplo-caso3-text">PER: Actúa como abogado con 15 años de experiencia en derecho contractual, pero aclarando que esta es una explicación educativa para fines de aprendizaje, no asesoría legal profesional.
+
+T: Analizar el contrato de prestación de servicios que te proporcionaré, identificando: riesgos potenciales, cláusulas clave, términos que requieren atención y explicar cada punto en lenguaje sencillo.
+
+CO: Soy estudiante de derecho aprendiendo a analizar contratos. Tengo un contrato de prestación de servicios [describe brevemente el tipo: freelance, servicios profesionales, etc.]. Necesito entender qué cláusulas podrían ser problemáticas y por qué, explicado de forma educativa.
+
+F: Devuelve el análisis en las siguientes secciones:
+1. Resumen del tipo de contrato (2-3 líneas)
+2. Cláusulas clave identificadas (lista con explicación sencilla de cada una)
+3. Riesgos potenciales identificados (lista de riesgos con explicación breve)
+4. Recomendaciones educativas (qué aspectos revisar con un abogado profesional)
+
+IMPORTANTE: Al inicio de tu respuesta, incluye esta advertencia: "Esta es una explicación educativa. NO reemplaza la asesoría legal profesional. Para asuntos legales importantes, consulta siempre con un abogado licenciado."
+
+Usa lenguaje claro y educativo, evitando jerga legal innecesaria.</div>
+                    <button class="btn btn-primary btn-sm btn-copiar-ejemplo" onclick="copiarEjemplo('caso3')">
+                        <i class="fas fa-copy"></i> Copiar Ejemplo
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CASO 4 -->
+        <div class="caso-section">
+            <div class="caso-header">
+                <div style="display: flex; align-items: center; flex: 1;">
+                    <div class="caso-number">4</div>
+                    <div class="caso-title">Titulares Periodísticos</div>
+                </div>
+                <span class="caso-tag">Periodismo</span>
+            </div>
+
+            <div class="caso-content">
+                <div class="contexto-box">
+                    <strong>📋 Contexto:</strong> Una comunicadora necesita ayuda para proponer titulares atractivos para una noticia.
+                </div>
+
+                <div class="reto-box">
+                    <strong>🎯 Reto:</strong> Diseñar un prompt que genere varios titulares con distintos enfoques y tonos.
+                </div>
+
+                <div class="prompt-defectuoso">
+                    "Ponle un buen título a esta noticia para que la gente le haga clic."
+                </div>
+
+                <div class="instrucciones-box">
+                    <h4><i class="fas fa-list-ol"></i> Instrucciones de Trabajo</h4>
+                    <ol>
+                        <li>Especifica el rol (editor jefe / redactor senior).</li>
+                        <li>Pide varios estilos de titulares (informativo, emocional, creativo, etc.).</li>
+                        <li>Define el formato de salida (lista numerada, con breve explicación).</li>
+                    </ol>
+                </div>
+
+                <div class="tips-box">
+                    <h4><i class="fas fa-lightbulb"></i> Pistas y Tips</h4>
+                    <ul class="tips-list">
+                        <li><strong>PER:</strong> ¿Quién escribe titulares profesionales? (editor jefe, redactor senior, periodista especializado)</li>
+                        <li><strong>T:</strong> La tarea debe pedir múltiples opciones: "generar", "proponer", "crear". ¿Cuántos titulares? (3-5 mínimo)</li>
+                        <li><strong>CO:</strong> Describe: tema de la noticia, público objetivo, medio (digital, impreso, redes), tono del medio, longitud deseada</li>
+                        <li><strong>F:</strong> Especifica formato: ¿lista numerada? ¿con explicación del estilo? ¿para qué plataforma? (web, redes, impreso)</li>
+                        <li><strong>Variedad:</strong> Pide diferentes estilos: informativo, emocional, creativo, directo, pregunta, cifra/número</li>
+                        <li><strong>SEO:</strong> Si es para web, menciona palabras clave importantes</li>
+                    </ul>
+                </div>
+
+                <div class="form-group-taller">
+                    <label><span class="pertcof-badge per">PER</span> Perfil de Persona Experta</label>
+                    <textarea id="caso4-per" placeholder="¿Qué experto necesita este prompt?"></textarea>
+                </div>
+                <div class="form-group-taller">
+                    <label><span class="pertcof-badge t">T</span> Tarea</label>
+                    <textarea id="caso4-t" placeholder="¿Qué tarea específica debe realizar la IA?"></textarea>
+                </div>
+                <div class="form-group-taller">
+                    <label><span class="pertcof-badge co">CO</span> Contexto</label>
+                    <textarea id="caso4-co" placeholder="¿Qué información contextual necesita la IA?"></textarea>
+                </div>
+                <div class="form-group-taller">
+                    <label><span class="pertcof-badge f">F</span> Formato de Salida</label>
+                    <textarea id="caso4-f" placeholder="¿Cómo debe estructurarse la respuesta?"></textarea>
+                </div>
+
+                <button class="btn btn-secondary btn-ver-ejemplo" onclick="toggleEjemplo('caso4')">
+                    <i class="fas fa-eye"></i> Ver Ejemplo de Solución
+                </button>
+                <div id="ejemplo-caso4" class="ejemplo-box">
+                    <h5><i class="fas fa-check-circle"></i> Ejemplo de Prompt Mejorado:</h5>
+                    <div class="ejemplo-prompt" id="ejemplo-caso4-text">PER: Actúa como editor jefe de un medio de comunicación digital con 10 años de experiencia creando titulares efectivos.
+
+T: Generar 5 propuestas de titulares diferentes para la noticia que te proporcionaré, cada una con un estilo y enfoque distinto (informativo, emocional, creativo, directo, pregunta/cifra).
+
+CO: Soy comunicadora trabajando en un medio digital. Tengo una noticia sobre [describe brevemente el tema] que será publicada en nuestra página web y compartida en redes sociales. Nuestro público es [describe audiencia: general, joven, profesional, etc.]. El tono del medio es [profesional/serio/cercano]. Necesito titulares entre [X-Y] palabras.
+
+F: Devuelve 5 titulares en formato de lista numerada. Para cada titular, incluye:
+1. El titular
+2. Estilo aplicado (informativo, emocional, creativo, etc.)
+3. Breve explicación de por qué funciona (1 línea)
+
+Variedad requerida:
+- Al menos uno informativo y directo
+- Al menos uno emocional o que genere curiosidad
+- Al menos uno creativo o innovador
+- Considera SEO si aplica (palabras clave importantes)
+
+Los titulares deben ser claros, precisos y atractivos para generar clicks sin caer en clickbait engañoso.</div>
+                    <button class="btn btn-primary btn-sm btn-copiar-ejemplo" onclick="copiarEjemplo('caso4')">
+                        <i class="fas fa-copy"></i> Copiar Ejemplo
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CASO 5 -->
+        <div class="caso-section">
+            <div class="caso-header">
+                <div style="display: flex; align-items: center; flex: 1;">
+                    <div class="caso-number">5</div>
+                    <div class="caso-title">Guion para Video Corto</div>
+                </div>
+                <span class="caso-tag">Publicidad / Contenidos</span>
+            </div>
+
+            <div class="caso-content">
+                <div class="contexto-box">
+                    <strong>📋 Contexto:</strong> Se necesita un guion de video de 30–60 segundos para redes sociales.
+                </div>
+
+                <div class="reto-box">
+                    <strong>🎯 Reto:</strong> Mejorar el prompt para que la IA entregue un guion con estructura clara (inicio, desarrollo, cierre) y foco en un mensaje principal.
+                </div>
+
+                <div class="prompt-defectuoso">
+                    "Haz un guion para un video corto sobre mi producto que sea llamativo."
+                </div>
+
+                <div class="instrucciones-box">
+                    <h4><i class="fas fa-list-ol"></i> Instrucciones de Trabajo</h4>
+                    <ol>
+                        <li>Define el rol (guionista publicitario, especialista en videos cortos).</li>
+                        <li>Explica el objetivo del video (informar, vender, sensibilizar).</li>
+                        <li>Pide la estructura y formato (diálogos, locución, indicaciones visuales).</li>
+                    </ol>
+                </div>
+
+                <div class="tips-box">
+                    <h4><i class="fas fa-lightbulb"></i> Pistas y Tips</h4>
+                    <ul class="tips-list">
+                        <li><strong>PER:</strong> ¿Quién escribe guiones para redes sociales? (guionista publicitario, creador de contenido, especialista en videos cortos)</li>
+                        <li><strong>T:</strong> La tarea debe ser específica: "escribir", "crear guion", "desarrollar". ¿Qué estructura necesita? (inicio, desarrollo, cierre)</li>
+                        <li><strong>CO:</strong> Describe: tipo de producto/servicio, objetivo (vender, informar, entretener), plataforma (Instagram, TikTok, YouTube), duración exacta, público objetivo</li>
+                        <li><strong>F:</strong> Especifica formato: ¿diálogos? ¿narración? ¿indicaciones visuales? ¿música? Estructura por tiempos (0-10s: inicio, 10-40s: desarrollo, etc.)</li>
+                        <li><strong>Elementos clave:</strong> Hook inicial (primeros 3 segundos), mensaje principal, call to action (CTA) al final</li>
+                        <li><strong>Timing:</strong> Para redes sociales, los primeros segundos son críticos para captar atención</li>
+                    </ul>
+                </div>
+
+                <div class="form-group-taller">
+                    <label><span class="pertcof-badge per">PER</span> Perfil de Persona Experta</label>
+                    <textarea id="caso5-per" placeholder="¿Qué experto necesita este prompt?"></textarea>
+                </div>
+                <div class="form-group-taller">
+                    <label><span class="pertcof-badge t">T</span> Tarea</label>
+                    <textarea id="caso5-t" placeholder="¿Qué tarea específica debe realizar la IA?"></textarea>
+                </div>
+                <div class="form-group-taller">
+                    <label><span class="pertcof-badge co">CO</span> Contexto</label>
+                    <textarea id="caso5-co" placeholder="¿Qué información contextual necesita la IA?"></textarea>
+                </div>
+                <div class="form-group-taller">
+                    <label><span class="pertcof-badge f">F</span> Formato de Salida</label>
+                    <textarea id="caso5-f" placeholder="¿Cómo debe estructurarse la respuesta?"></textarea>
+                </div>
+
+                <button class="btn btn-secondary btn-ver-ejemplo" onclick="toggleEjemplo('caso5')">
+                    <i class="fas fa-eye"></i> Ver Ejemplo de Solución
+                </button>
+                <div id="ejemplo-caso5" class="ejemplo-box">
+                    <h5><i class="fas fa-check-circle"></i> Ejemplo de Prompt Mejorado:</h5>
+                    <div class="ejemplo-prompt" id="ejemplo-caso5-text">PER: Actúa como guionista publicitario especializado en videos cortos para redes sociales con 8 años de experiencia.
+
+T: Crear un guion completo para un video de [30-60] segundos que incluya: estructura narrativa (inicio, desarrollo, cierre), diálogos o locución, indicaciones visuales y timing específico.
+
+CO: Necesito un guion para un video promocional sobre [describe producto/servicio]. El objetivo es [vender/informar/sensibilizar]. Será publicado en [Instagram/TikTok/YouTube]. El público objetivo es [describe: edad, intereses, comportamiento]. El video debe tener [30/45/60] segundos exactos.
+
+F: Devuelve el guion en el siguiente formato:
+
+**Estructura por tiempos:**
+- 0-5s: Hook inicial (captar atención)
+- 5-25s: Desarrollo del mensaje principal
+- 25-30s: Cierre y Call to Action (CTA)
+
+**Guion detallado:**
+Para cada sección, incluye:
+- [TIEMPO] - Descripción visual / Acción
+- [TEXTO/LOCUCIÓN] - Diálogo o narración exacta
+- [INDICACIONES] - Notas sobre música, efectos, transiciones
+
+**Elementos requeridos:**
+1. Hook inicial que capture atención en los primeros 3 segundos
+2. Mensaje principal claro y conciso
+3. CTA específico y directo al final
+4. Indicaciones de ritmo y tono
+
+El guion debe ser visual, dinámico y adaptado a la plataforma [menciona plataforma].</div>
+                    <button class="btn btn-primary btn-sm btn-copiar-ejemplo" onclick="copiarEjemplo('caso5')">
+                        <i class="fas fa-copy"></i> Copiar Ejemplo
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CASO 6 -->
+        <div class="caso-section">
+            <div class="caso-header">
+                <div style="display: flex; align-items: center; flex: 1;">
+                    <div class="caso-number">6</div>
+                    <div class="caso-title">Revisión de Texto con Foco en Estilo</div>
+                </div>
+                <span class="caso-tag">Redacción / Comunicación</span>
+            </div>
+
+            <div class="caso-content">
+                <div class="contexto-box">
+                    <strong>📋 Contexto:</strong> Una persona tiene un texto ya escrito y quiere mejorar el estilo sin cambiar el contenido.
+                </div>
+
+                <div class="reto-box">
+                    <strong>🎯 Reto:</strong> Diseñar un prompt para que la IA actúe como corrector de estilo, manteniendo ideas pero mejorando claridad y fluidez.
+                </div>
+
+                <div class="prompt-defectuoso">
+                    "Mejora este texto para que suene más profesional."
+                </div>
+
+                <div class="instrucciones-box">
+                    <h4><i class="fas fa-list-ol"></i> Instrucciones de Trabajo</h4>
+                    <ol>
+                        <li>Especifica el rol (corrector de estilo en [idioma]).</li>
+                        <li>Define qué puede cambiar (solo estilo, no contenido).</li>
+                        <li>Pide ejemplos de cambios y explicación breve.</li>
+                    </ol>
+                </div>
+
+                <div class="tips-box">
+                    <h4><i class="fas fa-lightbulb"></i> Pistas y Tips</h4>
+                    <ul class="tips-list">
+                        <li><strong>PER:</strong> ¿Quién corrige estilo? (corrector de estilo, editor de textos, redactor profesional, profesor de escritura)</li>
+                        <li><strong>T:</strong> La tarea debe ser clara: "corregir estilo", "mejorar redacción", "pulir texto". IMPORTANTE: mantener contenido original</li>
+                        <li><strong>CO:</strong> Describe: tipo de texto (artículo, email, documento), público objetivo, tono deseado (profesional, cercano, formal), idioma</li>
+                        <li><strong>F:</strong> Especifica formato: ¿texto mejorado + lista de cambios? ¿explicación de cada cambio? ¿versión original vs mejorada lado a lado?</li>
+                        <li><strong>Límites claros:</strong> Especifica que NO debe cambiar: ideas principales, información factual, mensaje central</li>
+                        <li><strong>Áreas a mejorar:</strong> Claridad, fluidez, gramática, vocabulario, estructura de oraciones</li>
+                    </ul>
+                </div>
+
+                <div class="form-group-taller">
+                    <label><span class="pertcof-badge per">PER</span> Perfil de Persona Experta</label>
+                    <textarea id="caso6-per" placeholder="¿Qué experto necesita este prompt?"></textarea>
+                </div>
+                <div class="form-group-taller">
+                    <label><span class="pertcof-badge t">T</span> Tarea</label>
+                    <textarea id="caso6-t" placeholder="¿Qué tarea específica debe realizar la IA?"></textarea>
+                </div>
+                <div class="form-group-taller">
+                    <label><span class="pertcof-badge co">CO</span> Contexto</label>
+                    <textarea id="caso6-co" placeholder="¿Qué información contextual necesita la IA?"></textarea>
+                </div>
+                <div class="form-group-taller">
+                    <label><span class="pertcof-badge f">F</span> Formato de Salida</label>
+                    <textarea id="caso6-f" placeholder="¿Cómo debe estructurarse la respuesta?"></textarea>
+                </div>
+
+                <button class="btn btn-secondary btn-ver-ejemplo" onclick="toggleEjemplo('caso6')">
+                    <i class="fas fa-eye"></i> Ver Ejemplo de Solución
+                </button>
+                <div id="ejemplo-caso6" class="ejemplo-box">
+                    <h5><i class="fas fa-check-circle"></i> Ejemplo de Prompt Mejorado:</h5>
+                    <div class="ejemplo-prompt" id="ejemplo-caso6-text">PER: Actúa como corrector de estilo profesional en español con 12 años de experiencia mejorando textos manteniendo el contenido original.
+
+T: Revisar y mejorar el estilo del texto que te proporcionaré, corrigiendo: claridad, fluidez, gramática, vocabulario y estructura de oraciones, pero manteniendo todas las ideas, información y mensaje originales intactos.
+
+CO: Tengo un texto ya escrito sobre [describe tema brevemente]. Es para [tipo de documento: artículo, email profesional, documento, etc.]. El público objetivo es [describe audiencia]. Necesito que suene más [profesional/cercano/formal/fluido] sin cambiar el contenido ni las ideas principales.
+
+F: Devuelve la revisión en este formato:
+
+**1. Texto Mejorado:**
+[Muestra el texto completo mejorado]
+
+**2. Principales Cambios Realizados:**
+Lista numerada con:
+- Cambio específico realizado (ej: "Reemplacé 'hacer' por 'desarrollar' para mayor precisión")
+- Breve explicación de por qué mejora el texto (1 línea)
+- Ejemplo: "Original: 'hacer una reunión' → Mejorado: 'organizar una reunión'"
+
+**3. Resumen de Mejoras:**
+- Gramática corregida: [número]
+- Claridad mejorada: [áreas específicas]
+- Fluidez: [mejoras en conectores, ritmo]
+
+IMPORTANTE: NO cambies:
+- Ideas principales
+- Información factual
+- Mensaje central
+- Tono general (solo ajusta la expresión)
+
+Solo mejora la forma en que está escrito, no el contenido.</div>
+                    <button class="btn btn-primary btn-sm btn-copiar-ejemplo" onclick="copiarEjemplo('caso6')">
+                        <i class="fas fa-copy"></i> Copiar Ejemplo
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CASO 7 -->
+        <div class="caso-section">
+            <div class="caso-header">
+                <div style="display: flex; align-items: center; flex: 1;">
+                    <div class="caso-number">7</div>
+                    <div class="caso-title">Asistente para Lluvia de Ideas</div>
+                </div>
+                <span class="caso-tag">Creatividad / Diseño gráfico / Publicidad</span>
+            </div>
+
+            <div class="caso-content">
+                <div class="contexto-box">
+                    <strong>📋 Contexto:</strong> Un equipo creativo necesita ideas iniciales para una campaña visual.
+                </div>
+
+                <div class="reto-box">
+                    <strong>🎯 Reto:</strong> Mejorar el prompt para obtener ideas variadas, con conceptos visuales claros y adaptables a diferentes formatos.
+                </div>
+
+                <div class="prompt-defectuoso">
+                    "Dame ideas creativas para una campaña con imágenes sobre nuestro producto."
+                </div>
+
+                <div class="instrucciones-box">
+                    <h4><i class="fas fa-list-ol"></i> Instrucciones de Trabajo</h4>
+                    <ol>
+                        <li>Define al PER como director creativo o estratega de marca.</li>
+                        <li>Pide ideas con descripción breve del concepto visual.</li>
+                        <li>Especifica número de ideas y formato de salida.</li>
+                    </ol>
+                </div>
+
+                <div class="tips-box">
+                    <h4><i class="fas fa-lightbulb"></i> Pistas y Tips</h4>
+                    <ul class="tips-list">
+                        <li><strong>PER:</strong> ¿Quién genera ideas creativas? (director creativo, estratega de marca, diseñador conceptual, copywriter creativo)</li>
+                        <li><strong>T:</strong> La tarea debe pedir variedad: "generar", "proponer", "desarrollar". ¿Cuántas ideas? (5-10 mínimo para tener opciones)</li>
+                        <li><strong>CO:</strong> Describe: producto/servicio, público objetivo, plataformas (Instagram, impreso, digital), objetivo (ventas, branding, engagement), presupuesto/recursos, estilo de marca</li>
+                        <li><strong>F:</strong> Especifica formato: ¿lista con conceptos? ¿descripción de cada idea? ¿elementos visuales? ¿adaptaciones por formato?</li>
+                        <li><strong>Variedad:</strong> Pide ideas diferentes: enfoques, estilos, tonos, formatos (fotografía, ilustración, video, gráfico)</li>
+                        <li><strong>Concepto visual:</strong> Cada idea debe incluir: colores, estilos, elementos visuales, mensaje, emociones a transmitir</li>
+                    </ul>
+                </div>
+
+                <div class="form-group-taller">
+                    <label><span class="pertcof-badge per">PER</span> Perfil de Persona Experta</label>
+                    <textarea id="caso7-per" placeholder="¿Qué experto necesita este prompt?"></textarea>
+                </div>
+                <div class="form-group-taller">
+                    <label><span class="pertcof-badge t">T</span> Tarea</label>
+                    <textarea id="caso7-t" placeholder="¿Qué tarea específica debe realizar la IA?"></textarea>
+                </div>
+                <div class="form-group-taller">
+                    <label><span class="pertcof-badge co">CO</span> Contexto</label>
+                    <textarea id="caso7-co" placeholder="¿Qué información contextual necesita la IA?"></textarea>
+                </div>
+                <div class="form-group-taller">
+                    <label><span class="pertcof-badge f">F</span> Formato de Salida</label>
+                    <textarea id="caso7-f" placeholder="¿Cómo debe estructurarse la respuesta?"></textarea>
+                </div>
+
+                <button class="btn btn-secondary btn-ver-ejemplo" onclick="toggleEjemplo('caso7')">
+                    <i class="fas fa-eye"></i> Ver Ejemplo de Solución
+                </button>
+                <div id="ejemplo-caso7" class="ejemplo-box">
+                    <h5><i class="fas fa-check-circle"></i> Ejemplo de Prompt Mejorado:</h5>
+                    <div class="ejemplo-prompt" id="ejemplo-caso7-text">PER: Actúa como director creativo con 15 años de experiencia en campañas visuales para marcas, especializado en conceptualización y estrategia creativa.
+
+T: Generar 8 ideas creativas diferentes para una campaña visual, cada una con un concepto visual claro, descripción de estilo, elementos visuales y adaptaciones para diferentes formatos.
+
+CO: Trabajo en un equipo creativo desarrollando una campaña visual para [describe producto/servicio]. Nuestro público objetivo es [describe: edad, género, intereses, valores]. La campaña será para [plataformas: Instagram, impreso, web, etc.]. El objetivo principal es [ventas, branding, engagement, sensibilización]. Nuestro presupuesto es [limitado/medio/alto]. El estilo de la marca es [moderno, clásico, minimalista, colorido, etc.].
+
+F: Devuelve 8 ideas en formato de lista numerada. Para cada idea incluye:
+
+**Idea #[número]: [Nombre del Concepto]**
+
+1. **Concepto Central:** Breve descripción del concepto creativo (2-3 líneas)
+2. **Descripción Visual:** 
+   - Estilo visual (fotografía, ilustración, gráfico, mixto)
+   - Paleta de colores sugerida
+   - Elementos visuales clave
+   - Tono y emociones a transmitir
+3. **Mensaje Principal:** El mensaje o idea que comunica
+4. **Adaptaciones por Formato:**
+   - Instagram: [adaptación específica]
+   - Impreso: [adaptación específica]
+   - Web: [adaptación específica]
+5. **Viabilidad:** Recursos necesarios (bajo/medio/alto)
+
+Varía los enfoques: algunas ideas pueden ser emocionales, otras directas, algunas innovadoras, otras clásicas. Todas deben ser viables y adaptables.</div>
+                    <button class="btn btn-primary btn-sm btn-copiar-ejemplo" onclick="copiarEjemplo('caso7')">
+                        <i class="fas fa-copy"></i> Copiar Ejemplo
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CASO 8 -->
+        <div class="caso-section">
+            <div class="caso-header">
+                <div style="display: flex; align-items: center; flex: 1;">
+                    <div class="caso-number">8</div>
+                    <div class="caso-title">Explicación de Tema Complejo para Público General</div>
+                </div>
+                <span class="caso-tag">Divulgación</span>
+            </div>
+
+            <div class="caso-content">
+                <div class="contexto-box">
+                    <strong>📋 Contexto:</strong> Explicar un tema técnico (por ejemplo, un concepto económico o científico) a público no experto.
+                </div>
+
+                <div class="reto-box">
+                    <strong>🎯 Reto:</strong> Diseñar un prompt que adapte el lenguaje, use ejemplos sencillos y mantenga la precisión básica.
+                </div>
+
+                <div class="prompt-defectuoso">
+                    "Explícame este tema difícil pero que se entienda fácil."
+                </div>
+
+                <div class="instrucciones-box">
+                    <h4><i class="fas fa-list-ol"></i> Instrucciones de Trabajo</h4>
+                    <ol>
+                        <li>Define el rol (divulgador / comunicador científico).</li>
+                        <li>Describe el público (adultos sin formación técnica, adolescentes, etc.).</li>
+                        <li>Pide metáforas, ejemplos y un resumen final.</li>
+                    </ol>
+                </div>
+
+                <div class="tips-box">
+                    <h4><i class="fas fa-lightbulb"></i> Pistas y Tips</h4>
+                    <ul class="tips-list">
+                        <li><strong>PER:</strong> ¿Quién explica temas complejos de forma simple? (divulgador científico, comunicador educativo, pedagogo, periodista científico)</li>
+                        <li><strong>T:</strong> La tarea debe ser clara: "explicar", "traducir", "adaptar". ¿Qué nivel de detalle? (básico, intermedio, resumido)</li>
+                        <li><strong>CO:</strong> Describe: tema específico, público objetivo (edad, formación, intereses), contexto (por qué necesitan entenderlo), nivel de conocimiento previo</li>
+                        <li><strong>F:</strong> Especifica formato: ¿estructura con introducción, desarrollo, conclusión? ¿con ejemplos? ¿metáforas? ¿comparaciones?</li>
+                        <li><strong>Lenguaje:</strong> Evitar jerga técnica, usar analogías cotidianas, ejemplos del día a día, comparaciones familiares</li>
+                        <li><strong>Elementos clave:</strong> Introducción que contextualice, explicación paso a paso, ejemplos concretos, metáforas, resumen final</li>
+                    </ul>
+                </div>
+
+                <div class="form-group-taller">
+                    <label><span class="pertcof-badge per">PER</span> Perfil de Persona Experta</label>
+                    <textarea id="caso8-per" placeholder="¿Qué experto necesita este prompt?"></textarea>
+                </div>
+                <div class="form-group-taller">
+                    <label><span class="pertcof-badge t">T</span> Tarea</label>
+                    <textarea id="caso8-t" placeholder="¿Qué tarea específica debe realizar la IA?"></textarea>
+                </div>
+                <div class="form-group-taller">
+                    <label><span class="pertcof-badge co">CO</span> Contexto</label>
+                    <textarea id="caso8-co" placeholder="¿Qué información contextual necesita la IA?"></textarea>
+                </div>
+                <div class="form-group-taller">
+                    <label><span class="pertcof-badge f">F</span> Formato de Salida</label>
+                    <textarea id="caso8-f" placeholder="¿Cómo debe estructurarse la respuesta?"></textarea>
+                </div>
+
+                <button class="btn btn-secondary btn-ver-ejemplo" onclick="toggleEjemplo('caso8')">
+                    <i class="fas fa-eye"></i> Ver Ejemplo de Solución
+                </button>
+                <div id="ejemplo-caso8" class="ejemplo-box">
+                    <h5><i class="fas fa-check-circle"></i> Ejemplo de Prompt Mejorado:</h5>
+                    <div class="ejemplo-prompt" id="ejemplo-caso8-text">PER: Actúa como divulgador científico con 10 años de experiencia explicando conceptos complejos a público general, especializado en adaptar lenguaje técnico a términos sencillos.
+
+T: Explicar el tema [menciona el tema técnico] de forma clara y accesible, usando lenguaje sencillo, metáforas, ejemplos cotidianos y comparaciones familiares, manteniendo la precisión básica del concepto.
+
+CO: Necesito explicar [tema específico, ej: "cómo funciona la inflación económica"] a un público de [describe: adultos sin formación en economía, adolescentes, público general]. La audiencia tiene [nivel de conocimiento: cero conocimientos previos, conocimientos básicos]. El contexto es [por qué necesitan entenderlo: tomar decisiones financieras, comprender noticias, interés general]. La explicación debe ser [breve/extensa: máximo X párrafos o palabras].
+
+F: Devuelve la explicación en esta estructura:
+
+**1. Introducción Contextual (1-2 párrafos):**
+- ¿Qué es [tema] y por qué es importante?
+- Situación familiar o ejemplo inicial que conecte con el lector
+
+**2. Explicación Principal (3-4 párrafos):**
+- Explicación paso a paso usando lenguaje sencillo
+- Evita términos técnicos (o explícalos si son necesarios)
+- Usa al menos 2 metáforas o analogías con situaciones cotidianas
+
+**3. Ejemplo Concreto:**
+- Un ejemplo real o hipotético que ilustre el concepto
+- Conecta el ejemplo con situaciones que el público conoce
+
+**4. Resumen Final (1 párrafo):**
+- Recapitulación en 3-4 líneas
+- Mensaje clave para recordar
+
+**IMPORTANTE:**
+- NO uses jerga técnica sin explicar
+- Usa comparaciones con la vida cotidiana (comida, transporte, familia, etc.)
+- Mantén la precisión pero prioriza la comprensión
+- Si el tema tiene conceptos previos necesarios, explícalos primero brevemente</div>
+                    <button class="btn btn-primary btn-sm btn-copiar-ejemplo" onclick="copiarEjemplo('caso8')">
+                        <i class="fas fa-copy"></i> Copiar Ejemplo
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CASO 9 -->
+        <div class="caso-section">
+            <div class="caso-header">
+                <div style="display: flex; align-items: center; flex: 1;">
+                    <div class="caso-number">9</div>
+                    <div class="caso-title">Plan de Estudio Personalizado</div>
+                </div>
+                <span class="caso-tag">Aprendizaje Autónomo</span>
+            </div>
+
+            <div class="caso-content">
+                <div class="contexto-box">
+                    <strong>📋 Contexto:</strong> Una persona quiere aprender una habilidad (por ejemplo: análisis de datos, escritura, diseño UX).
+                </div>
+
+                <div class="reto-box">
+                    <strong>🎯 Reto:</strong> Mejorar el prompt para que la IA genere un plan realista, por semanas, con actividades concretas.
+                </div>
+
+                <div class="prompt-defectuoso">
+                    "Hazme un plan para aprender esto lo más rápido posible."
+                </div>
+
+                <div class="instrucciones-box">
+                    <h4><i class="fas fa-list-ol"></i> Instrucciones de Trabajo</h4>
+                    <ol>
+                        <li>Define PER (mentor experto en esa habilidad).</li>
+                        <li>Especifica nivel inicial, tiempo disponible y objetivo.</li>
+                        <li>Pide el plan en etapas, con actividades y recursos sugeridos.</li>
+                    </ol>
+                </div>
+
+                <div class="tips-box">
+                    <h4><i class="fas fa-lightbulb"></i> Pistas y Tips</h4>
+                    <ul class="tips-list">
+                        <li><strong>PER:</strong> ¿Quién diseña planes de aprendizaje? (mentor, instructor, pedagogo, coach de aprendizaje, experto en la habilidad específica)</li>
+                        <li><strong>T:</strong> La tarea debe ser específica: "diseñar", "crear", "estructurar". ¿Qué tipo de plan? (por semanas, por módulos, progresivo)</li>
+                        <li><strong>CO:</strong> Describe: habilidad a aprender, nivel inicial (principiante, básico), tiempo disponible por semana, duración total deseada, objetivo final, estilo de aprendizaje preferido, recursos disponibles</li>
+                        <li><strong>F:</strong> Especifica formato: ¿plan semanal? ¿por módulos? ¿con actividades? ¿recursos? ¿evaluaciones? ¿tiempo estimado por actividad?</li>
+                        <li><strong>Realismo:</strong> "Lo más rápido posible" no es realista. Pide un plan progresivo y alcanzable</li>
+                        <li><strong>Estructura:</strong> Introducción, fundamentos, práctica, proyectos, recursos, evaluación</li>
+                    </ul>
+                </div>
+
+                <div class="form-group-taller">
+                    <label><span class="pertcof-badge per">PER</span> Perfil de Persona Experta</label>
+                    <textarea id="caso9-per" placeholder="¿Qué experto necesita este prompt?"></textarea>
+                </div>
+                <div class="form-group-taller">
+                    <label><span class="pertcof-badge t">T</span> Tarea</label>
+                    <textarea id="caso9-t" placeholder="¿Qué tarea específica debe realizar la IA?"></textarea>
+                </div>
+                <div class="form-group-taller">
+                    <label><span class="pertcof-badge co">CO</span> Contexto</label>
+                    <textarea id="caso9-co" placeholder="¿Qué información contextual necesita la IA?"></textarea>
+                </div>
+                <div class="form-group-taller">
+                    <label><span class="pertcof-badge f">F</span> Formato de Salida</label>
+                    <textarea id="caso9-f" placeholder="¿Cómo debe estructurarse la respuesta?"></textarea>
+                </div>
+
+                <button class="btn btn-secondary btn-ver-ejemplo" onclick="toggleEjemplo('caso9')">
+                    <i class="fas fa-eye"></i> Ver Ejemplo de Solución
+                </button>
+                <div id="ejemplo-caso9" class="ejemplo-box">
+                    <h5><i class="fas fa-check-circle"></i> Ejemplo de Prompt Mejorado:</h5>
+                    <div class="ejemplo-prompt" id="ejemplo-caso9-text">PER: Actúa como mentor experto en [habilidad específica] con 15 años de experiencia enseñando esta habilidad, especializado en diseño de planes de aprendizaje personalizados y progresivos.
+
+T: Diseñar un plan de estudio personalizado para aprender [habilidad específica], estructurado por semanas, con actividades concretas, recursos sugeridos y objetivos claros por etapa.
+
+CO: Quiero aprender [habilidad: análisis de datos, escritura profesional, diseño UX, etc.]. Mi nivel actual es [principiante/cero conocimientos/conocimientos básicos]. Puedo dedicar [X horas] por semana. Tengo [tiempo total disponible: 3 meses, 6 meses, etc.]. Mi objetivo final es [qué quiero lograr: cambiar de carrera, mejorar en mi trabajo actual, proyecto personal, etc.]. Prefiero aprender [por proyectos/práctica/teoría primero]. Tengo acceso a [recursos: cursos online gratuitos, libros, mentores, software, etc.].
+
+F: Devuelve un plan de estudio en este formato:
+
+**Resumen del Plan:**
+- Duración total: [semanas/meses]
+- Horas semanales: [X horas]
+- Nivel objetivo al finalizar: [básico/intermedio/avanzado]
+
+**Estructura por Etapas:**
+
+**ETAPA 1: Fundamentos (Semanas 1-2)**
+- Objetivos de aprendizaje: [qué aprenderá]
+- Actividades semanales:
+  * Semana 1: [actividades específicas con tiempo estimado]
+  * Semana 2: [actividades específicas con tiempo estimado]
+- Recursos recomendados: [libros, cursos, videos, herramientas]
+- Cómo verificar progreso: [mini-proyecto, quiz, práctica]
+
+[Repite para cada etapa]
+
+**ETAPA 2: Práctica Guiada (Semanas 3-6)**
+[Estructura similar]
+
+**ETAPA 3: Proyectos Prácticos (Semanas 7-10)**
+[Proyectos reales para aplicar lo aprendido]
+
+**ETAPA 4: Aplicación Avanzada (Semanas 11-12)**
+[Proyecto final o aplicación en contexto real]
+
+**Recursos Adicionales:**
+- Herramientas necesarias
+- Comunidades para unirse
+- Prácticas recomendadas
+
+**Consejos para el Éxito:**
+- Cómo mantener la motivación
+- Errores comunes a evitar
+- Cómo medir tu progreso
+
+IMPORTANTE: El plan debe ser realista, progresivo y adaptado al tiempo disponible. Prioriza la práctica sobre la teoría.</div>
+                    <button class="btn btn-primary btn-sm btn-copiar-ejemplo" onclick="copiarEjemplo('caso9')">
+                        <i class="fas fa-copy"></i> Copiar Ejemplo
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CASO 10 -->
+        <div class="caso-section">
+            <div class="caso-header">
+                <div style="display: flex; align-items: center; flex: 1;">
+                    <div class="caso-number">10</div>
+                    <div class="caso-title">Crítica y Mejora de un Prompt Existente</div>
+                </div>
+                <span class="caso-tag">Meta-entrenamiento</span>
+            </div>
+
+            <div class="caso-content">
+                <div class="contexto-box">
+                    <strong>📋 Contexto:</strong> El estudiante ya tiene un prompt que "más o menos funciona", pero quiere mejorarlo.
+                </div>
+
+                <div class="reto-box">
+                    <strong>🎯 Reto:</strong> Diseñar un prompt para que la IA critique y sugiera mejoras al prompt original usando criterios claros.
+                </div>
+
+                <div class="prompt-defectuoso">
+                    "Analiza este prompt y mejóralo para que funcione mejor."
+                </div>
+
+                <div class="instrucciones-box">
+                    <h4><i class="fas fa-list-ol"></i> Instrucciones de Trabajo</h4>
+                    <ol>
+                        <li>Pide que la IA actúe como "experta en diseño de prompts".</li>
+                        <li>Solicita análisis por partes: PER, T, CO, F y otros criterios (claridad, ambigüedad, etc.).</li>
+                        <li>Pide una versión mejorada del prompt y explicación de los cambios.</li>
+                    </ol>
+                </div>
+
+                <div class="tips-box">
+                    <h4><i class="fas fa-lightbulb"></i> Pistas y Tips</h4>
+                    <ul class="tips-list">
+                        <li><strong>PER:</strong> Es muy específico: necesitas un experto en diseño de prompts, ingeniería de prompts o metodologías como PER-T-CO-F</li>
+                        <li><strong>T:</strong> La tarea debe ser doble: "analizar" y "mejorar". ¿Qué criterios usar? (PER-T-CO-F, claridad, especificidad, contexto)</li>
+                        <li><strong>CO:</strong> Describe: el prompt original, para qué se usa, qué resultados obtiene actualmente, qué problemas tiene</li>
+                        <li><strong>F:</strong> Especifica formato: ¿análisis detallado? ¿versión mejorada? ¿explicación de cambios? ¿criterios evaluados?</li>
+                        <li><strong>Criterios de evaluación:</strong> PER (¿está claro?), T (¿es específica?), CO (¿hay suficiente contexto?), F (¿está definido?), claridad general, ambigüedades</li>
+                        <li><strong>Mejoras:</strong> Debe mostrar: qué faltaba, qué estaba vago, qué se añadió, por qué mejora</li>
+                    </ul>
+                </div>
+
+                <div class="form-group-taller">
+                    <label><span class="pertcof-badge per">PER</span> Perfil de Persona Experta</label>
+                    <textarea id="caso10-per" placeholder="¿Qué experto necesita este prompt?"></textarea>
+                </div>
+                <div class="form-group-taller">
+                    <label><span class="pertcof-badge t">T</span> Tarea</label>
+                    <textarea id="caso10-t" placeholder="¿Qué tarea específica debe realizar la IA?"></textarea>
+                </div>
+                <div class="form-group-taller">
+                    <label><span class="pertcof-badge co">CO</span> Contexto</label>
+                    <textarea id="caso10-co" placeholder="¿Qué información contextual necesita la IA?"></textarea>
+                </div>
+                <div class="form-group-taller">
+                    <label><span class="pertcof-badge f">F</span> Formato de Salida</label>
+                    <textarea id="caso10-f" placeholder="¿Cómo debe estructurarse la respuesta?"></textarea>
+                </div>
+
+                <button class="btn btn-secondary btn-ver-ejemplo" onclick="toggleEjemplo('caso10')">
+                    <i class="fas fa-eye"></i> Ver Ejemplo de Solución
+                </button>
+                <div id="ejemplo-caso10" class="ejemplo-box">
+                    <h5><i class="fas fa-check-circle"></i> Ejemplo de Prompt Mejorado:</h5>
+                    <div class="ejemplo-prompt" id="ejemplo-caso10-text">PER: Actúa como experta en diseño de prompts e ingeniería de prompts, especializada en metodologías como PER-T-CO-F, con experiencia evaluando y mejorando prompts para obtener mejores resultados con IAs generativas.
+
+T: Analizar el prompt que te proporcionaré usando la metodología PER-T-CO-F y criterios de calidad (claridad, especificidad, contexto, formato), identificar debilidades y ambigüedades, y luego proponer una versión mejorada del prompt con explicación detallada de los cambios realizados.
+
+CO: Tengo un prompt que uso para [describe para qué lo usas: generar contenido, analizar datos, crear textos, etc.]. Actualmente el prompt funciona "más o menos" pero [describe problemas: es vago, no da resultados consistentes, falta información, etc.]. El prompt original es: "[pega tu prompt aquí]". Me gustaría mejorarlo siguiendo la metodología PER-T-CO-F.
+
+F: Devuelve el análisis y mejora en este formato:
+
+**1. ANÁLISIS DEL PROMPT ORIGINAL:**
+
+**PER (Perfil de Persona Experta):**
+- ¿Está definido? [Sí/No/Parcialmente]
+- Análisis: [qué está bien, qué falta, qué está vago]
+
+**T (Tarea):**
+- ¿Está clara? [Sí/No/Parcialmente]
+- Análisis: [qué está bien, qué falta, qué está vago]
+
+**CO (Contexto):**
+- ¿Hay suficiente contexto? [Sí/No/Parcialmente]
+- Análisis: [qué información falta, qué está vago]
+
+**F (Formato de Salida):**
+- ¿Está especificado? [Sí/No/Parcialmente]
+- Análisis: [qué está bien, qué falta]
+
+**Otros Criterios:**
+- Claridad general: [evaluación]
+- Ambigüedades detectadas: [lista de ambigüedades]
+- Falta de información: [qué información importante falta]
+- Problemas detectados: [lista de problemas]
+
+**2. PROMPT MEJORADO:**
+
+[Incluye aquí el prompt completo mejorado usando PER-T-CO-F]
+
+**3. EXPLICACIÓN DE MEJORAS:**
+
+Para cada cambio realizado, explica:
+- **Cambio:** [qué se cambió o añadió]
+- **Razón:** [por qué mejora el prompt]
+- **Impacto esperado:** [qué mejor resultado debería dar]
+
+**4. RECOMENDACIONES ADICIONALES:**
+- Sugerencias para usar el prompt mejorado
+- Variables que puedes ajustar según tus necesidades
+- Cómo iterar y seguir mejorando
+
+Usa la metodología PER-T-CO-F estrictamente para estructurar el prompt mejorado.</div>
+                    <button class="btn btn-primary btn-sm btn-copiar-ejemplo" onclick="copiarEjemplo('caso10')">
+                        <i class="fas fa-copy"></i> Copiar Ejemplo
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function toggleEjemplo(casoId) {
+            const ejemploBox = document.getElementById(`ejemplo-${casoId}`);
+            ejemploBox.classList.toggle('show');
+        }
+
+        function copiarEjemplo(casoId) {
+            const texto = document.getElementById(`ejemplo-${casoId}-text`).textContent;
+            navigator.clipboard.writeText(texto).then(() => {
+                alert('¡Ejemplo copiado al portapapeles!');
+            }).catch(err => {
+                alert('Error al copiar. Por favor selecciona y copia manualmente.');
+            });
+        }
+    </script>
+</body>
+</html>
+

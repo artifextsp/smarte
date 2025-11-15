@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transferencia de Conocimiento CHOT - Emprende Smart</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .transferencia-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header-transferencia {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .header-transferencia h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header-transferencia p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .form-section {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .form-section h3 {
+            font-size: 1.25rem;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .pertcof-grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .pertcof-field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .pertcof-field label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        .pertcof-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .pertcof-badge.per {
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+        }
+
+        .pertcof-badge.t {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .pertcof-badge.co {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        }
+
+        .pertcof-badge.f {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        .pertcof-field textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius);
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: var(--transition);
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .pertcof-field textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .char-count {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-align: right;
+            margin-top: 0.25rem;
+        }
+
+        .actions-bar {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            background: var(--bg-color);
+            border-radius: var(--radius);
+            margin-bottom: 2rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .ai-search-section {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .ai-search-container {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .ai-search-input-wrapper {
+            flex: 1;
+            position: relative;
+        }
+
+        .ai-search-input {
+            width: 100%;
+            padding: 0.875rem 1rem 0.875rem 3rem;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius);
+            font-size: 0.95rem;
+        }
+
+        .ai-search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .ai-search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        .ai-search-results {
+            margin-top: 1rem;
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .ai-result-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            transition: var(--transition);
+        }
+
+        .ai-result-item:hover {
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow);
+        }
+
+        .ai-result-info {
+            flex: 1;
+        }
+
+        .ai-result-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .ai-result-url {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            word-break: break-all;
+        }
+
+        .prompt-preview {
+            background: var(--bg-color);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-top: 2rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .evaluation-panel {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border: 2px solid #f59e0b;
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .evaluation-panel.success {
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            border-color: #10b981;
+        }
+
+        .evaluation-panel.warning {
+            background: linear-gradient(135deg, #fee2e2, #fecaca);
+            border-color: #ef4444;
+        }
+
+        .evaluation-list {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0 0 0;
+        }
+
+        .evaluation-list li {
+            padding: 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .evaluation-list li i {
+            font-size: 1rem;
+        }
+
+        .template-examples {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .template-card {
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .template-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow);
+            transform: translateY(-2px);
+        }
+
+        .template-card h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .template-card p {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .ai-directory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .ai-directory-card {
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .ai-directory-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+
+        .ai-directory-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+        }
+
+        .ai-directory-name {
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--text-primary);
+            flex: 1;
+        }
+
+        .ai-directory-url {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            word-break: break-all;
+            margin-top: 0.25rem;
+        }
+
+        .ai-directory-use {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            flex: 1;
+        }
+
+        .ai-directory-action {
+            margin-top: 0.5rem;
+        }
+
+        .category-header {
+            grid-column: 1 / -1;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .category-header:first-child {
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="transferencia-container">
+        <div class="header-transferencia">
+            <h1><i class="fas fa-exchange-alt"></i> Transferencia de Conocimiento CHOT</h1>
+            <p>Genera prompts profesionales para aplicar tus conocimientos en situaciones reales</p>
+        </div>
+
+        <!-- Sección de Plantillas de Ejemplo -->
+        <div class="form-section">
+            <h3><i class="fas fa-lightbulb"></i> Ejemplos de Prompts de Transferencia</h3>
+            <p style="color: var(--text-secondary); margin-bottom: 1rem; font-size: 0.9rem;">
+                Haz clic en un ejemplo para cargarlo en el formulario
+            </p>
+            <div class="template-examples" id="templatesContainer">
+                <!-- Las plantillas se cargarán dinámicamente -->
+            </div>
+        </div>
+
+        <!-- Formulario PER-T-CO-F -->
+        <div class="form-section">
+            <h3><i class="fas fa-edit"></i> Crea tu Prompt de Transferencia</h3>
+            <form id="transferenciaForm" class="pertcof-grid">
+                <div class="pertcof-field">
+                    <label>
+                        <span class="pertcof-badge per">PER</span>
+                        Perfil de Persona Experta
+                    </label>
+                    <textarea id="perField" placeholder="Ej: Actúa como experto en metodología aplicada en el campo del marketing digital..." required></textarea>
+                    <div class="char-count"><span id="perCount">0</span> caracteres</div>
+                </div>
+
+                <div class="pertcof-field">
+                    <label>
+                        <span class="pertcof-badge t">T</span>
+                        Tarea
+                    </label>
+                    <textarea id="tField" placeholder="Ej: Diseñar un protocolo de trabajo paso a paso para investigar y producir nuevo conocimiento sobre..." required></textarea>
+                    <div class="char-count"><span id="tCount">0</span> caracteres</div>
+                </div>
+
+                <div class="pertcof-field">
+                    <label>
+                        <span class="pertcof-badge co">CO</span>
+                        Contexto
+                    </label>
+                    <textarea id="coField" placeholder="Ej: Trabajo en una pequeña empresa que vende cursos online..." required></textarea>
+                    <div class="char-count"><span id="coCount">0</span> caracteres</div>
+                </div>
+
+                <div class="pertcof-field">
+                    <label>
+                        <span class="pertcof-badge f">F</span>
+                        Formato de Salida
+                    </label>
+                    <textarea id="fField" placeholder="Ej: Devuelve el protocolo en forma de lista numerada con fases claras..." required></textarea>
+                    <div class="char-count"><span id="fCount">0</span> caracteres</div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Barra de Acciones -->
+        <div class="actions-bar">
+            <div class="action-buttons">
+                <button id="evaluarBtn" class="btn btn-warning">
+                    <i class="fas fa-check-circle"></i> Evaluar
+                </button>
+                <button id="generarBtn" class="btn btn-primary">
+                    <i class="fas fa-magic"></i> Generar Prompt
+                </button>
+                <button id="copiarBtn" class="btn btn-success" style="display: none;">
+                    <i class="fas fa-copy"></i> Copiar Prompt
+                </button>
+                <button id="limpiarBtn" class="btn btn-secondary">
+                    <i class="fas fa-redo"></i> Limpiar
+                </button>
+            </div>
+        </div>
+
+        <!-- Panel de Evaluación -->
+        <div id="evaluationPanel" class="evaluation-panel" style="display: none;">
+            <h4 style="margin-bottom: 0.5rem; font-weight: 600;">
+                <i class="fas fa-clipboard-check"></i> Resultado de la Evaluación
+            </h4>
+            <p id="evaluationMessage"></p>
+            <ul id="evaluationList" class="evaluation-list"></ul>
+        </div>
+
+        <!-- Buscador de IAs -->
+        <div class="ai-search-section">
+            <h3><i class="fas fa-robot"></i> Acceder a una IA</h3>
+            <p style="color: var(--text-secondary); margin-bottom: 1rem; font-size: 0.9rem;">
+                Escribe el nombre de la IA (ej: "deep seek", "chatgpt", "claude") y te llevaremos directamente a su sitio oficial
+            </p>
+            <div class="ai-search-container">
+                <div class="ai-search-input-wrapper">
+                    <i class="fas fa-search ai-search-icon"></i>
+                    <input type="text" id="aiSearchInput" class="ai-search-input" placeholder="Buscar IA... (ej: deep seek, chatgpt, claude)">
+                </div>
+                <button id="aiSearchBtn" class="btn btn-primary">
+                    <i class="fas fa-external-link-alt"></i> Ir a IA
+                </button>
+            </div>
+            <div id="aiSearchResults" class="ai-search-results"></div>
+        </div>
+
+        <!-- Listado Completo de IAs -->
+        <div class="form-section">
+            <h3><i class="fas fa-list"></i> Directorio Completo de IAs</h3>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem; font-size: 0.9rem;">
+                Explora todas las herramientas de IA disponibles y sus usos específicos. Haz clic en el botón para ir directamente a la plataforma.
+            </p>
+            <div id="aiDirectoryContainer" class="ai-directory-grid">
+                <!-- El listado se cargará dinámicamente -->
+            </div>
+        </div>
+
+        <!-- Vista Previa del Prompt -->
+        <div id="promptPreviewSection" style="display: none;">
+            <div class="form-section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h3 style="margin: 0;"><i class="fas fa-eye"></i> Vista Previa del Prompt</h3>
+                    <button id="copiarBtnPreview" class="btn btn-success">
+                        <i class="fas fa-copy"></i> Copiar Prompt
+                    </button>
+                </div>
+                <div id="promptPreview" class="prompt-preview"></div>
+                <div style="margin-top: 1rem; text-align: center;">
+                    <button id="copiarBtnBottom" class="btn btn-success btn-block">
+                        <i class="fas fa-copy"></i> Copiar Prompt para Pegar en Plataforma Externa
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="transferencia-chot.js"></script>
+</body>
+</html>
+
