@@ -98,7 +98,7 @@
             "url": "SUPERPROMPTS.html",
             "type": "platform",
             "description": "Biblioteca de superprompts con aplicación a emprendimiento",
-            "order": 1
+            "order": 2
           },
           {
             "id": "mi9psf6ceazdlj2yn4",
@@ -106,7 +106,15 @@
             "url": "CALCULADORA_FINANCIERA.html",
             "type": "link",
             "description": "Educación financiera de indicadores de inversión",
-            "order": 2
+            "order": 3
+          },
+          {
+            "id": "mia9zoxzlh4assnh5wh",
+            "title": "CONFERENCIA",
+            "url": "https://drive.google.com/file/d/1UHfhbPDAhrDT9uUdbieZ4OY43bUlcV8G/view?usp=drive_link",
+            "type": "pdf",
+            "description": "Base teórica de la jornada",
+            "order": 1
           }
         ]
       },
@@ -155,6 +163,14 @@
             "type": "platform",
             "description": "Generador de prompts para aplicar a la generación de imágenes con IA",
             "order": 1
+          },
+          {
+            "id": "miaa3ibs2jz9vwthexx",
+            "title": "CATÁLOGO IS MULTIMEDIA",
+            "url": "MULTIMEDIA.html",
+            "type": "platform",
+            "description": "Biblioteca de enlaces web de acceso a IA multimedia para el procesamiento de imágenes, audio y vídeo.",
+            "order": 2
           }
         ]
       }
