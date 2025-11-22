@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo de IAs Multimedia</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px 10px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .tab {
+            padding: 12px 30px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .tab:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .tab.active {
+            background: white;
+            color: #667eea;
+            border-color: white;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .card-icon {
+            font-size: 40px;
+            margin-right: 15px;
+        }
+
+        .card-title {
+            flex: 1;
+        }
+
+        .card-title h3 {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge.free {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge.freemium {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge.premium {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .badge.top {
+            background: #667eea;
+            color: white;
+            margin-left: 5px;
+        }
+
+        .card-description {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .card-features {
+            margin-bottom: 15px;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            font-size: 13px;
+            color: #555;
+        }
+
+        .feature::before {
+            content: "✓";
+            color: #28a745;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .card-link {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+
+        .card-link:hover {
+            transform: scale(1.02);
+        }
+
+        .section-intro {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .section-intro h2 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+
+        .section-intro p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tab {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 Catálogo de IAs Multimedia</h1>
+            <p>Las mejores herramientas de IA para Imagen, Audio y Video</p>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="showSection('imagenes')">🎨 Imágenes</div>
+            <div class="tab" onclick="showSection('audio')">🎵 Audio</div>
+            <div class="tab" onclick="showSection('video')">🎬 Video</div>
+        </div>
+
+        <!-- SECCIÓN IMÁGENES -->
+        <div id="imagenes" class="section active">
+            <div class="section-intro">
+                <h2>🎨 IAs para Procesamiento de Imágenes</h2>
+                <p>Herramientas de IA para generar, editar y mejorar imágenes. Desde generadores de arte hasta editores profesionales.</p>
+            </div>
+
+            <div class="cards-grid">
+                <!-- Nano Banana Pro -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🍌</div>
+                        <div class="card-title">
+                            <h3>Nano Banana Pro</h3>
+                            <span class="badge freemium">Freemium</span>
+                            <span class="badge top">Top</span>
+                        </div>
+                    </div>
+                    <div class="card-description">
+                        Plataforma avanzada de generación y edición de imágenes con IA. Especializada en transformaciones profesionales y efectos creativos.
+                    </div>
+                    <div class="card-features">
+                        <div class="feature">Generación de imágenes de alta calidad</div>
+                        <div class="feature">Edición inteligente con IA</div>
+                        <div class="feature">Múltiples estilos y efectos</div>
+                    </div>
+                    <a href="#" class="card-link">Visitar Sitio</a>
+                </div>
+
+                <!-- DALL-E 3 -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🎨</div>
+                        <div class="card-title">
+                            <h3>DALL-E 3</h3>
+                            <span class="badge premium">Premium</span>
+                            <span class="badge top">Top</span>
+                        </div>
+                    </div>
+                    <div class="card-description">
+                        La IA más avanzada de OpenAI para generar imágenes desde texto. Calidad superior y precisión en detalles.
+                    </div>
+                    <div class="card-features">
+                        <div class="feature">Máxima calidad y realismo</div>
+                        <div class="feature">Comprensión avanzada de prompts</div>
+                        <div class="feature">Coherencia en estilos</div>
+                    </div>
+                    <a href="https://openai.com/dall-e-3" class="card-link">Visitar Sitio</a>
+                </div>
+
+                <!-- Bing Image Creator -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🔷</div>
+                        <div class="card-title">
+                            <h3>Bing Image Creator</h3>
+                            <span class="badge free">Gratuito</span>
+                            <span class="badge top">Top</span>
+                        </div>
+                    </div>
+                    <div class="card-description">
+                        Usa DALL-E 3 de forma totalmente gratuita. Excelente calidad sin necesidad de pago.
+                    </div>
+                    <div class="card-features">
+                        <div class="feature">100% gratuito</div>
+                        <div class="feature">Tecnología DALL-E 3</div>
+                        <div class="feature">Generaciones ilimitadas</div>
+                    </div>
+                    <a href="https://www.bing.com/create" class="card-link">Visitar Sitio</a>
+                </div>
+
+                <!-- Stable Diffusion -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🌟</div>
+                        <div class="card-title">
+                            <h3>Stable Diffusion</h3>
+                            <span class="badge free">Gratuito</span>
+                            <span class="badge top">Top</span>
+                        </div>
+                    </div>
+                    <div class="card-description">
+                        Open source y totalmente gratuito. Instalable localmente. Control total sobre generación de imágenes.
+                    </div>
+                    <div class="card-features">
+                        <div class="feature">Código abierto</div>
+                        <div class="feature">Sin límites de uso</div>
+                        <div class="feature">Comunidad activa</div>
+                    </div>
+                    <a href="https://stability.ai/stable-diffusion" class="card-link">Visitar Sitio</a>
+                </div>
+
+                <!-- Leonardo.AI -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🎭</div>
+                        <div class="card-title">
+                            <h3>Leonardo.AI</h3>
+                            <span class="badge freemium">Freemium</span>
+                            <span class="badge top">Top</span>
+                        </div>
+                    </div>
+                    <div class="card-description">
+                        Especializado en arte conceptual, diseño de personajes y assets para juegos. Interfaz intuitiva.
+                    </div>
+                    <div class="card-features">
+                        <div class="feature">150 créditos gratis/día</div>
+                        <div class="feature">Modelos especializados</div>
+                        <div class="feature">Control de consistencia</div>
+                    </div>
+                    <a href="https://leonardo.ai" class="card-link">Visitar Sitio</a>
+                </div>
+
+                <!-- Midjourney -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">✨</div>
+                        <div class="card-title">
+                            <h3>Midjourney</h3>
+                            <span class="badge premium">Premium</span>
+                            <span class="badge top">Top</span>
+                        </div>
+                    </div>
+                    <div class="card-description">
+                        Referente en calidad artística. Genera imágenes impresionantes con estilo único. Funciona vía Discord.
+                    </div>
+                    <div class="card-features">
+                        <div class="feature">Calidad artística superior</div>
+                        <div class="feature">Estilos únicos</div>
+                        <div class="feature">Comunidad creativa</div>
+                    </div>
+                    <a href="https://midjourney.com" class="card-link">Visitar Sitio</a>
+                </div>
+
+                <!-- Adobe Firefly -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🔥</div>
+                        <div class="card-title">
+                            <h3>Adobe Firefly</h3>
+                            <span class="badge freemium">Freemium</span>
+                        </div>
+                    </div>
+                    <div class="card-description">
+                        IA de Adobe integrada con Creative Cloud. Edición avanzada y generación comercialmente segura.
+                    </div>
+                    <div class="card-features">
+                        <div class="feature">25 créditos gratis/mes</div>
+                        <div class="feature">Seguro comercialmente</div>
+                        <div class="feature">Integración Adobe</div>
+                    </div>
+                    <a href="https://firefly.adobe.com" class="card-link">Visitar Sitio</a>
+                </div>
+
+                <!-- Canva AI -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🎨</div>
+                        <div class="card-title">
+                            <h3>Canva AI</h3>
+                            <span class="badge freemium">Freemium</span>
+                        </div>
+                    </div>
+                    <div class="card-description">
+                        Generador de imágenes integrado en Canva. Perfecto para diseño gráfico rápido y presentaciones.
+                    </div>
+                    <div class="card-features">
+                        <div class="feature">Uso limitado gratuito</div>
+                        <div class="feature">Integrado con editor</div>
+                        <div class="feature">Plantillas incluidas</div>
+                    </div>
+                    <a href="https://www.canva.com/ai-image-generator/" class="card-link">Visitar Sitio</a>
+                </div>
+
+                <!-- Playground AI -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🎮</div>
+                        <div class="card-title">
+                            <h3>Playground AI</h3>
+                            <span class="badge free">Gratuito</span>
+                        </div>
+                    </div>
+                    <div class="card-description">
+                        Plataforma amigable para experimentar con IA. 1000 imágenes gratis al día. Ideal para aprender.
+                    </div>
+                    <div class="card-features">
+                        <div class="feature">1000 imágenes/día gratis</div>
+                        <div class="feature">Múltiples modelos</div>
+                        <div class="feature">Editor integrado</div>
+                    </div>
+                    <a href="https://playgroundai.com" class="card-link">Visitar Sitio</a>
+                </div>
+
+                <!-- Ideogram -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">💭</div>
+                        <div class="card-title">
+                            <h3>Ideogram</h3>
+                            <span class="badge freemium">Freemium</span>
+                        </div>
+                    </div>
+                    <div class="card-description">
+                        Excelente para generar texto dentro de imágenes. Comprende y renderiza tipografía correctamente.
+                    </div>
+                    <div class="card-features">
+                        <div class="feature">Renderiza texto en imágenes</div>
+                        <div class="feature">100 prompts gratis/mes</div>
+                        <div class="feature">Alta calidad</div>
+                    </div>
+                    <a href="https://ideogram.ai" class="card-link">Visitar Sitio</a>
+                </div>
+
+                <!-- Google ImageFX -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🔍</div>
+                        <div class="card-title">
+                            <h3>Google ImageFX</h3>
+                            <span class="badge free">Gratuito</span>
+                        </div>
+                    </div>
+                    <div class="card-description">
+                        IA de Google para generación de imágenes. Modelo Imagen 2. Totalmente gratuito.
+                    </div>
+                    <div class="card-features">
+                        <div class="feature">100% gratuito</div>
+                        <div class="feature">Tecnología Google</div>
+                        <div class="feature">Interfaz simple</div>
+                    </div>
+                    <a href="https://aitestkitchen.withgoogle.com/tools/image-fx" class="card-link">Visitar Sitio</a>
+                </div>
+
+                <!-- Craiyon -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🖍️</div>
+                        <div class="card-title">
+                            <h3>Craiyon</h3>
+                            <span class="badge free">Gratuito</span>
+                        </div>
+                    </div>
+                    <div class="card-description">
+                        Anteriormente DALL-E mini. Totalmente gratuito sin registro. Ideal para probar ideas rápido.
+                    </div>
+                    <div class="card-features">
+                        <div class="feature">Sin registro necesario</div>
+                        <div class="feature">Ilimitado y gratuito</div>
+                        <div class="feature">Rápido y simple</div>
+                    </div>
+                    <a href="https://www.craiyon.com" class="card-link">Visitar Sitio</a>
+                </div>
+
+                <!-- DreamStudio -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">💫</div>
+                        <div class="card-title">
+                            <h3>DreamStudio</h3>
+                            <span class="badge freemium">Freemium</span>
+                        </div>
+                    </div>
+                    <div class="card-description">
+                        Interfaz oficial de Stability AI para Stable Diffusion. Control profesional sobre parámetros.
+                    </div>
+                    <div class="card-features">
+                        <div class="feature">25 créditos iniciales</div>
+                        <div class="feature">Control avanzado</div>
+                        <div class="feature">Múltiples modelos</div>
+                    </div>
+                    <a href="https://dreamstudio.ai" class="card-link">Visitar Sitio</a>
+                </div>
+
+                <!-- Microsoft Designer -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🎨</div>
+                        <div class="card-title">
+                            <h3>Microsoft Designer</h3>
+                            <span class="badge free">Gratuito</span>
+                        </div>
+                    </div>
+                    <div class="card-description">
+                        Herramienta de diseño con IA de Microsoft. Genera y edita imágenes con templates profesionales.
+                    </div>
+                    <div class="card-features">
+                        <div class="feature">Gratuito con cuenta MS</div>
+                        <div class="feature">Templates incluidos</div>
+                        <div class="feature">Editor integrado</div>
+                    </div>
+                    <a href="https://designer.microsoft.com" class="card-link">Visitar Sitio</a>
+                </div>
+
+                <!-- Clipdrop -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">✂️</div>
+                        <div class="card-title">
+                            <h3>Clipdrop</h3>
+                            <span class="badge freemium">Freemium</span>
+                        </div>
+                    </div>
+                    <div class="card-description">
+                        Suite de herramientas de IA: remover fondos, upscaling, limpieza de imágenes y más.
+                    </div>
+                    <div class="card-features">
+                        <div class="feature">Múltiples herramientas</div>
+                        <div class="feature">Remover fondos gratis</div>
+                        <div class="feature">Upscaling de imágenes</div>
+                    </div>
+                    <a href="https://clipdrop.co" class="card-link">Visitar Sitio</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN AUDIO -->
+        <div id="audio" class="section">
+            <div class="section-intro">
+                <h2>🎵 IAs para Procesamiento de Audio</h2>
+                <p>Herramientas de IA para generar voces, música, editar audio y transcribir. Desde text-to-speech hasta producción musical.</p>
+            </div>
+
+            <div class="cards-grid">
+                <!-- ElevenLabs -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🎙️</div>
+                        <div class="card-title">
+                            <h3>ElevenLabs</h3>
+                            <span class="badge freemium">Freemium</span>
+                            <span class="badge top">Top</span>
+                        </div>
+                    </div>
+                    <div class="card-description">
+                        La mejor IA de text-to-speech. Voces ultra-realistas en múltiples idiomas. Clonación de voz disponible.
+                    </div>
+                    <div class="card-features">
+                        <div class="feature">10,000 caracteres gratis/mes</div>
+                        <div class="feature">Voces hiper-realistas</div>
+                        <div class="feature">Clonación de voz</div>
+                    </div>
+                    <a href="https://elevenlabs.io" class="card-link">Visitar Sitio</a>
+                </div>
+
+                <!-- Murf.AI -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🗣️</div>
+                        <div class="card-title">
+                            <h3>Murf.AI</h3>
+                            <span class="badge freemium">Freemium</span>
+                            <span class="badge top">Top</span>
+                        </div>
+                    </div>
+                    <div class="card-description">
+                        Voces profesionales para presentaciones, videos y podcasts. Múltiples acentos y emociones.
+                    </div>
+                    <div class="card-features">
+                        <div class="feature">10 minutos gratis</div>
+                        <div class="feature">120+ voces profesionales</div>
+                        <div class="feature">Control de emociones</div>
+                    </div>
+                    <a href="https://murf.ai" class="card-link">Visitar Sitio</a>
+                </div>
+
+                <!-- Adobe Podcast -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🎧</div>
+                        <div class="card-title">
+                            <h3>Adobe Podcast</h3>
+                            <span class="badge free">Gratuito</span>
+                            <span class="badge top">Top</span>
+                        </div>
+                    </div>
+                    <div class="card-description">
+                        Limpieza de audio profesional con IA. Elimina ruido de fondo y mejora la calidad vocal automáticamente.
+                    </div>
+                    <div class="card-features">
+                        <div class="feature">100% gratuito</div>
+                        <div class="feature">Mejora vocal automática</div>
+                        <div class="feature">Elimina ruido</div>
+                    </div>
+                    <a href="https://podcast.adobe.com" class="card-link">Visitar Sitio</a>
+                </div>
+
+                <!-- Descript -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">📝</div>
+                        <div class="card-title">
+                            <h3>Descript</h3>
+                            <span class="badge freemium">Freemium</span>
+                            <span class="badge top">Top</span>
+                        </div>
+                    </div>
+                    <div class="card-description">
+                        Edición de audio/video mediante texto. Transcripción automática y edición super intuitiva.
+                    </div>
+                    <div class="card-features">
+                        <div class="feature">1 hora gratis/mes transcripción</div>
+                        <div class="feature">Editar como documento</div>
+                        <div class="feature">Overdub (clonación voz)</div>
+                    </div>
+                    <a href="https://www.descript.com" class="card-link">Visitar Sitio</a>
+                </div>
+
+                <!-- Krisp -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🔇</div>
+                        <div class="card-title">
+                            <h3>Krisp</h3>
+                            <span class="badge freemium">Freemium</span>
+                        </div>
+                    </div>
+                    <div class="card-description">
+                        Cancelación de ruido en tiempo real para llamadas. Elimina ladridos, teclado, ruido ambiente.
+                    </div>
+                    <div class="card-features">
+                        <div class="feature">60 min gratis/día</div>
+                        <div class="feature">Tiempo real</div>
+                        <div class="feature">Todas las apps</div>
+                    </div>
+                    <a href="https://krisp.ai" class="card-link">Visitar Sitio</a>
+                </div>
+
+                <!-- Soundraw -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🎼</div>
+                        <div class="card-title">
+                            <h3>Soundraw</h3>
+                            <span class="badge freemium">Freemium</span>
+                        </div>
+                    </div>
+                    <div class="card-description">
+                        Genera música original con IA. Personaliza género, mood, tempo. Libre de copyright.
+                    </div>
+                    <div class="card-features">
+                        <div class="feature">Prueba gratuita</div>
+                        <div class="feature">Música personalizable</div>
+                        <div class="feature">Libre de copyright</div>
+                    </div>
+                    <a href="https://soundraw.io" class="card-link">Visitar Sitio</a>
+                </div>
+
+                <!-- Beatoven.ai -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🎹</div>
+                        <div class="card-title">
+                            <h3>Beatoven.ai</h3>
+                            <span class="badge freemium">Freemium</span>
+                        </div>
+                    </div>
+                    <div class="card-description">
+                        Crea música de fondo para videos. IA adapta la música al contenido. Ideal para YouTube.
+                    </div>
+                    <div class="card-features">
+                        <div class="feature">15 min gratis/mes</div>
+                        <div class="feature">Adaptativa al contenido</div>
+                        <div class="feature">Múltiples géneros</div>
+                    </div>
+                    <a href="https://beatoven.ai" class="card-link">Visitar Sitio</a>
+                </div>
+
+                <!-- Aiva -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🎻</div>
+                        <div class="card-title">
+                            <h3>Aiva</h3>
+                            <span class="badge freemium">Freemium</span>
+                        </div>
+                    </div>
+                    <div class="card-description">
+                        Composición musical profesional con IA. Especializado en música orquestal y cinematográfica.
+                    </div>
+                    <div class="card-features">
+                        <div class="feature">3 descargas gratis/mes</div>
+                        <div class="feature">Música orquestal</div>
+                        <div class="feature">Edición de partituras</div>
+                    </div>
+                    <a href="https://www.aiva.ai" class="card-link">Visitar Sitio</a>
+                </div>
+
+                <!-- Boomy -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">💥</div>
+                        <div class="card-title">
+                            <h3>Boomy</h3>
+                            <span class="badge free">Gratuito</span>
+                        </div>
+                    </div>
+                    <div class="card-description">
+                        Crea canciones completas en segundos. Publica en Spotify. Gana regalías de tus creaciones.
+                    </div>
+                    <div class="card-features">
+                        <div class="feature">Creación ilimitada</div>
+                        <div class="feature">Publica en Spotify</div>
+                        <div class="feature">Gana regalías</div>
+                    </div>
+                    <a href="https://boomy.com" class="card-link">Visitar Sitio</a>
+                </div>
+
+                <!-- Lalal.ai -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🎚️</div>
+                        <div class="card-title">
+                            <h3>Lalal.ai</h3>
+                            <span class="badge freemium">Freemium</span>
+                        </div>
+                    </div>
+                    <div class="card-description">
+                        Separa voces e instrumentos de cualquier canción. Extrae stems con alta calidad.
+                    </div>
+                    <div class="card-features">
+                        <div class="feature">10 min gratis</div>
+                        <div class="feature">Separación de stems</div>
+                        <div class="feature">Alta calidad</div>
+                    </div>
+                    <a href="https://www.lalal.ai" class="card-link">Visitar Sitio</a>
+                </div>
+
+                <!-- Cleanvoice -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🧹</div>
+                        <div class="card-title">
+                            <h3>Cleanvoice</h3>
+                            <span class="badge freemium">Freemium</span>
+                        </div>
+                    </div>
+                    <div class="card-description">
+                        Elimina muletillas, silencios y ruidos de podcasts automáticamente. Ahorra horas de edición.
+                    </div>
+                    <div class="card-features">
+                        <div class="feature">30 min gratis</div>
+                        <div class="feature">Elimina muletillas</div>
+                        <div class="feature">Automático</div>
+                    </div>
+                    <a href="https://cleanvoice.ai" class="card-link">Visitar Sitio</a>
+                </div>
+
+                <!-- Voicemod -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🎭</div>
+                        <div class="card-title">
+                            <h3>Voicemod</h3>
+                            <span class="badge freemium">Freemium</span>
+                        </div>
+                    </div>
+                    <div class="card-description">
+                        Cambiador de voz en tiempo real. Ideal para streaming, gaming y creación de contenido.
+                    </div>
+                    <div class="card-features">
+                        <div class="feature">Voces gratis limitadas</div>
+                        <div class="feature">Tiempo real</div>
+                        <div class="feature">Efectos de sonido</div>
+                    </div>
+                    <a href="https://www.voicemod.net" class="card-link">Visitar Sitio</a>
+                </div>
+
+                <!-- Resemble.AI -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">👤</div>
+                        <div class="card-title">
+                            <h3>Resemble.AI</h3>
+                            <span class="badge freemium">Freemium</span>
+                        </div>
+                    </div>
+                    <div class="card-description">
+                        Clonación de voz profesional. Crea tu propia voz sintética desde solo 3 minutos de audio.
+                    </div>
+                    <div class="card-features">
+                        <div class="feature">Plan gratuito disponible</div>
+                        <div class="feature">Clonación de voz</div>
+                        <div class="feature">API disponible</div>
+                    </div>
+                    <a href="https://www.resemble.ai" class="card-link">Visitar Sitio</a>
+                </div>
+
+                <!-- Splice -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🎛️</div>
+                        <div class="card-title">
+                            <h3>Splice</h3>
+                            <span class="badge freemium">Freemium</span>
+                        </div>
+                    </div>
+                    <div class="card-description">
+                        Plataforma de samples con IA. Encuentra loops y samples perfectos para tu música.
+                    </div>
+                    <div class="card-features">
+                        <div class="feature">Prueba gratuita</div>
+                        <div class="feature">Millones de samples</div>
+                        <div class="feature">Búsqueda con IA</div>
+                    </div>
+                    <a href="https://splice.com" class="card-link">Visitar Sitio</a>
+                </div>
+
+                <!-- VEED.IO Audio -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🎚️</div>
+                        <div class="card-title">
+                            <h3>VEED.IO Audio</h3>
+                            <span class="badge freemium">Freemium</span>
+                        </div>
+                    </div>
+                    <div class="card-description">
+                        Editor de audio online con transcripción automática. Subtítulos y edición de audio simplificada.
+                    </div>
+                    <div class="card-features">
+                        <div class="feature">10 min gratis/mes</div>
+                        <div class="feature">Transcripción automática</div>
+                        <div class="feature">Editor online</div>
+                    </div>
+                    <a href="https://www.veed.io" class="card-link">Visitar Sitio</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN VIDEO -->
+        <div id="video" class="section">
+            <div class="section-intro">
+                <h2>🎬 IAs para Procesamiento de Video</h2>
+                <p>Herramientas de IA para generar, editar y producir videos. Desde generación text-to-video hasta avatares con IA.</p>
+            </div>
+
+            <div class="cards-grid">
+                <!-- Runway ML -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🎬</div>
+                        <div class="card-title">
+                            <h3>Runway ML</h3>
+                            <span class="badge freemium">Freemium</span>
+                            <span class="badge top">Top</span>
+                        </div>
+                    </div>
+                    <div class="card-description">
+                        La IA más avanzada para generación de video. Text-to-video, imagen-to-video, edición con IA.
+                    </div>
+                    <div class="card-features">
+                        <div class="feature">Créditos gratis iniciales</div>
+                        <div class="feature">Gen-2 (última tecnología)</div>
+                        <div class="feature">Edición profesional</div>
+                    </div>
+                    <a href="https://runwayml.com" class="card-link">Visitar Sitio</a>
+                </div>
+
+                <!-- Pika Labs -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">⚡</div>
+                        <div class="card-title">
+                            <h3>Pika Labs</h3>
+                            <span class="badge freemium">Freemium</span>
+                            <span class="badge top">Top</span>
+                        </div>
+                    </div>
+                    <div class="card-description">
+                        Genera videos desde texto o imágenes. Calidad cinematográfica. Competidor directo de Runway.
+                    </div>
+                    <div class="card-features">
+                        <div class="feature">Plan gratuito disponible</div>
+                        <div class="feature">Text/Image to video</div>
+                        <div class="feature">Edición de videos</div>
+                    </div>
+                    <a href="https://pika.art" class="card-link">Visitar Sitio</a>
+                </div>
+
+                <!-- Synthesia -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">👨‍💼</div>
+                        <div class="card-title">
+                            <h3>Synthesia</h3>
+                            <span class="badge freemium">Freemium</span>
+                            <span class="badge top">Top</span>
+                        </div>
+                    </div>
+                    <div class="card-description">
+                        Crea videos con avatares IA. Perfecto para capacitación, marketing y presentaciones corporativas.
+                    </div>
+                    <div class="card-features">
+                        <div class="feature">Demo gratis</div>
+                        <div class="feature">160+ avatares</div>
+                        <div class="feature">120+ idiomas</div>
+                    </div>
+                    <a href="https://www.synthesia.io" class="card-link">Visitar Sitio</a>
+                </div>
+
+                <!-- HeyGen -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🎥</div>
+                        <div class="card-title">
+                            <h3>HeyGen</h3>
+                            <span class="badge freemium">Freemium</span>
+                            <span class="badge top">Top</span>
+                        </div>
+                    </div>
+                    <div class="card-description">
+                        Avatares realistas con sincronización labial perfecta. Clona tu voz y apariencia.
+                    </div>
+                    <div class="card-features">
+                        <div class="feature">Créditos gratis iniciales</div>
+                        <div class="feature">Avatares ultra-realistas</div>
+                        <div class="feature">Traducción automática</div>
+                    </div>
+                    <a href="https://www.heygen.com" class="card-link">Visitar Sitio</a>
+                </div>
+
+                <!-- Pictory -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">📖</div>
+                        <div class="card-title">
+                            <h3>Pictory</h3>
+                            <span class="badge freemium">Freemium</span>
+                        </div>
+                    </div>
+                    <div class="card-description">
+                        Convierte artículos y scripts en videos automáticamente. Ideal para marketing de contenidos.
+                    </div>
+                    <div class="card-features">
+                        <div class="feature">Prueba gratis 3 videos</div>
+                        <div class="feature">Texto a video</div>
+                        <div class="feature">Subtítulos automáticos</div>
+                    </div>
+                    <a href="https://pictory.ai" class="card-link">Visitar Sitio</a>
+                </div>
+
+                <!-- InVideo -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">✨</div>
+                        <div class="card-title">
+                            <h3>InVideo</h3>
+                            <span class="badge freemium">Freemium</span>
+                        </div>
+                    </div>
+                    <div class="card-description">
+                        Editor de video online con IA. Miles de plantillas. Perfecto para redes sociales y YouTube.
+                    </div>
+                    <div class="card-features">
+                        <div class="feature">Plan gratuito disponible</div>
+                        <div class="feature">5000+ plantillas</div>
+                        <div class="feature">Text-to-video</div>
+                    </div>
+                    <a href="https://invideo.io" class="card-link">Visitar Sitio</a>
+                </div>
+
+                <!-- Descript Video -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🎞️</div>
+                        <div class="card-title">
+                            <h3>Descript Video</h3>
+                            <span class="badge freemium">Freemium</span>
+                        </div>
+                    </div>
+                    <div class="card-description">
+                        Edita video como si fuera un documento de texto. Transcripción automática incluida.
+                    </div>
+                    <div class="card-features">
+                        <div class="feature">1 hora gratis/mes</div>
+                        <div class="feature">Edición basada en texto</div>
+                        <div class="feature">Overdub de video</div>
+                    </div>
+                    <a href="https://www.descript.com" class="card-link">Visitar Sitio</a>
+                </div>
+
+                <!-- Kapwing -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🎨</div>
+                        <div class="card-title">
+                            <h3>Kapwing</h3>
+                            <span class="badge freemium">Freemium</span>
+                        </div>
+                    </div>
+                    <div class="card-description">
+                        Editor de video colaborativo online. Subtítulos automáticos, resize, y herramientas con IA.
+                    </div>
+                    <div class="card-features">
+                        <div class="feature">Plan gratuito robusto</div>
+                        <div class="feature">Colaboración en tiempo real</div>
+                        <div class="feature">Subtítulos con IA</div>
+                    </div>
+                    <a href="https://www.kapwing.com" class="card-link">Visitar Sitio</a>
+                </div>
+
+                <!-- VEED.IO Video -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🎬</div>
+                        <div class="card-title">
+                            <h3>VEED.IO</h3>
+                            <span class="badge freemium">Freemium</span>
+                        </div>
+                    </div>
+                    <div class="card-description">
+                        Editor de video online completo. Subtítulos automáticos, traducciones, y efectos con IA.
+                    </div>
+                    <div class="card-features">
+                        <div class="feature">10 min gratis/mes</div>
+                        <div class="feature">Suite completa</div>
+                        <div class="feature">Múltiples idiomas</div>
+                    </div>
+                    <a href="https://www.veed.io" class="card-link">Visitar Sitio</a>
+                </div>
+
+                <!-- Fliki -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">📱</div>
+                        <div class="card-title">
+                            <h3>Fliki</h3>
+                            <span class="badge freemium">Freemium</span>
+                        </div>
+                    </div>
+                    <div class="card-description">
+                        Convierte texto a video con voces IA realistas. Ideal para contenido educativo y marketing.
+                    </div>
+                    <div class="card-features">
+                        <div class="feature">5 min gratis/mes</div>
+                        <div class="feature">Voces IA de calidad</div>
+                        <div class="feature">75+ idiomas</div>
+                    </div>
+                    <a href="https://fliki.ai" class="card-link">Visitar Sitio</a>
+                </div>
+
+                <!-- Steve.AI -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🎭</div>
+                        <div class="card-title">
+                            <h3>Steve.AI</h3>
+                            <span class="badge freemium">Freemium</span>
+                        </div>
+                    </div>
+                    <div class="card-description">
+                        Crea videos animados y live-action desde texto. Perfecto para explainer videos.
+                    </div>
+                    <div class="card-features">
+                        <div class="feature">Prueba gratuita</div>
+                        <div class="feature">Animación y live-action</div>
+                        <div class="feature">Scripts automáticos</div>
+                    </div>
+                    <a href="https://steve.ai" class="card-link">Visitar Sitio</a>
+                </div>
+
+                <!-- Lumen5 -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">💡</div>
+                        <div class="card-title">
+                            <h3>Lumen5</h3>
+                            <span class="badge freemium">Freemium</span>
+                        </div>
+                    </div>
+                    <div class="card-description">
+                        Transforma blogs y artículos en videos atractivos. IA selecciona imágenes y música.
+                    </div>
+                    <div class="card-features">
+                        <div class="feature">5 videos gratis/mes</div>
+                        <div class="feature">Blog a video</div>
+                        <div class="feature">Millones de assets</div>
+                    </div>
+                    <a href="https://lumen5.com" class="card-link">Visitar Sitio</a>
+                </div>
+
+                <!-- Elai.io -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🤖</div>
+                        <div class="card-title">
+                            <h3>Elai.io</h3>
+                            <span class="badge freemium">Freemium</span>
+                        </div>
+                    </div>
+                    <div class="card-description">
+                        Videos con avatares IA desde texto o PPT. Ideal para e-learning y capacitación empresarial.
+                    </div>
+                    <div class="card-features">
+                        <div class="feature">1 min gratis</div>
+                        <div class="feature">25+ avatares</div>
+                        <div class="feature">PPT a video</div>
+                    </div>
+                    <a href="https://elai.io" class="card-link">Visitar Sitio</a>
+                </div>
+
+                <!-- D-ID -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">🗨️</div>
+                        <div class="card-title">
+                            <h3>D-ID</h3>
+                            <span class="badge freemium">Freemium</span>
+                        </div>
+                    </div>
+                    <div class="card-description">
+                        Anima fotos estáticas con IA. Crea "talking heads" desde cualquier imagen o avatar.
+                    </div>
+                    <div class="card-features">
+                        <div class="feature">Créditos gratis iniciales</div>
+                        <div class="feature">Anima cualquier foto</div>
+                        <div class="feature">Sincronización labial IA</div>
+                    </div>
+                    <a href="https://www.d-id.com" class="card-link">Visitar Sitio</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showSection(sectionId) {
+            // Ocultar todas las secciones
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Quitar active de todos los tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Mostrar sección seleccionada
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Activar tab seleccionado
+            event.target.classList.add('active');
+
+            // Scroll al inicio
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

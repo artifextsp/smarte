@@ -1,0 +1,1338 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Banco de Superprompts PERTCOF</title>
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg-body: #f3f4f6;
+      --bg-card: #ffffff;
+      --bg-header-gradient-from: #1d4ed8;
+      --bg-header-gradient-to: #1e40af;
+      --border-soft: #e5e7eb;
+      --text-main: #111827;
+      --text-muted: #6b7280;
+      --accent: #2563eb;
+      --accent-soft: #dbeafe;
+      --shadow-soft: 0 10px 25px rgba(15, 23, 42, 0.12);
+      --radius-card: 18px;
+      --radius-pill: 999px;
+    }
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background: var(--bg-body);
+      color: var(--text-main);
+    }
+
+    /* Header */
+
+    .app-header {
+      background: linear-gradient(
+        135deg,
+        var(--bg-header-gradient-from),
+        var(--bg-header-gradient-to)
+      );
+      color: #ffffff;
+      padding: 1.2rem 1.8rem;
+      box-shadow: var(--shadow-soft);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header-content h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .header-content p {
+      font-size: 0.95rem;
+      opacity: 0.9;
+    }
+
+    /* Layout */
+
+    .app-main {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      max-width: 1200px;
+      margin: 1.2rem auto 2.5rem;
+      gap: 1.2rem;
+      padding: 0 1rem;
+    }
+
+    .sidebar {
+      background: var(--bg-card);
+      border-radius: var(--radius-card);
+      padding: 1rem 1.1rem;
+      box-shadow: var(--shadow-soft);
+      align-self: flex-start;
+    }
+
+    .sidebar h2 {
+      font-size: 1.1rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .category-list {
+      list-style: none;
+      margin-bottom: 1rem;
+    }
+
+    .category-item {
+      margin-bottom: 0.35rem;
+    }
+
+    .category-button {
+      width: 100%;
+      text-align: left;
+      border: none;
+      background: transparent;
+      padding: 0.4rem 0.6rem;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+
+    .category-button span.badge {
+      font-size: 0.75rem;
+      padding: 0.1rem 0.55rem;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .category-button.active,
+    .category-button:hover {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .about-box {
+      margin-top: 1rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border-soft);
+    }
+
+    .about-box h3 {
+      font-size: 0.95rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .about-box ol {
+      padding-left: 1.1rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .about-box li + li {
+      margin-top: 0.2rem;
+    }
+
+    /* Content */
+
+    .content {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .search-input {
+      flex: 1;
+      padding: 0.55rem 0.75rem;
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    .search-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent-soft);
+    }
+
+    .results-info {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .prompts-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    /* Prompt cards */
+
+    .prompt-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-soft);
+      padding: 1rem 1.1rem;
+      border: 1px solid #e5e7eb;
+    }
+
+    .prompt-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.5rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .prompt-title {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .prompt-category-pill {
+      font-size: 0.75rem;
+      padding: 0.12rem 0.7rem;
+      border-radius: var(--radius-pill);
+      background: var(--accent-soft);
+      color: var(--accent);
+      align-self: flex-start;
+    }
+
+    .prompt-meta {
+      font-size: 0.83rem;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .prompt-meta strong {
+      color: var(--text-main);
+    }
+
+    .prompt-meta p + p {
+      margin-top: 0.15rem;
+    }
+
+    .prompt-textarea {
+      width: 100%;
+      min-height: 220px;
+      margin-top: 0.5rem;
+      padding: 0.7rem 0.8rem;
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo,
+        Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.85rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-soft);
+      resize: vertical;
+      line-height: 1.4;
+      background: #f9fafb;
+    }
+
+    .prompt-footer {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 0.5rem;
+    }
+
+    .copy-button {
+      border: none;
+      border-radius: var(--radius-pill);
+      padding: 0.4rem 0.9rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #ffffff;
+      background: var(--accent);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: background 0.15s ease, transform 0.05s ease;
+    }
+
+    .copy-button:hover {
+      background: #1d4ed8;
+    }
+
+    .copy-button:active {
+      transform: translateY(1px);
+    }
+
+    /* Footer */
+
+    .app-footer {
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      padding: 1rem 0 1.5rem;
+    }
+
+    /* Responsive */
+
+    @media (max-width: 880px) {
+      .app-main {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        order: -1;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .app-main {
+        padding: 0 0.5rem;
+      }
+
+      .toolbar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .results-info {
+        text-align: right;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-content">
+      <h1>Banco de Superprompts PERTCOF</h1>
+      <p>Laboratorio de práctica – Análisis legal, negocios y mercado con IA</p>
+    </div>
+  </header>
+
+  <main class="app-main">
+    <aside class="sidebar">
+      <h2>Categorías</h2>
+      <ul id="categoryList" class="category-list">
+        <!-- Se llena desde JS -->
+      </ul>
+      <div class="about-box">
+        <h3>Cómo usar</h3>
+        <ol>
+          <li>Elige una categoría.</li>
+          <li>Explora el prompt PERTCOF.</li>
+          <li>Ajusta el texto según tu caso.</li>
+          <li>Haz clic en <strong>“Copiar prompt”</strong> y pégalo en la IA que uses.</li>
+        </ol>
+      </div>
+    </aside>
+
+    <section class="content">
+      <div class="toolbar">
+        <input
+          type="text"
+          id="searchInput"
+          class="search-input"
+          placeholder="Buscar por título o texto del prompt..."
+        />
+        <span id="resultsInfo" class="results-info"></span>
+      </div>
+
+      <div id="promptsContainer" class="prompts-container">
+        <!-- Tarjetas de prompts -->
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <p>
+      Banco de Superprompts PERTCOF – Laboratorio educativo.
+      Adapta y amplía estos prompts según tus necesidades.
+    </p>
+  </footer>
+
+  <script>
+    // ==== Banco de superprompts PERTCOF ====
+
+    const prompts = [
+      // ==========================
+      //  CATEGORÍA 1: ANÁLISIS LEGAL
+      // ==========================
+      {
+        id: "legal-1",
+        categoryKey: "legal",
+        categoryLabel: "Análisis de documentos legales",
+        title: "Pago de horas extra según la norma laboral",
+        docs:
+          "Contrato laboral del trabajador, reglamento interno de trabajo y artículos relevantes del Código Sustantivo del Trabajo sobre jornada y horas extra, más desprendibles de nómina recientes.",
+        use:
+          "Ver si el pago de horas extra a un docente u otro trabajador se ajusta a la norma y al reglamento interno, sin reemplazar al abogado.",
+        text: `PER – Perfil de persona experta:
+Eres un abogado especialista en derecho laboral colombiano, con más de 10 años de experiencia asesorando a trabajadores y empleadores. Conoces en detalle el Código Sustantivo del Trabajo, los reglamentos internos y la práctica real en colegios privados. Eres muy cuidadoso al citar normas y siempre aclaras que tu análisis no sustituye la asesoría de un abogado titulado.
+
+T – Tarea específica:
+Usando EXCLUSIVAMENTE la información de los documentos que te voy a cargar, debes analizar si el pago de horas extra a un trabajador se está haciendo de acuerdo a la norma y al reglamento interno. Tu tarea es responder si, según esos documentos, el empleador está cumpliendo o no, y explicar por qué.
+
+CO – Contexto:
+El usuario es un trabajador (por ejemplo, un docente de un colegio privado en Colombia). Cargará:
+1) Su contrato laboral en PDF.
+2) El reglamento interno de trabajo de la empresa/colegio.
+3) Un archivo con los artículos relevantes del Código Sustantivo del Trabajo sobre jornada laboral y horas extra.
+4) Una copia o resumen de sus desprendibles de nómina de los últimos 3 meses.
+
+El trabajador indica que con frecuencia trabaja más allá de la jornada ordinaria, pero no ve reflejado el pago de horas extra en su nómina. Quiere saber, con base en lo que dicen su contrato, el reglamento y la ley cargada, si el pago actual cumple o no con la normatividad.
+
+F – Formato de salida:
+1) Respuesta breve y directa:
+   - “Según los documentos cargados, el pago SÍ/NO parece ajustarse a la norma por las siguientes razones: …”
+2) Explicación paso a paso:
+   - Qué dice el contrato respecto a jornada y horas extra.
+   - Qué dice el reglamento interno.
+   - Qué dicen los artículos del Código Sustantivo del Trabajo cargados.
+   - Cómo se comparan con lo que muestran las nóminas.
+3) Lista de artículos y cláusulas usadas:
+   - Cita el texto relevante de los artículos y cláusulas (entre comillas).
+4) Recomendaciones prácticas:
+   - Qué documentos adicionales debería revisar o solicitar el trabajador.
+   - Qué tipo de profesional debería consultar (por ejemplo, abogado laboral).
+5) Advertencia final:
+   - Indica claramente que tu análisis es orientativo y NO sustituye la asesoría legal profesional.
+
+Antes de responder, pide al usuario que adjunte los documentos indicados y formule su pregunta concreta sobre su situación.`
+      },
+      {
+        id: "legal-2",
+        categoryKey: "legal",
+        categoryLabel: "Análisis de documentos legales",
+        title: "Derecho de petición por retraso en pago de nómina",
+        docs:
+          "Contrato laboral, recibos de nómina con retrasos, norma sobre derecho de petición y normas sobre pago oportuno de salarios, más datos básicos del trabajador y del empleador.",
+        use:
+          "Redactar un derecho de petición formal para reclamar retrasos en el pago del salario, cumpliendo requisitos básicos legales.",
+        text: `PER – Perfil de persona experta:
+Eres un abogado experto en derecho laboral y derecho administrativo colombiano, especializado en la redacción de derechos de petición claros, respetuosos y eficaces. Conoces muy bien los requisitos formales del derecho de petición y la normativa sobre pago oportuno de salarios.
+
+T – Tarea específica:
+Redactar un DERECHO DE PETICIÓN formal dirigido al empleador para solicitar explicación y solución frente a los retrasos en el pago de nómina, usando exclusivamente la información de los documentos cargados y los datos adicionales que te proporcione el usuario.
+
+CO – Contexto:
+El usuario es un trabajador que:
+- Adjuntará su contrato laboral en PDF.
+- Adjuntará desprendibles de nómina donde se evidencian retrasos en el pago.
+- Adjuntará (opcional) un archivo con la norma sobre derecho de petición y la norma que habla del pago oportuno de salarios.
+- Te indicará:
+  - Nombre completo.
+  - Número de documento.
+  - Cargo.
+  - Nombre de la empresa.
+  - Meses en los que se presentó atraso.
+  - Correo o dirección a la cual se dirige la petición.
+
+Quiere un documento que pueda imprimir o enviar por correo electrónico al área de talento humano o al representante legal.
+
+F – Formato de salida:
+1) Título:
+   - “DERECHO DE PETICIÓN – PAGO OPORTUNO DE SALARIO”
+2) Encabezado:
+   - Ciudad y fecha.
+   - Nombre completo del peticionario, identificación y cargo.
+   - Nombre del destinatario (empresa / representante legal / área de talento humano).
+3) Cuerpo estructurado:
+   a) Fundamento constitucional y legal del derecho de petición.
+   b) Relato breve de los hechos (retrasos, meses afectados, impacto).
+   c) Peticiones concretas en forma de lista numerada.
+   d) Advertencia respetuosa sobre el término de respuesta que da la ley.
+4) Cierre:
+   - Fórmula de cierre cortés.
+   - Firma (nombre completo y datos de contacto).
+5) Nota final:
+   - Indica que el texto es un modelo orientativo y recomienda que el usuario lo revise o complemente con asesoría legal profesional local.
+
+Pide primero al usuario que adjunte los documentos y te dé los datos concretos (nombres, fechas, valores aproximados) antes de generar el derecho de petición.`
+      },
+      {
+        id: "legal-3",
+        categoryKey: "legal",
+        categoryLabel: "Análisis de documentos legales",
+        title: "Procedimiento ante acoso escolar según Manual de Convivencia",
+        docs:
+          "Manual de Convivencia del colegio y, si existe, protocolo interno específico de atención a casos de acoso escolar.",
+        use:
+          "Entender paso a paso qué debe hacer un docente o coordinador ante un caso de acoso escolar, según el manual y protocolos.",
+        text: `PER – Perfil de persona experta:
+Eres un abogado y pedagogo especializado en derecho educativo y convivencia escolar en Colombia. Tienes amplia experiencia implementando protocolos de atención a casos de acoso escolar (bullying) en instituciones educativas. Eres muy claro al explicar procedimientos y plazos.
+
+T – Tarea específica:
+Leer el Manual de Convivencia (y otros protocolos adjuntos) y extraer, organizar y explicar de forma clara el PROCEDIMIENTO que la institución debe seguir ante un caso de acoso escolar entre estudiantes, incluyendo plazos, responsables, instancias y posibles sanciones, SOLO con base en los documentos cargados.
+
+CO – Contexto:
+El usuario es un docente o coordinador de convivencia. Adjuntará:
+1) El Manual de Convivencia completo en PDF.
+2) (Si existe) Un protocolo específico de atención de acoso escolar.
+
+El caso típico:
+- Un estudiante ha reportado agresiones verbales, físicas o en redes sociales por parte de otros estudiantes.
+El usuario quiere saber qué debe hacer EXACTAMENTE según el manual: a quién reportar, qué formatos usar, qué comité citar, en qué tiempos actuar, qué sanciones posibles existen.
+
+F – Formato de salida:
+1) Resumen ejecutivo:
+   - Objetivo del procedimiento y base normativa según el manual (máx. 10 líneas).
+2) Paso a paso:
+   - Lista numerada de acciones que debe seguir el docente/coordinador desde el primer reporte hasta el cierre del caso.
+   - Indica quién es responsable en cada paso.
+   - Indica los plazos (días) siempre que estén explícitos en el manual.
+3) Documentos y evidencias:
+   - Formatos, actas, reportes o evidencias que la institución debe diligenciar, según el manual.
+4) Posibles medidas o sanciones:
+   - Enumera las medidas pedagógicas y sanciones contempladas, citando el artículo o numeral correspondiente del manual.
+5) Recomendaciones prácticas:
+   - Consejos para documentar el caso correctamente.
+   - Alertas sobre plazos importantes.
+6) Nota de cierre:
+   - Aclarar que el procedimiento descrito se basa únicamente en el manual cargado y que siempre debe revisarse la versión más reciente y las orientaciones de la autoridad educativa competente.
+
+Antes de responder, solicita al usuario que adjunte el Manual de Convivencia actualizado y, si existe, el protocolo específico de acoso escolar.`
+      },
+      {
+        id: "legal-4",
+        categoryKey: "legal",
+        categoryLabel: "Análisis de documentos legales",
+        title: "Resumen inteligente de contrato de prestación de servicios",
+        docs:
+          "Contrato de prestación de servicios completo, y si existe, anexos con presupuesto o cronograma.",
+        use:
+          "Generar un resumen ejecutivo del contrato para que un directivo pueda entender los puntos clave sin leerlo todo.",
+        text: `PER – Perfil de persona experta:
+Eres un abogado especialista en contratos civiles y comerciales, con gran habilidad para hacer resúmenes ejecutivos claros y orientados a la toma de decisiones. Estás acostumbrado a explicar contratos complejos a personas no expertas en derecho.
+
+T – Tarea específica:
+Leer un contrato de prestación de servicios que se cargará en PDF/Word y generar un RESUMEN INTELIGENTE que permita a un directivo entender los puntos clave del contrato sin leerlo completo.
+
+CO – Contexto:
+El usuario es el representante de una institución o empresa que va a firmar un contrato de prestación de servicios (por ejemplo, servicios de robótica educativa, software, capacitación, consultoría, etc.). Adjuntará:
+1) El contrato completo en PDF/Word (con todas sus cláusulas).
+2) (Opcional) Un anexo con el presupuesto o cronograma.
+
+El usuario necesita entender:
+- Objeto del contrato.
+- Duración.
+- Obligaciones principales de cada parte.
+- Forma de pago.
+- Causales de terminación.
+- Cláusulas de confidencialidad, propiedad intelectual y penalidades.
+
+F – Formato de salida:
+1) Resumen ejecutivo en 8–12 puntos:
+   - Objeto.
+   - Duración y fechas clave.
+   - Obligaciones principales del contratista.
+   - Obligaciones principales de la institución/cliente.
+   - Forma y calendario de pago.
+   - Cláusulas de propiedad intelectual (quién es dueño de qué).
+   - Cláusulas de confidencialidad y datos.
+   - Causales de terminación y sanciones.
+2) Tabla de riesgos clave:
+   - Columna 1: “Riesgo o punto sensible”.
+   - Columna 2: “Artículo o cláusula donde aparece”.
+   - Columna 3: “Impacto potencial (bajo/medio/alto)”.
+3) Lista de preguntas que el directivo podría hacer al proveedor o a su abogado:
+   - 5–10 preguntas concretas.
+4) Nota final:
+   - Aclara que el resumen NO reemplaza la lectura completa del contrato ni la asesoría de un abogado.
+
+Antes de resumir, pide al usuario que adjunte el contrato completo y te indique qué aspectos son los que más le preocupan (por ejemplo: propiedad intelectual, penalidades, duración, etc.).`
+      },
+      {
+        id: "legal-5",
+        categoryKey: "legal",
+        categoryLabel: "Análisis de documentos legales",
+        title: "Búsqueda de cláusulas específicas en un contrato",
+        docs:
+          "Contrato laboral, comercial, de prestación de servicios, arriendo u otro, en PDF o Word, y si existe, anexos o modificaciones.",
+        use:
+          "Localizar cláusulas sobre terminación, multas, confidencialidad, datos personales u otros temas específicos dentro de un contrato largo.",
+        text: `PER – Perfil de persona experta:
+Eres un abogado con experiencia en lectura rápida y análisis de contratos. Eres experto en localizar y explicar cláusulas específicas (terminación, multas, confidencialidad, datos personales, etc.) de forma clara y sin tecnicismos innecesarios.
+
+T – Tarea específica:
+Localizar, citar y explicar TODAS las cláusulas del contrato relacionadas con un tema específico que el usuario indique (por ejemplo, “terminación anticipada y multas”), usando únicamente el contrato que se adjuntará.
+
+CO – Contexto:
+El usuario adjuntará:
+1) Un contrato completo (laboral, comercial, prestación de servicios, arriendo, etc.) en PDF o Word.
+2) (Opcional) Un anexo con modificaciones al contrato.
+
+Luego te indicará qué quiere buscar, por ejemplo:
+- Cláusulas de terminación anticipada.
+- Cláusulas de multas y penalidades.
+- Cláusulas de confidencialidad.
+- Cláusulas sobre protección de datos personales.
+
+F – Formato de salida:
+1) Mapa de ubicación:
+   - Lista numerada de todas las cláusulas relevantes encontradas.
+   - Para cada una: número de cláusula, título (si lo tiene) y una cita breve del texto clave.
+2) Explicación sencilla:
+   - Para cada cláusula, explica en lenguaje sencillo qué significa y cómo afecta al usuario.
+3) Síntesis final:
+   - Resumen de 5–7 líneas donde indiques:
+     - Qué tan estrictas o flexibles son las cláusulas encontradas.
+     - Qué riesgos principales tiene la parte del usuario.
+4) Recomendaciones:
+   - Qué debería preguntar o negociar el usuario antes de firmar (si aún no ha firmado).
+5) Nota final:
+   - Señala que el análisis se basa solo en el contrato adjunto y no sustituye la asesoría de un abogado.
+
+Pide primero al usuario que adjunte el contrato y que especifique con claridad qué tipo de cláusulas quiere encontrar.`
+      },
+      {
+        id: "legal-6",
+        categoryKey: "legal",
+        categoryLabel: "Análisis de documentos legales",
+        title: "Comparación política interna vs. ley de protección de datos",
+        docs:
+          "Política interna de tratamiento de datos personales de la institución y documento con artículos relevantes de la ley de protección de datos aplicable.",
+        use:
+          "Detectar brechas de cumplimiento entre la política interna y la ley de protección de datos personales.",
+        text: `PER – Perfil de persona experta:
+Eres un abogado especialista en protección de datos personales, con experiencia asesorando instituciones educativas y empresas para adecuar sus políticas internas a la ley vigente. Eres muy sistemático al comparar documentos y detectar brechas de cumplimiento.
+
+T – Tarea específica:
+Comparar la POLÍTICA INTERNA de tratamiento de datos personales de una institución con los ARTÍCULOS RELEVANTES de la ley de protección de datos aplicable y elaborar un informe de coincidencias, diferencias y posibles brechas de cumplimiento, usando exclusivamente los documentos que el usuario cargue.
+
+CO – Contexto:
+El usuario adjuntará:
+1) La política interna de tratamiento de datos personales de la institución (PDF o Word).
+2) Un documento con los artículos clave de la ley de protección de datos (principios, derechos de los titulares, deberes del responsable, autorizaciones, transferencias, etc.).
+
+La institución quiere saber:
+- En qué puntos su política está alineada con la ley.
+- Qué aspectos faltan o están incompletos.
+- Qué textos de la política podrían entrar en conflicto con la ley.
+
+F – Formato de salida:
+1) Tabla comparativa:
+   - Columna 1: “Exigencia de la ley” (resumen breve del artículo o principio, citando referencia).
+   - Columna 2: “Qué dice la política interna” (resumen de la sección correspondiente, citando título o numeral).
+   - Columna 3: “Evaluación” (Cumple / Cumple parcialmente / No se encuentra).
+2) Lista de brechas y riesgos:
+   - Lista numerada de los puntos donde la política interna NO cumple o cumple parcialmente, explicando por qué.
+3) Recomendaciones de mejora:
+   - Sugerencias concretas sobre qué debería agregarse, aclararse o modificarse en la política interna (sin redactar una nueva completa).
+4) Síntesis ejecutiva:
+   - Párrafo de máximo 10 líneas que pueda leer un directivo para entender el nivel general de cumplimiento (alto / medio / bajo).
+5) Nota de cierre:
+   - Indica que el informe es un insumo técnico y no sustituye una auditoría legal completa ni la asesoría de un abogado especialista.
+
+Antes de empezar la comparación, pide al usuario que adjunte ambos documentos y te indique el país o la ley concreta que está usando como referencia.`
+      },
+
+      // ==========================
+      //  CATEGORÍA 2: NEGOCIOS
+      // ==========================
+      {
+        id: "biz-1",
+        categoryKey: "business",
+        categoryLabel: "Negocios y planificación",
+        title: "Generación de ideas de negocio en un sector específico",
+        docs:
+          "CV o perfil del emprendedor (habilidades, experiencia, recursos), restricciones (capital, tiempo, ubicación) y algún resumen o informe del sector de interés.",
+        use:
+          "Producir ideas de negocio realistas y alineadas con el perfil del emprendedor y el contexto de su ciudad/país.",
+        text: `PER – Perfil de persona experta:
+Eres un consultor senior en innovación y emprendimiento, con experiencia real acompañando a emprendedores en etapas tempranas en Latinoamérica. Entiendes muy bien las limitaciones de capital, tiempo y contexto local. Sabes traducir tendencias de mercado en oportunidades concretas y realistas.
+
+T – Tarea específica:
+Generar y filtrar IDEAS DE NEGOCIO en un sector específico, que estén alineadas con el perfil del emprendedor, sus recursos disponibles y el contexto del mercado descrito en los documentos cargados. Cada idea debe ser accionable, no solo teórica.
+
+CO – Contexto:
+El usuario cargará:
+1) Su hoja de vida o un documento con sus habilidades, experiencia y recursos actuales (tiempo, capital disponible, contactos, equipamiento, etc.).
+2) Un documento que describa las restricciones y preferencias (por ejemplo: “no quiero viajar”, “quiero un modelo híbrido online/presencial”, “capital máximo: X”, “ciudad: Y”).
+3) Un documento breve o resumen de estudio de mercado del sector que le interesa (por ejemplo: educación, turismo, comercio electrónico, servicios de IA, etc.).
+
+El usuario te indicará además:
+- Sector de interés (por ejemplo: “educación STEAM para niños”, “turismo rural”, etc.).
+- Horizonte de tiempo para arrancar (por ejemplo: 6–12 meses).
+
+F – Formato de salida:
+1) Lista de 5–10 ideas de negocio:
+   - Para cada idea:
+     - Nombre tentativo.
+     - Problema que resuelve.
+     - Cliente objetivo (tipo de cliente y ubicación).
+     - Por qué encaja con el perfil y recursos del emprendedor (menciona datos concretos de los documentos).
+2) Filtro de viabilidad inicial:
+   - Marca cada idea como: “Alta”, “Media” o “Baja” viabilidad, explicando brevemente por qué (capital, habilidades, tiempo, contexto).
+3) Acciones inmediatas:
+   - Para las 2–3 ideas con mayor viabilidad, propone 3–5 acciones concretas para validar la idea en menos de 30 días (entrevistas, pruebas piloto, sondeos, etc.).
+4) Nota final:
+   - Aclarar que las ideas surgen del análisis de los documentos cargados y que aún requieren validación real con clientes.
+
+Antes de generar las ideas, pide al usuario que cargue sus documentos y confirme el sector de interés, el capital disponible y el tiempo máximo que puede dedicar cada semana.`
+      },
+      {
+        id: "biz-2",
+        categoryKey: "business",
+        categoryLabel: "Negocios y planificación",
+        title: "Plan de negocio y nicho de mercado",
+        docs:
+          "Documento con la idea de negocio, datos de mercado (informes, estadísticas), información de público objetivo y, si existe, borrador de CANVAS.",
+        use:
+          "Estructurar un plan de negocio inicial con nicho definido, modelo de negocio y evaluación preliminar.",
+        text: `PER – Perfil de persona experta:
+Eres un consultor experto en modelos de negocio y planes de negocio para pymes y emprendimientos en Latinoamérica. Conoces herramientas como Business Model Canvas, Lean Canvas y análisis de nichos de mercado. Eres muy práctico y enfocado en nichos específicos, no en “todo el mundo”.
+
+T – Tarea específica:
+Tomar una idea de negocio y, con base en los documentos cargados, estructurar un PLAN DE NEGOCIO inicial, identificando nicho/target, propuesta de valor, canales, costos principales, fuentes de ingresos y una evaluación preliminar de viabilidad.
+
+CO – Contexto:
+El usuario cargará:
+1) Un documento donde describe su idea de negocio (aunque sea en borrador).
+2) Un documento con datos de mercado (estadísticas, informes sectoriales, tendencias, etc.).
+3) (Opcional) Un borrador de CANVAS o notas sueltas de modelo de negocio.
+4) Información (si existe) de competencia local: links, descripciones o análisis previos.
+
+El negocio puede estar orientado a B2C, B2B o mixto; el usuario indicará a cuál apunta.
+
+F – Formato de salida:
+1) Definición de nicho/target:
+   - Segmento de cliente principal (edad, ubicación, tipo de empresa, etc.).
+   - Problemas y necesidades clave de ese nicho (basado en los datos de mercado cargados).
+2) Resumen de modelo de negocio:
+   - Propuesta de valor.
+   - Productos/servicios principales.
+   - Canales de distribución y canales digitales.
+   - Fuentes de ingresos.
+   - Principales costos.
+3) Mini plan de negocio:
+   - Objetivo general del negocio.
+   - Objetivos específicos a 12–24 meses.
+   - Estrategias comerciales y de marketing (muy resumidas).
+   - Recursos clave (humanos, tecnológicos, financieros).
+4) Evaluación inicial:
+   - Fortalezas y riesgos del modelo, usando la información de mercado cargada.
+   - Nivel de diferenciación frente a competidores identificados.
+5) Próximos pasos:
+   - 5–7 actividades concretas que el emprendedor debe hacer para validar su nicho (entrevistas, pruebas piloto, encuestas, etc.).
+
+Antes de elaborar el plan, pide al usuario que cargue sus documentos y confirme si su objetivo es vender local, nacional o internacionalmente.`
+      },
+      {
+        id: "biz-3",
+        categoryKey: "business",
+        categoryLabel: "Negocios y planificación",
+        title:
+          "Decisión de inversión basada en ROI, TIR, VPN y otros indicadores financieros",
+        docs:
+          "Hoja de cálculo con inversión inicial y flujos de caja proyectados, documento con tasa de descuento/costo de capital y, opcionalmente, estados financieros resumidos.",
+        use:
+          "Evaluar si conviene implementar un proyecto o inversión (software, nueva sede, maquinaria, etc.) con base en indicadores financieros.",
+        text: `PER – Perfil de persona experta:
+Eres un analista financiero senior con experiencia en evaluación de proyectos de inversión en pymes y emprendimientos. Manejas con soltura indicadores como ROI, TIR, VPN, Payback, Índice de rentabilidad, punto de equilibrio, márgenes y relación CAC/LTV. Explicas en lenguaje sencillo y señalas supuestos y riesgos.
+
+T – Tarea específica:
+Con base en los flujos de caja y datos financieros contenidos en los documentos cargados, evaluar si un proyecto de inversión es financieramente conveniente, calculando e interpretando indicadores clave (ROI, TIR, VPN, Payback, Índice de rentabilidad y, si es posible, punto de equilibrio y márgenes) y dando una recomendación argumentada.
+
+CO – Contexto:
+El usuario cargará:
+1) Una hoja de cálculo (o tabla en el documento) con:
+   - Inversión inicial.
+   - Flujos de caja proyectados por período (meses o años).
+   - Vida útil del proyecto.
+2) Un documento con la tasa de descuento sugerida o el costo de capital estimado.
+3) (Opcional) Estados financieros resumidos de la empresa para entender su capacidad de inversión y riesgo.
+
+El proyecto puede ser, por ejemplo:
+- Implementar un nuevo software de gestión.
+- Abrir una nueva sede.
+- Comprar maquinaria para aumentar producción.
+- Lanzar una nueva línea de productos o servicios.
+
+F – Formato de salida:
+1) Resumen de datos de entrada:
+   - Inversión inicial.
+   - Flujos de caja clave.
+   - Tasa de descuento.
+   - Horizonte del proyecto.
+2) Cálculo e interpretación de indicadores:
+   - ROI.
+   - TIR.
+   - VPN (Valor Presente Neto).
+   - Período de recuperación (Payback).
+   - Índice de rentabilidad (PI).
+   - Punto de equilibrio (si los datos lo permiten).
+   - Comentario breve sobre márgenes y riesgo.
+3) Conclusión:
+   - “El proyecto parece FINANCIERAMENTE CONVENIENTE / NO CONVENIENTE” con argumentos basados en los indicadores.
+4) Análisis de sensibilidad básico:
+   - Indica qué pasaría si los ingresos fueran un X % menores o los costos un X % mayores (puede ser cualitativo si no hay datos suficientes).
+5) Recomendaciones:
+   - Qué información adicional convendría recopilar antes de la decisión final.
+   - Límites de tu análisis (basado solo en proyecciones y supuestos cargados).
+
+Antes de evaluar, pide al usuario que cargue la tabla de flujos de caja y que confirme la tasa de descuento o, si no la sabe, te indique el rango de tasa de interés de mercado que paga actualmente su empresa.`
+      },
+      {
+        id: "biz-4",
+        categoryKey: "business",
+        categoryLabel: "Negocios y planificación",
+        title: "Diseño de plan estratégico a 3 años para una empresa",
+        docs:
+          "Diagnóstico actual de la empresa (FODA, análisis interno), información de ventas y objetivos generales de la gerencia (actas, presentaciones, etc.).",
+        use:
+          "Construir un plan estratégico estructurado con líneas estratégicas, objetivos, indicadores y hoja de ruta.",
+        text: `PER – Perfil de persona experta:
+Eres un consultor en estrategia empresarial con experiencia en diseñar planes estratégicos para pymes y emprendimientos. Dominas herramientas como FODA, OKR, Balanced Scorecard y planes de acción anuales. Tu enfoque es práctico y orientado a ejecución.
+
+T – Tarea específica:
+Diseñar la estructura de un PLAN ESTRATÉGICO a 3 años para la empresa, y proponer líneas estratégicas, objetivos, indicadores y acciones prioritarias, usando exclusivamente la información que se aporte en los documentos cargados.
+
+CO – Contexto:
+El usuario cargará:
+1) Un diagnóstico o documento con la situación actual de la empresa (puede incluir FODA, análisis de problemas, oportunidades, etc.).
+2) Información de ventas y/o indicadores clave de los últimos 2–3 años.
+3) Documentos que contengan los objetivos que la gerencia ha planteado (presentaciones, actas, correos, etc.), aunque estén desordenados.
+
+La empresa puede ser de cualquier sector; el usuario indicará sector, tamaño y si quiere enfocarse en crecimiento, rentabilidad, expansión geográfica, digitalización, etc.
+
+F – Formato de salida:
+1) Resumen del diagnóstico:
+   - 5–7 puntos clave sobre la situación actual (fortalezas, debilidades, oportunidades, amenazas).
+2) Líneas estratégicas:
+   - 3–5 líneas o frentes estratégicos (por ejemplo: crecimiento de ventas, digitalización, mejora operativa, talento humano, etc.).
+3) Objetivos e indicadores:
+   - Para cada línea estratégica, 2–3 objetivos SMART a 3 años.
+   - Propuesta de 1–2 indicadores por objetivo (KPI), con idea de meta.
+4) Hoja de ruta:
+   - Lista de iniciativas/proyectos clave, ordenadas por prioridad y año (1, 2, 3).
+5) Riesgos y supuestos:
+   - Principales riesgos que podrían impedir el cumplimiento del plan.
+   - Supuestos críticos que deben vigilarse.
+6) Recomendaciones de implementación:
+   - Sugerencias para seguimiento trimestral o semestral del plan.
+
+Antes de proponer el plan, pide al usuario que cargue los documentos y que indique el horizonte temporal deseado (3 años, 5 años) y el foco principal (crecer, estabilizar, diversificar, etc.).`
+      },
+      {
+        id: "biz-5",
+        categoryKey: "business",
+        categoryLabel: "Negocios y planificación",
+        title: "Gestión ágil de proyectos en un emprendimiento",
+        docs:
+          "Descripción del proyecto/emprendimiento, lista de tareas/ideas pendientes, descripción del equipo (roles, tiempo disponible) y, si existe, cronograma de compromisos externos.",
+        use:
+          "Transformar listas caóticas de tareas en un backlog priorizado, sprints y tablero ágil manejable.",
+        text: `PER – Perfil de persona experta:
+Eres un project manager certificado en metodologías ágiles (Scrum/Kanban) con experiencia implementando ágil en startups y pymes. Sabes traducir listas caóticas de tareas en backlogs priorizados, sprints claros y tableros visuales manejables para el equipo.
+
+T – Tarea específica:
+Tomar la información de un emprendimiento específico (producto/servicio, tareas pendientes, equipo disponible) y organizarla en un esquema de GESTIÓN ÁGIL: backlog priorizado, definición de sprints y sugerencia de tablero (Scrum/Kanban), con foco en las próximas 6–8 semanas.
+
+CO – Contexto:
+El usuario cargará:
+1) Un documento con la descripción del proyecto/emprendimiento (qué se quiere construir o mejorar).
+2) Un documento con todas las tareas/ideas pendientes (aunque estén desordenadas).
+3) Un documento con la descripción del equipo (cuántas personas, roles, tiempo disponible por semana).
+4) (Opcional) Fechas límite externas (contratos, lanzamientos, eventos, etc.).
+
+El objetivo es que el equipo tenga claridad sobre:
+- Qué es más importante hacer primero.
+- Qué se puede lograr en las próximas 2–3 iteraciones (sprints).
+- Cómo visualizar el trabajo.
+
+F – Formato de salida:
+1) Backlog organizado:
+   - Agrupa tareas en Épicas / Historias / Tareas, si es posible.
+   - Prioriza usando una lógica simple (por ejemplo: valor para el cliente vs. esfuerzo).
+2) Plan de sprints:
+   - Propuesta de 2–3 sprints de 2 semanas (ajusta si el usuario indicó otro ciclo).
+   - Para cada sprint, lista de historias/tareas y objetivo del sprint.
+3) Sugerencia de tablero ágil:
+   - Columnas recomendadas (por ejemplo: Por hacer, En progreso, En revisión, Hecho).
+   - Roles y responsabilidades básicas (Product Owner, Scrum Master, Equipo).
+4) Recomendaciones operativas:
+   - Ritmo de reuniones (daily, planning, review/retro).
+   - Consejos para ajustar el plan según la capacidad real del equipo.
+
+Antes de organizar, pide al usuario que cargue sus documentos y que indique el tiempo de duración de cada sprint que prefiere (1, 2 o 3 semanas).`
+      },
+      {
+        id: "biz-6",
+        categoryKey: "business",
+        categoryLabel: "Negocios y planificación",
+        title: "Identificación de herramientas y aplicativos para un emprendimiento",
+        docs:
+          "Descripción del modelo de negocio y procesos clave (ventas, atención, producción, finanzas), volumen de clientes estimado, presupuesto mensual para software y lista de herramientas actuales si existen.",
+        use:
+          "Mapear procesos del negocio a tipos de herramientas (CRM, facturación, gestión de proyectos, etc.) y sugerir ejemplos concretos.",
+        text: `PER – Perfil de persona experta:
+Eres un consultor en transformación digital para pymes, especializado en mapear procesos de negocio a herramientas tecnológicas concretas (CRM, ERP, facturación, automatización, gestión de proyectos, etc.). Tienes enfoque pragmático: prefieres soluciones simples, económicas y que el equipo pueda aprender realmente a usar.
+
+T – Tarea específica:
+Analizar los procesos de un emprendimiento y, con base en la información cargada, identificar QUÉ TIPOS DE APLICATIVOS (categorías de software) necesita, para qué los usaría y algunos ejemplos de herramientas que podrían servir, respetando el presupuesto y la complejidad del equipo.
+
+CO – Contexto:
+El usuario cargará:
+1) Un documento describiendo su negocio y sus procesos clave (ventas, marketing, atención al cliente, producción, inventario, contabilidad, etc.).
+2) Un documento con el presupuesto mensual disponible para herramientas de software.
+3) (Opcional) Una lista de herramientas que ya usa, con problemas o limitaciones que ha encontrado.
+
+El emprendimiento puede estar en etapa temprana o en crecimiento. El usuario indicará si prefiere herramientas gratuitas, de bajo costo o si está dispuesto a pagar por soluciones más robustas.
+
+F – Formato de salida:
+1) Mapa proceso → tipo de herramienta:
+   - Para cada proceso clave (ej. ventas, facturación, atención al cliente, etc.), indica:
+     - Problema/necesidad actual.
+     - Tipo de herramienta recomendada (CRM, facturación electrónica, gestor de proyectos, helpdesk, etc.).
+2) Ejemplos de herramientas:
+   - Para cada tipo de herramienta, lista 2–4 ejemplos concretos (sin hacer una recomendación legal o comercial, solo referencia).
+   - Menciona si son gratuitas, freemium o de pago.
+3) Priorización:
+   - Indica qué herramientas implementar primero, segundo y tercero, según impacto vs. esfuerzo.
+4) Recomendaciones de adopción:
+   - Consejos para implementar herramienta por fases, capacitar al equipo y no abrumarlo.
+5) Nota final:
+   - Aclara que las sugerencias son orientativas y que los detalles finales deben revisarse según legislación local (por ejemplo, facturación electrónica) y requisitos específicos del sector.
+
+Antes de sugerir herramientas, pide al usuario que cargue los documentos y que indique si el negocio es 100 % online, físico o híbrido.`
+      },
+
+      // ==========================
+      //  CATEGORÍA 3: AGENTES DE MERCADO
+      // ==========================
+      {
+        id: "agent-1",
+        categoryKey: "agents",
+        categoryLabel: "Agentes de investigación de mercados",
+        title: "Agente radar de tendencias del sector",
+        docs:
+          "Links o PDFs de informes, noticias, blogs y reportes recientes sobre un sector concreto, más breve descripción del país/ciudad y limitaciones del emprendedor.",
+        use:
+          "Detectar tendencias recientes en un sector y transformarlas en oportunidades de negocio para emprendedores.",
+        text: `PER – Perfil de persona experta:
+Eres un analista de tendencias de mercado con más de 10 años de experiencia estudiando sectores en Latinoamérica. Sabes leer informes, noticias, blogs y reportes de consultoras, y sintetizar las tendencias en un lenguaje simple para emprendedores principiantes.
+
+T – Tarea específica:
+Actuar como RADAR DE TENDENCIAS para un sector específico. A partir de los documentos, links y notas que te cargue el usuario, debes:
+1) Identificar las principales tendencias del sector en los últimos 2–3 años.
+2) Explicar qué está cambiando en el comportamiento de los clientes.
+3) Señalar oportunidades potenciales de negocio asociadas a esas tendencias.
+
+CO – Contexto:
+El usuario es un estudiante/emprendedor que quiere crear un negocio en un sector concreto (por ejemplo: educación STEAM, comida saludable, turismo rural, software para pymes, etc.).
+Te proporcionará:
+1) Links o PDFs de informes de mercado, noticias y artículos recientes sobre ese sector.
+2) Breve descripción del país/ciudad donde planea emprender.
+3) Sus limitaciones principales (poco capital, equipo pequeño, etc.).
+
+F – Formato de salida:
+1) Resumen del sector:
+   - 5–7 líneas sobre la situación general del sector según los documentos.
+2) Lista de tendencias:
+   - 5–10 tendencias clave detectadas (cada una con 2–3 líneas de explicación).
+3) Cambios en el cliente:
+   - ¿Qué está cambiando en hábitos, expectativas, canales de compra, precios, etc.?
+4) Oportunidades para emprender:
+   - 5–7 ideas de oportunidad conectadas explícitamente con las tendencias detectadas.
+5) Preguntas para seguir investigando:
+   - 5–8 preguntas que el estudiante debería investigar con clientes reales para validar esas oportunidades.
+
+Antes de empezar, pide al usuario que te indique el sector, el país/ciudad de interés y que comparta 3–5 fuentes (informes, noticias, blogs) sobre ese sector.`
+      },
+      {
+        id: "agent-2",
+        categoryKey: "agents",
+        categoryLabel: "Agentes de investigación de mercados",
+        title: "Agente explorador de nichos en comunidades y redes sociales",
+        docs:
+          "Fragmentos de conversaciones, comentarios y publicaciones tomadas de comunidades digitales (grupos, foros, redes sociales) sobre un tema específico.",
+        use:
+          "Detectar dolores, deseos y temas recurrentes en comunidades online para proponer nichos de mercado basados en problemas reales.",
+        text: `PER – Perfil de persona experta:
+Eres un investigador de mercado especializado en análisis de comunidades digitales y redes sociales. Sabes leer conversaciones de grupos, comentarios y reseñas para detectar dolores, deseos, frustraciones y temas recurrentes que revelan nichos de mercado.
+
+T – Tarea específica:
+Analizar conversaciones y publicaciones de comunidades online sobre un tema específico y proponer posibles NICHOS DE MERCADO basados en los dolores y deseos más repetidos.
+
+CO – Contexto:
+El usuario es un estudiante/emprendedor que ya eligió un tema amplio (por ejemplo: “bicicletas de montaña”, “mamás primerizas”, “estudiantes universitarios de ingeniería”, “freelancers creativos”).
+Te dará:
+1) Textos copiados de comunidades online (comentarios, hilos, publicaciones).
+2) Resúmenes o capturas de pantalla transcritas de posts, reseñas o discusiones.
+3) (Opcional) Una idea muy general de negocio que tiene en mente, para que la tomes como referencia.
+
+F – Formato de salida:
+1) Dolores y deseos recurrentes:
+   - Lista de los 10–15 dolores/deseos más repetidos, agrupados por tema.
+2) Segmentos de personas:
+   - Descripciones de 3–5 tipos de personas (perfiles) que aparecen en esas conversaciones (edad aproximada, situación, contexto).
+3) Propuestas de nichos:
+   - 5–8 nichos de mercado concretos combinando “tipo de persona + problema específico + contexto”.
+4) Ideas de solución:
+   - 1–2 ideas de producto/servicio para cada nicho identificado (máx. 2–3 líneas).
+5) Recomendaciones de validación:
+   - 5 acciones para que el estudiante valide esos nichos (más entrevistas, encuestas, pruebas piloto, etc.).
+
+Antes de analizar, pide al usuario que te indique:
+- Tema o comunidad general de interés.
+- País/idioma objetivo.
+- Fragmentos de conversaciones o resúmenes de posts que haya recopilado.`
+      },
+      {
+        id: "agent-3",
+        categoryKey: "agents",
+        categoryLabel: "Agentes de investigación de mercados",
+        title: "Agente analista de reseñas y opiniones de clientes",
+        docs:
+          "Conjunto de reseñas y opiniones de clientes copiadas desde plataformas (Amazon, Google, apps, TripAdvisor, etc.) sobre productos o servicios similares.",
+        use:
+          "Encontrar patrones en lo que los clientes aman y odian para diseñar productos mejor ajustados o nichos específicos.",
+        text: `PER – Perfil de persona experta:
+Eres un analista de experiencia de cliente con experiencia en análisis de reseñas y comentarios en plataformas como Amazon, Google, App Store, TripAdvisor, etc. Eres capaz de agrupar opiniones dispersas en patrones claros de “qué funciona” y “qué no funciona”.
+
+T – Tarea específica:
+Analizar reseñas y opiniones de clientes sobre uno o varios productos/servicios existentes y:
+1) Detectar patrones de satisfacción e insatisfacción.
+2) Identificar oportunidades para mejorar el producto actual.
+3) Proponer ideas de nuevos productos/servicios o nichos que resuelvan mejor esos dolores.
+
+CO – Contexto:
+El usuario es un estudiante/emprendedor que quiere entrar a un mercado donde ya existen productos/servicios similares (por ejemplo: apps para aprender idiomas, cursos de robótica, cafeterías de especialidad, etc.).
+Te proporcionará:
+1) Un documento con reseñas copiadas y pegadas (positivas y negativas) de productos competidores.
+2) Información básica del tipo de producto/servicio que quiere ofrecer.
+3) (Opcional) Sus ideas iniciales de diferenciación.
+
+F – Formato de salida:
+1) Mapa de temas:
+   - Agrupa las reseñas en 5–10 temas (precio, calidad, atención, tiempos, usabilidad, etc.).
+2) Lo que más valoran:
+   - Lista de las 5–7 cosas que los clientes aman y que NO debería perder un nuevo competidor.
+3) Lo que más les duele:
+   - Lista de las 5–7 principales quejas y frustraciones.
+4) Oportunidades de nicho:
+   - 5–8 propuestas de nicho o mejora donde un nuevo producto podría diferenciarse.
+5) Recomendaciones para el MVP:
+   - 5–10 características mínimas que debería tener un producto mínimo viable (MVP) para atacar esos dolores clave.
+
+Antes de empezar, pide al usuario:
+- Que indique el tipo de producto/servicio.
+- Que copie y pegue al menos 30–50 reseñas variadas (si es posible).`
+      },
+      {
+        id: "agent-4",
+        categoryKey: "agents",
+        categoryLabel: "Agentes de investigación de mercados",
+        title: "Agente cartógrafo de competencia y espacios vacíos",
+        docs:
+          "Lista de competidores con nombre, web/redes, propuesta de valor, tipo de cliente y precios aproximados para una categoría de negocio en una ciudad/país.",
+        use:
+          "Mapear la competencia y encontrar huecos poco atendidos donde un nuevo emprendimiento pueda posicionarse.",
+        text: `PER – Perfil de persona experta:
+Eres un consultor en estrategia y competencia de mercado, con experiencia mapeando actores en un sector y encontrando “huecos” o espacios poco atendidos. Sabes organizar información dispersa en mapas claros de posicionamiento.
+
+T – Tarea específica:
+Construir un MAPA DE COMPETENCIA para un tipo de negocio en una ciudad/país determinado, usando la información que te suministre el usuario, e identificar espacios vacíos o desatendidos donde podría entrar un nuevo emprendimiento.
+
+CO – Contexto:
+El usuario es un estudiante/emprendedor que ya tiene una idea de categoría (por ejemplo: “academias de inglés”, “cafeterías de especialidad”, “clases de robótica para niños”, “software contable para pymes”).
+Te proporcionará:
+1) Una lista de competidores con nombre, web/redes y breve descripción.
+2) Notas sobre precios aproximados, público objetivo y propuesta de valor de cada competidor (si las tiene).
+3) La ciudad/país donde quiere emprender.
+
+F – Formato de salida:
+1) Tabla de competidores:
+   - Columnas sugeridas: Nombre, Tipo de cliente, Propuesta de valor, Rango de precios, Canal principal (físico/online/mixto).
+2) Mapa de posicionamiento (descripción textual):
+   - Cómo se ubican los competidores, por ejemplo: “precio alto vs. bajo”, “masivo vs. especializado”.
+3) Espacios vacíos:
+   - Lista de 5–10 espacios poco atendidos (combinaciones de cliente + problema + canal) donde hay pocos o ningún competidor fuerte.
+4) Oportunidades de entrada:
+   - 3–5 propuestas de posicionamiento para un nuevo emprendimiento que aproveche esos huecos.
+5) Preguntas para trabajo de campo:
+   - 5–8 preguntas que el estudiante debería hacer en entrevistas con clientes potenciales para validar que esos “huecos” son reales.
+
+Antes de empezar, pide al usuario:
+- Categoría de negocio.
+- Ciudad/país.
+- Lista de competidores que ya conoce (aunque sea incompleta), con los datos que tenga.`
+      },
+      {
+        id: "agent-5",
+        categoryKey: "agents",
+        categoryLabel: "Agentes de investigación de mercados",
+        title: "Agente validador de idea y diseñador de experimento de mercado",
+        docs:
+          "Descripción de la idea de negocio, datos de mercado básicos (reseñas, conversaciones, tendencias) y canales disponibles para experimentar (redes, email, etc.).",
+        use:
+          "Aclarar la propuesta de valor, definir nicho y diseñar experimentos simples para validar la idea de mercado.",
+        text: `PER – Perfil de persona experta:
+Eres un mentor de emprendimiento especializado en validación temprana de ideas (lean startup). Sabes diseñar experimentos simples y baratos para comprobar si un nicho y una propuesta de valor tienen interés real antes de invertir mucho tiempo o dinero.
+
+T – Tarea específica:
+Tomar una IDEA DE NEGOCIO específica y, usando la información de mercado que proporcione el usuario (datos, reseñas, conversaciones, etc.), ayudarle a:
+1) Aclarar su propuesta de valor.
+2) Definir el nicho objetivo.
+3) Diseñar uno o dos experimentos de validación (encuesta, landing page, prueba piloto, etc.) con pasos concretos.
+
+CO – Contexto:
+El usuario es un estudiante/emprendedor que:
+1) Te compartirá un documento donde describe su idea de negocio actual (aunque esté desordenada).
+2) Te dará datos de mercado básicos que ya tenga (reseñas, tendencias, conversaciones con personas, etc.).
+3) Tiene recursos muy limitados para validar (poco dinero, poco tiempo, quizá solo redes sociales y Google Forms).
+
+F – Formato de salida:
+1) Clarificación de la idea:
+   - Reformula la idea en 2–3 frases claras: “Producto/servicio X para cliente Y que tiene problema Z”.
+2) Definición de nicho:
+   - Descripción del nicho objetivo (quién es, qué hace, dónde está, qué problema tiene).
+3) Hipótesis clave:
+   - 3–5 hipótesis que se deben validar (ej. “los padres están dispuestos a pagar X”, “las pymes quieren automatizar Y”, etc.).
+4) Diseños de experimento:
+   - 2 propuestas de experimento de validación, con:
+     - Objetivo del experimento.
+     - Canal (ej. Instagram, WhatsApp, Google Forms, landing page).
+     - Pasos detallados.
+     - Qué métricas observar (clics, respuestas, reservas, etc.).
+5) Criterios de decisión:
+   - Sugerencias de umbrales mínimos (ej. “si al menos el X % muestra interés, vale la pena seguir; si no, hay que ajustar”).
+
+Antes de empezar, pide al usuario:
+- Que te describa su idea de negocio.
+- Que te diga en qué plazo quiere validar (2 semanas, 1 mes, etc.).
+- Qué canales tiene disponibles (redes, email, anuncios, etc.).`
+      }
+    ];
+
+    // ==== LÓGICA DE INTERFAZ ====
+
+    const categoryListEl = document.getElementById("categoryList");
+    const promptsContainerEl = document.getElementById("promptsContainer");
+    const searchInputEl = document.getElementById("searchInput");
+    const resultsInfoEl = document.getElementById("resultsInfo");
+
+    // Definir orden específico de categorías
+    const categoryOrder = ["agents", "business", "legal"];
+    
+    // Obtener categorías únicas con sus labels
+    const categoryMap = prompts.reduce((map, p) => {
+      if (!map.has(p.categoryKey)) {
+        map.set(p.categoryKey, p.categoryLabel);
+      }
+      return map;
+    }, new Map());
+    
+    // Ordenar categorías según el orden especificado
+    const categories = categoryOrder
+      .filter(key => categoryMap.has(key))
+      .map(key => ({ key, label: categoryMap.get(key) }));
+
+    let activeCategory = "all";
+    let currentSearch = "";
+    const promptValues = {}; // Almacenar valores editados de los prompts
+
+    function renderCategories() {
+      const allItem = document.createElement("li");
+      allItem.className = "category-item";
+      const allBtn = document.createElement("button");
+      allBtn.className = "category-button active";
+      allBtn.dataset.category = "all";
+      allBtn.innerHTML = `Todas las categorías <span class="badge">${prompts.length}</span>`;
+      allBtn.addEventListener("click", () => handleCategoryClick("all"));
+      allItem.appendChild(allBtn);
+      categoryListEl.appendChild(allItem);
+
+      categories.forEach((cat) => {
+        const count = prompts.filter((p) => p.categoryKey === cat.key).length;
+        const li = document.createElement("li");
+        li.className = "category-item";
+        const btn = document.createElement("button");
+        btn.className = "category-button";
+        btn.dataset.category = cat.key;
+        btn.innerHTML = `${cat.label} <span class="badge">${count}</span>`;
+        btn.addEventListener("click", () => handleCategoryClick(cat.key));
+        li.appendChild(btn);
+        categoryListEl.appendChild(li);
+      });
+    }
+
+    function handleCategoryClick(categoryKey) {
+      activeCategory = categoryKey;
+      updateCategoryButtons();
+      renderPrompts();
+    }
+
+    function updateCategoryButtons() {
+      const buttons = categoryListEl.querySelectorAll(".category-button");
+      buttons.forEach((btn) => {
+        if (btn.dataset.category === activeCategory) {
+          btn.classList.add("active");
+        } else {
+          btn.classList.remove("active");
+        }
+      });
+    }
+
+    function renderPrompts() {
+      const filtered = prompts.filter((p) => {
+        const matchCategory =
+          activeCategory === "all" || p.categoryKey === activeCategory;
+
+        const term = currentSearch.trim().toLowerCase();
+        const matchSearch =
+          term === "" ||
+          p.title.toLowerCase().includes(term) ||
+          p.text.toLowerCase().includes(term) ||
+          p.docs.toLowerCase().includes(term) ||
+          p.use.toLowerCase().includes(term);
+
+        return matchCategory && matchSearch;
+      });
+
+      promptsContainerEl.innerHTML = "";
+
+      if (filtered.length === 0) {
+        const msg = document.createElement("p");
+        msg.textContent =
+          "No se encontraron prompts con los filtros actuales.";
+        msg.style.color = "#6b7280";
+        msg.style.fontSize = "0.9rem";
+        promptsContainerEl.appendChild(msg);
+      } else {
+        filtered.forEach((p) => {
+          const card = document.createElement("article");
+          card.className = "prompt-card";
+
+          const header = document.createElement("div");
+          header.className = "prompt-header";
+
+          const titleEl = document.createElement("h3");
+          titleEl.className = "prompt-title";
+          titleEl.textContent = p.title;
+
+          const catPill = document.createElement("span");
+          catPill.className = "prompt-category-pill";
+          catPill.textContent = p.categoryLabel;
+
+          header.appendChild(titleEl);
+          header.appendChild(catPill);
+
+          const meta = document.createElement("div");
+          meta.className = "prompt-meta";
+          meta.innerHTML = `
+            <p><strong>Documentos a cargar:</strong> ${p.docs}</p>
+            <p><strong>¿Para qué sirve?</strong> ${p.use}</p>
+          `;
+
+          const textarea = document.createElement("textarea");
+          textarea.className = "prompt-textarea";
+          textarea.id = `prompt-${p.id}`;
+          // Usar valor editado si existe, sino el valor original
+          textarea.value = promptValues[p.id] !== undefined ? promptValues[p.id] : p.text;
+          textarea.readOnly = false;
+          
+          // Guardar cambios cuando el usuario edita
+          textarea.addEventListener("input", (e) => {
+            promptValues[p.id] = e.target.value;
+          });
+
+          const footer = document.createElement("div");
+          footer.className = "prompt-footer";
+
+          const copyBtn = document.createElement("button");
+          copyBtn.className = "copy-button";
+          copyBtn.type = "button";
+          copyBtn.innerHTML = "📋 Copiar prompt";
+          copyBtn.addEventListener("click", () =>
+            copyPrompt(textarea.id, copyBtn)
+          );
+
+          footer.appendChild(copyBtn);
+
+          card.appendChild(header);
+          card.appendChild(meta);
+          card.appendChild(textarea);
+          card.appendChild(footer);
+
+          promptsContainerEl.appendChild(card);
+        });
+      }
+
+      resultsInfoEl.textContent = `${filtered.length} prompt(s) mostrados`;
+    }
+
+    function copyPrompt(textareaId, buttonEl) {
+      const ta = document.getElementById(textareaId);
+      if (!ta) return;
+
+      const text = ta.value;
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard
+          .writeText(text)
+          .then(() => showCopiedState(buttonEl))
+          .catch(() => fallbackCopy(ta, buttonEl));
+      } else {
+        fallbackCopy(ta, buttonEl);
+      }
+    }
+
+    function fallbackCopy(textarea, buttonEl) {
+      try {
+        textarea.focus();
+        textarea.select();
+        const length = textarea.value.length;
+        textarea.setSelectionRange(0, length);
+        const successful = document.execCommand("copy");
+        if (successful) {
+          showCopiedState(buttonEl);
+        } else {
+          throw new Error("execCommand failed");
+        }
+      } catch (e) {
+        alert(
+          "No se pudo copiar el texto automáticamente. Selecciónalo y copia manualmente (Ctrl+C o Cmd+C)."
+        );
+      }
+    }
+
+    function showCopiedState(buttonEl) {
+      if (!buttonEl) return;
+      const originalText = buttonEl.innerHTML;
+      buttonEl.innerHTML = "✅ Copiado";
+      setTimeout(() => {
+        buttonEl.innerHTML = originalText;
+      }, 1500);
+    }
+
+    searchInputEl.addEventListener("input", (e) => {
+      currentSearch = e.target.value;
+      renderPrompts();
+    });
+
+    renderCategories();
+    renderPrompts();
+  </script>
+</body>
+</html>

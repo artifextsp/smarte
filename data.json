@@ -78,5 +78,86 @@
         ]
       }
     ]
+  },
+  {
+    "id": "mi9kkivcclns7hladl",
+    "name": "MULTIMEDIA",
+    "icon": null,
+    "description": "Uso de inteligencia artificial para el procesamiento básico de imágenes, audio y video.",
+    "order": 2,
+    "chapters": [
+      {
+        "id": "mi9knxpbvmjnygwhuz",
+        "name": "POWERPROMPTS",
+        "description": "Prompts de uso recurrente en los campos legales, emprendimiento e investigación.",
+        "order": 1,
+        "resources": [
+          {
+            "id": "mi9nn64hm68rfz6lm1",
+            "title": "BIBLIOTECA DE SUPERPROMPTS",
+            "url": "SUPERPROMPTS.html",
+            "type": "platform",
+            "description": "Biblioteca de superprompts con aplicación a emprendimiento",
+            "order": 1
+          },
+          {
+            "id": "mi9psf6ceazdlj2yn4",
+            "title": "CALCULADORA FINANCIERA",
+            "url": "CALCULADORA_FINANCIERA.html",
+            "type": "link",
+            "description": "Educación financiera de indicadores de inversión",
+            "order": 2
+          }
+        ]
+      },
+      {
+        "id": "mi9no0h0tjz8l2b385e",
+        "name": "NOTEBOOK LM",
+        "description": "Repositorio inteligente de información",
+        "order": 2,
+        "resources": [
+          {
+            "id": "mi9pniqo7zwyy4mw8yk",
+            "title": "NOTEBOOK LM",
+            "url": "https://notebooklm.google.com",
+            "type": "link",
+            "description": "Cuaderno inteligente",
+            "order": 1
+          }
+        ]
+      },
+      {
+        "id": "mi9poqdzjvaznve9wt8",
+        "name": "NAPKIN",
+        "description": "Síntesis de información",
+        "order": 3,
+        "resources": [
+          {
+            "id": "mi9ppy2w1jjp576ynb8",
+            "title": "NAPKIN",
+            "url": "https://app.napkin.ai",
+            "type": "link",
+            "description": "Síntesis de información",
+            "order": 1
+          }
+        ]
+      },
+      {
+        "id": "mi9pqout9qjqcw4w23",
+        "name": "IMÁGENES",
+        "description": "Manejo de imágenes con IA",
+        "order": 4,
+        "resources": [
+          {
+            "id": "mi9pufh9c9t5aruifus",
+            "title": "IMAGE LABORATORY",
+            "url": "lab.html",
+            "type": "platform",
+            "description": "Generador de prompts para aplicar a la generación de imágenes con IA",
+            "order": 1
+          }
+        ]
+      }
+    ]
   }
 ]

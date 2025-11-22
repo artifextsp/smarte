@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Indicadores Financieros</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .tabs {
+            display: flex;
+            overflow-x: auto;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .tabs::-webkit-scrollbar {
+            height: 3px;
+        }
+
+        .tabs::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 10px;
+        }
+
+        .tab {
+            padding: 15px 20px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+            font-size: 14px;
+            font-weight: 500;
+            color: #6c757d;
+        }
+
+        .tab:hover {
+            background: #e9ecef;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            background: white;
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        .indicator-section {
+            display: none;
+        }
+
+        .indicator-section.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .info-box h3 {
+            color: #1976D2;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .info-box p {
+            color: #555;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+
+        .example-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .example-box h4 {
+            color: #856404;
+            font-size: 15px;
+            margin-bottom: 10px;
+        }
+
+        .example-box p {
+            color: #856404;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .form-group small {
+            display: block;
+            color: #6c757d;
+            margin-top: 5px;
+            font-size: 12px;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .result-box {
+            margin-top: 20px;
+            padding: 20px;
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .result-box.show {
+            display: block;
+            animation: slideDown 0.3s;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-box h3 {
+            color: #155724;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        .result-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #155724;
+            margin-bottom: 10px;
+        }
+
+        .interpretation {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
+
+        .interpretation h4 {
+            color: #333;
+            font-size: 15px;
+            margin-bottom: 10px;
+        }
+
+        .interpretation p {
+            color: #555;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .positive {
+            color: #28a745 !important;
+        }
+
+        .negative {
+            color: #dc3545 !important;
+        }
+
+        .warning {
+            color: #ffc107 !important;
+        }
+
+        .multi-period {
+            margin-bottom: 15px;
+        }
+
+        .period-inputs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .period-inputs input {
+            flex: 1;
+        }
+
+        .add-period-btn {
+            padding: 8px 15px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .period-item {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .remove-period-btn {
+            padding: 8px 15px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 20px;
+            }
+            
+            .tab {
+                padding: 12px 15px;
+                font-size: 13px;
+            }
+            
+            .content {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💼 Calculadora Financiera</h1>
+            <p>Analiza la viabilidad de tu emprendimiento</p>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="showIndicator('roi')">ROI</div>
+            <div class="tab" onclick="showIndicator('tir')">TIR</div>
+            <div class="tab" onclick="showIndicator('vpn')">VPN</div>
+            <div class="tab" onclick="showIndicator('payback')">Payback</div>
+            <div class="tab" onclick="showIndicator('ir')">Índice R.</div>
+            <div class="tab" onclick="showIndicator('equilibrio')">Equilibrio</div>
+            <div class="tab" onclick="showIndicator('margenes')">Márgenes</div>
+            <div class="tab" onclick="showIndicator('cac')">CAC</div>
+            <div class="tab" onclick="showIndicator('ltv')">LTV</div>
+        </div>
+
+        <div class="content">
+            <!-- ROI -->
+            <div id="roi" class="indicator-section active">
+                <div class="info-box">
+                    <h3>📊 ROI - Retorno sobre Inversión</h3>
+                    <p><strong>¿Qué mide?</strong> Por cada peso que invertiste, cuánto ganaste (o perdiste).</p>
+                    <p><strong>Interpretación:</strong> Si inviertes $10,000 y ganas $3,000 netos, tu ROI es 30%. Significa que por cada $1 invertido recuperaste $0.30 de ganancia.</p>
+                </div>
+
+                <div class="example-box">
+                    <h4>💡 Ejemplo Práctico</h4>
+                    <p>Inviertes $50,000 en un curso online. Después de un año vendes y ganas $80,000 (ya descontados todos los costos). Tu ganancia neta es $30,000. ROI = (30,000/50,000) × 100 = <strong>60%</strong></p>
+                </div>
+
+                <div class="form-group">
+                    <label>Inversión Inicial ($)</label>
+                    <input type="number" id="roi-inversion" placeholder="Ej: 50000">
+                    <small>¿Cuánto dinero pusiste al inicio? (equipos, inventario, software, etc.)</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Ganancia Neta ($)</label>
+                    <input type="number" id="roi-ganancia" placeholder="Ej: 30000">
+                    <small>Total ganado MENOS todos los costos y gastos</small>
+                </div>
+
+                <button class="btn" onclick="calcularROI()">Calcular ROI</button>
+                <button class="btn btn-secondary" onclick="cargarEjemploROI()">Cargar Ejemplo</button>
+
+                <div id="roi-result" class="result-box">
+                    <h3>Resultado:</h3>
+                    <div class="result-value" id="roi-value"></div>
+                    <div class="interpretation" id="roi-interpretation"></div>
+                </div>
+            </div>
+
+            <!-- TIR -->
+            <div id="tir" class="indicator-section">
+                <div class="info-box">
+                    <h3>📈 TIR - Tasa Interna de Retorno</h3>
+                    <p><strong>¿Qué mide?</strong> La rentabilidad anual de tu proyecto considerando todos los flujos de caja.</p>
+                    <p><strong>Interpretación:</strong> Si tu TIR es 25% y tu costo de oportunidad (banco, otro negocio) es 10%, el proyecto es atractivo.</p>
+                </div>
+
+                <div class="example-box">
+                    <h4>💡 Ejemplo Práctico</h4>
+                    <p>Inviertes $100,000 hoy. En año 1 ganas $30,000, año 2: $40,000, año 3: $50,000. La TIR te dice qué tasa de interés anual equivale a esos flujos. Si es 22%, significa que tu proyecto rinde como si tuvieras un 22% anual.</p>
+                </div>
+
+                <div class="form-group">
+                    <label>Inversión Inicial ($)</label>
+                    <input type="number" id="tir-inversion" placeholder="Ej: 100000">
+                    <small>Inversión al inicio (número negativo en los cálculos)</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Flujos de Caja Anuales</label>
+                    <small>Añade los flujos de efectivo que esperas recibir cada año</small>
+                </div>
+
+                <div id="tir-flujos-container"></div>
+                <button class="add-period-btn" onclick="agregarFlujoTIR()">+ Añadir Año</button>
+
+                <button class="btn" onclick="calcularTIR()">Calcular TIR</button>
+                <button class="btn btn-secondary" onclick="cargarEjemploTIR()">Cargar Ejemplo</button>
+
+                <div id="tir-result" class="result-box">
+                    <h3>Resultado:</h3>
+                    <div class="result-value" id="tir-value"></div>
+                    <div class="interpretation" id="tir-interpretation"></div>
+                </div>
+            </div>
+
+            <!-- VPN -->
+            <div id="vpn" class="indicator-section">
+                <div class="info-box">
+                    <h3>💰 VPN - Valor Presente Neto</h3>
+                    <p><strong>¿Qué mide?</strong> El valor HOY de todos los flujos futuros descontados por una tasa de interés.</p>
+                    <p><strong>Interpretación:</strong> VPN > 0 = el proyecto genera valor. VPN < 0 = destruye valor. VPN = 0 = ni ganas ni pierdes.</p>
+                </div>
+
+                <div class="example-box">
+                    <h4>💡 Ejemplo Práctico</h4>
+                    <p>Inviertes $80,000. Año 1: $35,000, Año 2: $40,000, Año 3: $30,000. Si tu tasa de descuento es 12% (lo que podrías ganar en otra inversión), el VPN trae esos flujos a hoy y resta la inversión. Si da $15,000, ganas $15k más que si hubieras puesto el dinero al 12%.</p>
+                </div>
+
+                <div class="form-group">
+                    <label>Inversión Inicial ($)</label>
+                    <input type="number" id="vpn-inversion" placeholder="Ej: 80000">
+                </div>
+
+                <div class="form-group">
+                    <label>Tasa de Descuento (%)</label>
+                    <input type="number" id="vpn-tasa" placeholder="Ej: 12" step="0.1">
+                    <small>Tu costo de oportunidad (rendimiento de alternativas como bonos, plazo fijo, etc.)</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Flujos de Caja Anuales</label>
+                </div>
+
+                <div id="vpn-flujos-container"></div>
+                <button class="add-period-btn" onclick="agregarFlujoVPN()">+ Añadir Año</button>
+
+                <button class="btn" onclick="calcularVPN()">Calcular VPN</button>
+                <button class="btn btn-secondary" onclick="cargarEjemploVPN()">Cargar Ejemplo</button>
+
+                <div id="vpn-result" class="result-box">
+                    <h3>Resultado:</h3>
+                    <div class="result-value" id="vpn-value"></div>
+                    <div class="interpretation" id="vpn-interpretation"></div>
+                </div>
+            </div>
+
+            <!-- PAYBACK -->
+            <div id="payback" class="indicator-section">
+                <div class="info-box">
+                    <h3>⏱️ Payback - Período de Recuperación</h3>
+                    <p><strong>¿Qué mide?</strong> Cuánto tiempo tardas en recuperar tu inversión inicial.</p>
+                    <p><strong>Interpretación:</strong> Si tu payback es 2 años, significa que en 2 años recuperas lo invertido. Mientras más corto, mejor (menos riesgo).</p>
+                </div>
+
+                <div class="example-box">
+                    <h4>💡 Ejemplo Práctico</h4>
+                    <p>Inviertes $60,000 en una tienda. Año 1 ganas $25,000, Año 2: $30,000, Año 3: $20,000. Al sumar: en año 2 llevas $55,000, en año 3 llevas $75,000. Tu inversión de $60k se recupera durante el año 2.</p>
+                </div>
+
+                <div class="form-group">
+                    <label>Inversión Inicial ($)</label>
+                    <input type="number" id="payback-inversion" placeholder="Ej: 60000">
+                </div>
+
+                <div class="form-group">
+                    <label>Flujos de Caja Anuales</label>
+                </div>
+
+                <div id="payback-flujos-container"></div>
+                <button class="add-period-btn" onclick="agregarFlujoPayback()">+ Añadir Año</button>
+
+                <button class="btn" onclick="calcularPayback()">Calcular Payback</button>
+                <button class="btn btn-secondary" onclick="cargarEjemploPayback()">Cargar Ejemplo</button>
+
+                <div id="payback-result" class="result-box">
+                    <h3>Resultado:</h3>
+                    <div class="result-value" id="payback-value"></div>
+                    <div class="interpretation" id="payback-interpretation"></div>
+                </div>
+            </div>
+
+            <!-- ÍNDICE DE RENTABILIDAD -->
+            <div id="ir" class="indicator-section">
+                <div class="info-box">
+                    <h3>📊 Índice de Rentabilidad (IR)</h3>
+                    <p><strong>¿Qué mide?</strong> Por cada peso invertido, cuánto recibes en valor presente.</p>
+                    <p><strong>Interpretación:</strong> IR > 1 = proyecto rentable. IR = 1.5 significa que por cada $1 invertido, recibes $1.50 en valor presente.</p>
+                </div>
+
+                <div class="example-box">
+                    <h4>💡 Ejemplo Práctico</h4>
+                    <p>Inviertes $50,000. Los flujos futuros descontados suman $72,000. IR = 72,000/50,000 = 1.44. Por cada $1 invertido obtienes $1.44 de valor presente.</p>
+                </div>
+
+                <div class="form-group">
+                    <label>Inversión Inicial ($)</label>
+                    <input type="number" id="ir-inversion" placeholder="Ej: 50000">
+                </div>
+
+                <div class="form-group">
+                    <label>Tasa de Descuento (%)</label>
+                    <input type="number" id="ir-tasa" placeholder="Ej: 10" step="0.1">
+                </div>
+
+                <div class="form-group">
+                    <label>Flujos de Caja Anuales</label>
+                </div>
+
+                <div id="ir-flujos-container"></div>
+                <button class="add-period-btn" onclick="agregarFlujoIR()">+ Añadir Año</button>
+
+                <button class="btn" onclick="calcularIR()">Calcular Índice de Rentabilidad</button>
+                <button class="btn btn-secondary" onclick="cargarEjemploIR()">Cargar Ejemplo</button>
+
+                <div id="ir-result" class="result-box">
+                    <h3>Resultado:</h3>
+                    <div class="result-value" id="ir-value"></div>
+                    <div class="interpretation" id="ir-interpretation"></div>
+                </div>
+            </div>
+
+            <!-- PUNTO DE EQUILIBRIO -->
+            <div id="equilibrio" class="indicator-section">
+                <div class="info-box">
+                    <h3>⚖️ Punto de Equilibrio</h3>
+                    <p><strong>¿Qué mide?</strong> Cuántas unidades debes vender para NO perder ni ganar (utilidad = 0).</p>
+                    <p><strong>Interpretación:</strong> Si tu punto de equilibrio es 100 unidades, debes vender al menos 100 para cubrir todos tus costos. De 101 en adelante empiezas a ganar.</p>
+                </div>
+
+                <div class="example-box">
+                    <h4>💡 Ejemplo Práctico</h4>
+                    <p>Vendes hamburguesas a $50 c/u. Cada una te cuesta $20 en ingredientes (costo variable). Tus gastos fijos (renta, luz, salarios) son $6,000/mes. Equilibrio = 6,000/(50-20) = 200 hamburguesas/mes.</p>
+                </div>
+
+                <div class="form-group">
+                    <label>Costos Fijos Mensuales ($)</label>
+                    <input type="number" id="eq-fijos" placeholder="Ej: 6000">
+                    <small>Renta, salarios fijos, servicios, seguros (lo que pagas aunque no vendas nada)</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Precio de Venta Unitario ($)</label>
+                    <input type="number" id="eq-precio" placeholder="Ej: 50">
+                    <small>¿A cuánto vendes cada unidad/servicio?</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Costo Variable Unitario ($)</label>
+                    <input type="number" id="eq-cvariable" placeholder="Ej: 20">
+                    <small>Cuánto te cuesta producir/entregar una unidad (materiales, comisiones, etc.)</small>
+                </div>
+
+                <button class="btn" onclick="calcularEquilibrio()">Calcular Punto de Equilibrio</button>
+                <button class="btn btn-secondary" onclick="cargarEjemploEquilibrio()">Cargar Ejemplo</button>
+
+                <div id="equilibrio-result" class="result-box">
+                    <h3>Resultado:</h3>
+                    <div class="result-value" id="equilibrio-value"></div>
+                    <div class="interpretation" id="equilibrio-interpretation"></div>
+                </div>
+            </div>
+
+            <!-- MÁRGENES -->
+            <div id="margenes" class="indicator-section">
+                <div class="info-box">
+                    <h3>📈 Márgenes de Rentabilidad</h3>
+                    <p><strong>Margen Bruto:</strong> (Ventas - Costos Directos) / Ventas. Qué porcentaje queda después de pagar lo que cuesta producir.</p>
+                    <p><strong>Margen Operativo:</strong> Utilidad Operativa / Ventas. Qué porcentaje queda después de todos los gastos operativos.</p>
+                </div>
+
+                <div class="example-box">
+                    <h4>💡 Ejemplo Práctico</h4>
+                    <p>Vendes $100,000. Costos directos: $40,000. Gastos operativos: $35,000. Margen Bruto = (100k-40k)/100k = 60%. Margen Operativo = (100k-40k-35k)/100k = 25%.</p>
+                </div>
+
+                <div class="form-group">
+                    <label>Ventas Totales ($)</label>
+                    <input type="number" id="marg-ventas" placeholder="Ej: 100000">
+                </div>
+
+                <div class="form-group">
+                    <label>Costos Directos ($)</label>
+                    <input type="number" id="marg-directos" placeholder="Ej: 40000">
+                    <small>Materiales, mano de obra directa, costos de producción</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Gastos Operativos ($)</label>
+                    <input type="number" id="marg-operativos" placeholder="Ej: 35000">
+                    <small>Renta, salarios administrativos, marketing, servicios</small>
+                </div>
+
+                <button class="btn" onclick="calcularMargenes()">Calcular Márgenes</button>
+                <button class="btn btn-secondary" onclick="cargarEjemploMargenes()">Cargar Ejemplo</button>
+
+                <div id="margenes-result" class="result-box">
+                    <h3>Resultados:</h3>
+                    <div class="interpretation" id="margenes-interpretation"></div>
+                </div>
+            </div>
+
+            <!-- CAC -->
+            <div id="cac" class="indicator-section">
+                <div class="info-box">
+                    <h3>💸 CAC - Costo de Adquisición de Cliente</h3>
+                    <p><strong>¿Qué mide?</strong> Cuánto te cuesta en promedio conseguir un nuevo cliente.</p>
+                    <p><strong>Interpretación:</strong> Si gastas $10,000 en marketing y consigues 50 clientes, tu CAC es $200 por cliente. Esto debe ser menor al valor que genera cada cliente.</p>
+                </div>
+
+                <div class="example-box">
+                    <h4>💡 Ejemplo Práctico</h4>
+                    <p>Gastas $15,000 en publicidad Facebook + $5,000 en un vendedor. Total: $20,000. Consigues 100 nuevos clientes. CAC = 20,000/100 = $200 por cliente.</p>
+                </div>
+
+                <div class="form-group">
+                    <label>Gastos Totales en Marketing y Ventas ($)</label>
+                    <input type="number" id="cac-gastos" placeholder="Ej: 20000">
+                    <small>Publicidad, salarios de vendedores, herramientas de marketing, eventos</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Número de Nuevos Clientes Adquiridos</label>
+                    <input type="number" id="cac-clientes" placeholder="Ej: 100">
+                    <small>Clientes que conseguiste en ese período</small>
+                </div>
+
+                <button class="btn" onclick="calcularCAC()">Calcular CAC</button>
+                <button class="btn btn-secondary" onclick="cargarEjemploCAC()">Cargar Ejemplo</button>
+
+                <div id="cac-result" class="result-box">
+                    <h3>Resultado:</h3>
+                    <div class="result-value" id="cac-value"></div>
+                    <div class="interpretation" id="cac-interpretation"></div>
+                </div>
+            </div>
+
+            <!-- LTV -->
+            <div id="ltv" class="indicator-section">
+                <div class="info-box">
+                    <h3>💎 LTV - Lifetime Value</h3>
+                    <p><strong>¿Qué mide?</strong> Cuánto dinero te genera un cliente durante toda su relación contigo.</p>
+                    <p><strong>Interpretación:</strong> Si un cliente compra en promedio $500/año durante 3 años, su LTV es $1,500. Idealmente LTV debe ser 3x mayor que CAC.</p>
+                </div>
+
+                <div class="example-box">
+                    <h4>💡 Ejemplo Práctico</h4>
+                    <p>Tienes un servicio de suscripción. Cliente paga $200/mes, tu margen es 60% ($120), y en promedio se quedan 2 años (24 meses). LTV = 120 × 24 = $2,880.</p>
+                </div>
+
+                <div class="form-group">
+                    <label>Valor Promedio de Compra ($)</label>
+                    <input type="number" id="ltv-compra" placeholder="Ej: 200">
+                    <small>¿Cuánto gasta el cliente en promedio cada vez?</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Frecuencia de Compra (veces por año)</label>
+                    <input type="number" id="ltv-frecuencia" placeholder="Ej: 12">
+                    <small>¿Cuántas veces compra al año? (12 = mensual)</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Margen de Ganancia (%)</label>
+                    <input type="number" id="ltv-margen" placeholder="Ej: 60">
+                    <small>Qué porcentaje de cada venta es ganancia neta</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Vida Útil del Cliente (años)</label>
+                    <input type="number" id="ltv-vida" placeholder="Ej: 2" step="0.1">
+                    <small>¿Cuánto tiempo en promedio te compra un cliente?</small>
+                </div>
+
+                <button class="btn" onclick="calcularLTV()">Calcular LTV</button>
+                <button class="btn btn-secondary" onclick="cargarEjemploLTV()">Cargar Ejemplo</button>
+
+                <div id="ltv-result" class="result-box">
+                    <h3>Resultado:</h3>
+                    <div class="result-value" id="ltv-value"></div>
+                    <div class="interpretation" id="ltv-interpretation"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales para flujos
+        let flujosTIR = [];
+        let flujosVPN = [];
+        let flujosPayback = [];
+        let flujosIR = [];
+
+        function showIndicator(id) {
+            // Ocultar todas las secciones
+            document.querySelectorAll('.indicator-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Ocultar todos los resultados
+            document.querySelectorAll('.result-box').forEach(box => {
+                box.classList.remove('show');
+            });
+            
+            // Quitar active de todos los tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Mostrar sección seleccionada
+            document.getElementById(id).classList.add('active');
+            
+            // Activar tab seleccionado
+            event.target.classList.add('active');
+        }
+
+        // ============== ROI ==============
+        function calcularROI() {
+            const inversion = parseFloat(document.getElementById('roi-inversion').value);
+            const ganancia = parseFloat(document.getElementById('roi-ganancia').value);
+            
+            if (!inversion || !ganancia) {
+                alert('Por favor completa todos los campos');
+                return;
+            }
+            
+            const roi = (ganancia / inversion) * 100;
+            
+            document.getElementById('roi-value').textContent = roi.toFixed(2) + '%';
+            
+            let interpretacion = '<h4>¿Qué significa este resultado?</h4>';
+            
+            if (roi > 0) {
+                interpretacion += `<p class="positive">✅ <strong>Resultado Positivo:</strong> Por cada $1 que invertiste, ganaste $${(ganancia/inversion).toFixed(2)}. `;
+                
+                if (roi > 50) {
+                    interpretacion += 'Excelente retorno sobre inversión.</p>';
+                } else if (roi > 20) {
+                    interpretacion += 'Buen retorno sobre inversión.</p>';
+                } else {
+                    interpretacion += 'Retorno modesto, evalúa si es suficiente para ti.</p>';
+                }
+            } else {
+                interpretacion += `<p class="negative">❌ <strong>Resultado Negativo:</strong> Estás perdiendo dinero. Por cada $1 invertido, pierdes $${Math.abs(ganancia/inversion).toFixed(2)}.</p>`;
+            }
+            
+            interpretacion += `<p><strong>Decisión sugerida:</strong> ${roi > 15 ? 'El proyecto parece rentable. Considera continuar o escalar.' : 'Analiza si puedes mejorar la rentabilidad o considera otras opciones de inversión.'}</p>`;
+            
+            document.getElementById('roi-interpretation').innerHTML = interpretacion;
+            document.getElementById('roi-result').classList.add('show');
+        }
+
+        function cargarEjemploROI() {
+            document.getElementById('roi-inversion').value = '50000';
+            document.getElementById('roi-ganancia').value = '30000';
+        }
+
+        // ============== TIR ==============
+        function agregarFlujoTIR() {
+            const anio = flujosTIR.length + 1;
+            flujosTIR.push(0);
+            renderFlujosTIR();
+        }
+
+        function renderFlujosTIR() {
+            const container = document.getElementById('tir-flujos-container');
+            container.innerHTML = '';
+            
+            flujosTIR.forEach((flujo, index) => {
+                const div = document.createElement('div');
+                div.className = 'period-item';
+                div.innerHTML = `
+                    <input type="number" placeholder="Año ${index + 1}" value="${flujo}" onchange="flujosTIR[${index}] = parseFloat(this.value)" style="flex: 1;">
+                    <button class="remove-period-btn" onclick="eliminarFlujoTIR(${index})">Eliminar</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function eliminarFlujoTIR(index) {
+            flujosTIR.splice(index, 1);
+            renderFlujosTIR();
+        }
+
+        function calcularTIR() {
+            const inversion = parseFloat(document.getElementById('tir-inversion').value);
+            
+            if (!inversion || flujosTIR.length === 0) {
+                alert('Por favor completa la inversión y agrega al menos un flujo');
+                return;
+            }
+            
+            const flujos = [-inversion, ...flujosTIR];
+            const tir = calcularTIRNewtonRaphson(flujos);
+            
+            document.getElementById('tir-value').textContent = (tir * 100).toFixed(2) + '%';
+            
+            let interpretacion = '<h4>¿Qué significa este resultado?</h4>';
+            interpretacion += `<p>Tu proyecto rinde aproximadamente <strong>${(tir * 100).toFixed(2)}%</strong> anual.</p>`;
+            
+            if (tir > 0.15) {
+                interpretacion += '<p class="positive">✅ <strong>Excelente:</strong> Es una tasa de retorno muy atractiva. Si tu costo de oportunidad (otras inversiones) es menor, adelante.</p>';
+            } else if (tir > 0.10) {
+                interpretacion += '<p class="positive">✅ <strong>Bueno:</strong> Rentabilidad aceptable. Compara con otras opciones disponibles.</p>';
+            } else if (tir > 0) {
+                interpretacion += '<p class="warning">⚠️ <strong>Modesto:</strong> Rentabilidad baja. Evalúa si vale la pena vs otras alternativas.</p>';
+            } else {
+                interpretacion += '<p class="negative">❌ <strong>Negativo:</strong> El proyecto destruye valor. No es recomendable.</p>';
+            }
+            
+            document.getElementById('tir-interpretation').innerHTML = interpretacion;
+            document.getElementById('tir-result').classList.add('show');
+        }
+
+        function calcularTIRNewtonRaphson(flujos) {
+            let tasa = 0.1;
+            const maxIteraciones = 100;
+            const tolerancia = 0.00001;
+            
+            for (let i = 0; i < maxIteraciones; i++) {
+                let vpn = 0;
+                let derivada = 0;
+                
+                for (let j = 0; j < flujos.length; j++) {
+                    vpn += flujos[j] / Math.pow(1 + tasa, j);
+                    if (j > 0) {
+                        derivada -= j * flujos[j] / Math.pow(1 + tasa, j + 1);
+                    }
+                }
+                
+                if (Math.abs(vpn) < tolerancia) {
+                    return tasa;
+                }
+                
+                tasa = tasa - vpn / derivada;
+            }
+            
+            return tasa;
+        }
+
+        function cargarEjemploTIR() {
+            document.getElementById('tir-inversion').value = '100000';
+            flujosTIR = [30000, 40000, 50000];
+            renderFlujosTIR();
+        }
+
+        // ============== VPN ==============
+        function agregarFlujoVPN() {
+            flujosVPN.push(0);
+            renderFlujosVPN();
+        }
+
+        function renderFlujosVPN() {
+            const container = document.getElementById('vpn-flujos-container');
+            container.innerHTML = '';
+            
+            flujosVPN.forEach((flujo, index) => {
+                const div = document.createElement('div');
+                div.className = 'period-item';
+                div.innerHTML = `
+                    <input type="number" placeholder="Año ${index + 1}" value="${flujo}" onchange="flujosVPN[${index}] = parseFloat(this.value)" style="flex: 1;">
+                    <button class="remove-period-btn" onclick="eliminarFlujoVPN(${index})">Eliminar</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function eliminarFlujoVPN(index) {
+            flujosVPN.splice(index, 1);
+            renderFlujosVPN();
+        }
+
+        function calcularVPN() {
+            const inversion = parseFloat(document.getElementById('vpn-inversion').value);
+            const tasa = parseFloat(document.getElementById('vpn-tasa').value) / 100;
+            
+            if (!inversion || !tasa || flujosVPN.length === 0) {
+                alert('Por favor completa todos los campos');
+                return;
+            }
+            
+            let vpn = -inversion;
+            flujosVPN.forEach((flujo, index) => {
+                vpn += flujo / Math.pow(1 + tasa, index + 1);
+            });
+            
+            document.getElementById('vpn-value').textContent = '$' + vpn.toFixed(2);
+            
+            let interpretacion = '<h4>¿Qué significa este resultado?</h4>';
+            
+            if (vpn > 0) {
+                interpretacion += `<p class="positive">✅ <strong>VPN Positivo:</strong> Tu proyecto genera <strong>$${vpn.toFixed(2)}</strong> de valor adicional comparado con invertir al ${(tasa*100).toFixed(1)}% anual.</p>`;
+                interpretacion += '<p><strong>Decisión:</strong> El proyecto es financieramente atractivo. Acepta el proyecto.</p>';
+            } else if (vpn === 0) {
+                interpretacion += '<p class="warning">⚖️ <strong>VPN Cero:</strong> El proyecto rinde exactamente igual que tu tasa de descuento. Es indiferente.</p>';
+            } else {
+                interpretacion += `<p class="negative">❌ <strong>VPN Negativo:</strong> Tu proyecto destruye <strong>$${Math.abs(vpn).toFixed(2)}</strong> de valor. Estarías mejor invirtiendo al ${(tasa*100).toFixed(1)}%.</p>`;
+                interpretacion += '<p><strong>Decisión:</strong> Rechaza el proyecto o busca formas de mejorar los flujos.</p>';
+            }
+            
+            document.getElementById('vpn-interpretation').innerHTML = interpretacion;
+            document.getElementById('vpn-result').classList.add('show');
+        }
+
+        function cargarEjemploVPN() {
+            document.getElementById('vpn-inversion').value = '80000';
+            document.getElementById('vpn-tasa').value = '12';
+            flujosVPN = [35000, 40000, 30000];
+            renderFlujosVPN();
+        }
+
+        // ============== PAYBACK ==============
+        function agregarFlujoPayback() {
+            flujosPayback.push(0);
+            renderFlujosPayback();
+        }
+
+        function renderFlujosPayback() {
+            const container = document.getElementById('payback-flujos-container');
+            container.innerHTML = '';
+            
+            flujosPayback.forEach((flujo, index) => {
+                const div = document.createElement('div');
+                div.className = 'period-item';
+                div.innerHTML = `
+                    <input type="number" placeholder="Año ${index + 1}" value="${flujo}" onchange="flujosPayback[${index}] = parseFloat(this.value)" style="flex: 1;">
+                    <button class="remove-period-btn" onclick="eliminarFlujoPayback(${index})">Eliminar</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function eliminarFlujoPayback(index) {
+            flujosPayback.splice(index, 1);
+            renderFlujosPayback();
+        }
+
+        function calcularPayback() {
+            const inversion = parseFloat(document.getElementById('payback-inversion').value);
+            
+            if (!inversion || flujosPayback.length === 0) {
+                alert('Por favor completa todos los campos');
+                return;
+            }
+            
+            let acumulado = 0;
+            let payback = 0;
+            
+            for (let i = 0; i < flujosPayback.length; i++) {
+                acumulado += flujosPayback[i];
+                if (acumulado >= inversion) {
+                    payback = i + 1;
+                    break;
+                }
+            }
+            
+            if (payback === 0) {
+                document.getElementById('payback-value').textContent = 'No se recupera';
+                document.getElementById('payback-interpretation').innerHTML = '<p class="negative">❌ Con los flujos proyectados NO recuperas tu inversión.</p>';
+            } else {
+                document.getElementById('payback-value').textContent = payback + ' años';
+                
+                let interpretacion = '<h4>¿Qué significa este resultado?</h4>';
+                interpretacion += `<p>Recuperarás tu inversión en aproximadamente <strong>${payback} años</strong>.</p>`;
+                
+                if (payback <= 2) {
+                    interpretacion += '<p class="positive">✅ <strong>Excelente:</strong> Recuperación rápida. Bajo riesgo.</p>';
+                } else if (payback <= 4) {
+                    interpretacion += '<p class="positive">✅ <strong>Bueno:</strong> Recuperación razonable para la mayoría de negocios.</p>';
+                } else {
+                    interpretacion += '<p class="warning">⚠️ <strong>Lento:</strong> Recuperación tardía. Mayor riesgo. Evalúa si es aceptable para ti.</p>';
+                }
+                
+                document.getElementById('payback-interpretation').innerHTML = interpretacion;
+            }
+            
+            document.getElementById('payback-result').classList.add('show');
+        }
+
+        function cargarEjemploPayback() {
+            document.getElementById('payback-inversion').value = '60000';
+            flujosPayback = [25000, 30000, 20000];
+            renderFlujosPayback();
+        }
+
+        // ============== ÍNDICE DE RENTABILIDAD ==============
+        function agregarFlujoIR() {
+            flujosIR.push(0);
+            renderFlujosIR();
+        }
+
+        function renderFlujosIR() {
+            const container = document.getElementById('ir-flujos-container');
+            container.innerHTML = '';
+            
+            flujosIR.forEach((flujo, index) => {
+                const div = document.createElement('div');
+                div.className = 'period-item';
+                div.innerHTML = `
+                    <input type="number" placeholder="Año ${index + 1}" value="${flujo}" onchange="flujosIR[${index}] = parseFloat(this.value)" style="flex: 1;">
+                    <button class="remove-period-btn" onclick="eliminarFlujoIR(${index})">Eliminar</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function eliminarFlujoIR(index) {
+            flujosIR.splice(index, 1);
+            renderFlujosIR();
+        }
+
+        function calcularIR() {
+            const inversion = parseFloat(document.getElementById('ir-inversion').value);
+            const tasa = parseFloat(document.getElementById('ir-tasa').value) / 100;
+            
+            if (!inversion || !tasa || flujosIR.length === 0) {
+                alert('Por favor completa todos los campos');
+                return;
+            }
+            
+            let vpFlujos = 0;
+            flujosIR.forEach((flujo, index) => {
+                vpFlujos += flujo / Math.pow(1 + tasa, index + 1);
+            });
+            
+            const ir = vpFlujos / inversion;
+            
+            document.getElementById('ir-value').textContent = ir.toFixed(2);
+            
+            let interpretacion = '<h4>¿Qué significa este resultado?</h4>';
+            interpretacion += `<p>Por cada $1 invertido, recibes <strong>$${ir.toFixed(2)}</strong> en valor presente.</p>`;
+            
+            if (ir > 1.5) {
+                interpretacion += '<p class="positive">✅ <strong>Excelente:</strong> Muy rentable. Por cada peso invertido obtienes mucho más de regreso.</p>';
+            } else if (ir > 1) {
+                interpretacion += '<p class="positive">✅ <strong>Bueno:</strong> Proyecto rentable. Genera valor positivo.</p>';
+            } else if (ir === 1) {
+                interpretacion += '<p class="warning">⚖️ <strong>Neutro:</strong> Ni ganas ni pierdes en términos de valor presente.</p>';
+            } else {
+                interpretacion += '<p class="negative">❌ <strong>No Rentable:</strong> Pierdes valor. Rechaza el proyecto.</p>';
+            }
+            
+            interpretacion += `<p><strong>Decisión:</strong> ${ir > 1 ? 'Acepta el proyecto.' : 'Rechaza el proyecto o mejora los flujos.'}</p>`;
+            
+            document.getElementById('ir-interpretation').innerHTML = interpretacion;
+            document.getElementById('ir-result').classList.add('show');
+        }
+
+        function cargarEjemploIR() {
+            document.getElementById('ir-inversion').value = '50000';
+            document.getElementById('ir-tasa').value = '10';
+            flujosIR = [25000, 30000, 25000];
+            renderFlujosIR();
+        }
+
+        // ============== PUNTO DE EQUILIBRIO ==============
+        function calcularEquilibrio() {
+            const fijos = parseFloat(document.getElementById('eq-fijos').value);
+            const precio = parseFloat(document.getElementById('eq-precio').value);
+            const cvariable = parseFloat(document.getElementById('eq-cvariable').value);
+            
+            if (!fijos || !precio || !cvariable) {
+                alert('Por favor completa todos los campos');
+                return;
+            }
+            
+            if (precio <= cvariable) {
+                alert('El precio de venta debe ser mayor que el costo variable');
+                return;
+            }
+            
+            const equilibrio = fijos / (precio - cvariable);
+            const ventasEquilibrio = equilibrio * precio;
+            
+            document.getElementById('equilibrio-value').textContent = Math.ceil(equilibrio) + ' unidades';
+            
+            let interpretacion = '<h4>¿Qué significa este resultado?</h4>';
+            interpretacion += `<p>Debes vender <strong>${Math.ceil(equilibrio)} unidades</strong> al mes para no perder ni ganar.</p>`;
+            interpretacion += `<p>Esto equivale a ventas de <strong>$${ventasEquilibrio.toFixed(2)}</strong> mensuales.</p>`;
+            interpretacion += `<p class="positive">💡 <strong>Interpretación:</strong> A partir de la unidad ${Math.ceil(equilibrio) + 1} empiezas a generar ganancias.</p>`;
+            interpretacion += `<p><strong>Margen de Contribución:</strong> Cada unidad deja $${(precio - cvariable).toFixed(2)} para cubrir costos fijos y generar utilidad.</p>`;
+            
+            document.getElementById('equilibrio-interpretation').innerHTML = interpretacion;
+            document.getElementById('equilibrio-result').classList.add('show');
+        }
+
+        function cargarEjemploEquilibrio() {
+            document.getElementById('eq-fijos').value = '6000';
+            document.getElementById('eq-precio').value = '50';
+            document.getElementById('eq-cvariable').value = '20';
+        }
+
+        // ============== MÁRGENES ==============
+        function calcularMargenes() {
+            const ventas = parseFloat(document.getElementById('marg-ventas').value);
+            const directos = parseFloat(document.getElementById('marg-directos').value);
+            const operativos = parseFloat(document.getElementById('marg-operativos').value);
+            
+            if (!ventas || !directos || !operativos) {
+                alert('Por favor completa todos los campos');
+                return;
+            }
+            
+            const margenBruto = ((ventas - directos) / ventas) * 100;
+            const utilidadOperativa = ventas - directos - operativos;
+            const margenOperativo = (utilidadOperativa / ventas) * 100;
+            
+            let interpretacion = '<h4>Resultados:</h4>';
+            
+            interpretacion += `<div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin-bottom: 15px;">`;
+            interpretacion += `<p style="font-size: 16px; margin-bottom: 10px;"><strong>Margen Bruto:</strong> <span class="positive" style="font-size: 24px;">${margenBruto.toFixed(2)}%</span></p>`;
+            interpretacion += `<p style="color: #666; font-size: 13px;">De cada $100 en ventas, $${margenBruto.toFixed(2)} quedan después de costos directos.</p>`;
+            
+            if (margenBruto > 60) {
+                interpretacion += '<p class="positive">✅ Excelente margen bruto. Buena eficiencia en producción.</p>';
+            } else if (margenBruto > 40) {
+                interpretacion += '<p class="positive">✅ Buen margen bruto. Nivel saludable.</p>';
+            } else if (margenBruto > 20) {
+                interpretacion += '<p class="warning">⚠️ Margen bruto moderado. Evalúa optimizar costos.</p>';
+            } else {
+                interpretacion += '<p class="negative">❌ Margen bruto bajo. Difícil cubrir gastos operativos.</p>';
+            }
+            interpretacion += '</div>';
+            
+            interpretacion += `<div style="background: #f8f9fa; padding: 15px; border-radius: 5px;">`;
+            interpretacion += `<p style="font-size: 16px; margin-bottom: 10px;"><strong>Margen Operativo:</strong> <span class="${margenOperativo > 0 ? 'positive' : 'negative'}" style="font-size: 24px;">${margenOperativo.toFixed(2)}%</span></p>`;
+            interpretacion += `<p style="color: #666; font-size: 13px;">Utilidad operativa real: $${utilidadOperativa.toFixed(2)}</p>`;
+            
+            if (margenOperativo > 20) {
+                interpretacion += '<p class="positive">✅ Excelente rentabilidad operativa.</p>';
+            } else if (margenOperativo > 10) {
+                interpretacion += '<p class="positive">✅ Buena rentabilidad operativa.</p>';
+            } else if (margenOperativo > 0) {
+                interpretacion += '<p class="warning">⚠️ Rentabilidad operativa baja. Optimiza gastos.</p>';
+            } else {
+                interpretacion += '<p class="negative">❌ Pérdida operativa. Urgente revisar estructura de costos.</p>';
+            }
+            interpretacion += '</div>';
+            
+            document.getElementById('margenes-interpretation').innerHTML = interpretacion;
+            document.getElementById('margenes-result').classList.add('show');
+        }
+
+        function cargarEjemploMargenes() {
+            document.getElementById('marg-ventas').value = '100000';
+            document.getElementById('marg-directos').value = '40000';
+            document.getElementById('marg-operativos').value = '35000';
+        }
+
+        // ============== CAC ==============
+        function calcularCAC() {
+            const gastos = parseFloat(document.getElementById('cac-gastos').value);
+            const clientes = parseFloat(document.getElementById('cac-clientes').value);
+            
+            if (!gastos || !clientes) {
+                alert('Por favor completa todos los campos');
+                return;
+            }
+            
+            const cac = gastos / clientes;
+            
+            document.getElementById('cac-value').textContent = '$' + cac.toFixed(2);
+            
+            let interpretacion = '<h4>¿Qué significa este resultado?</h4>';
+            interpretacion += `<p>Te cuesta <strong>$${cac.toFixed(2)}</strong> adquirir cada nuevo cliente.</p>`;
+            interpretacion += '<p><strong>💡 Regla clave:</strong> Tu CAC debe ser menor a 1/3 del LTV (Lifetime Value) de tus clientes.</p>';
+            interpretacion += `<p>Por ejemplo, si tu CAC es $${cac.toFixed(2)}, tu LTV ideal debería ser al menos $${(cac * 3).toFixed(2)}.</p>`;
+            
+            if (cac < 100) {
+                interpretacion += '<p class="positive">✅ CAC bajo. Excelente eficiencia en adquisición.</p>';
+            } else if (cac < 500) {
+                interpretacion += '<p class="positive">✅ CAC razonable. Asegúrate que tu LTV sea 3x mayor.</p>';
+            } else {
+                interpretacion += '<p class="warning">⚠️ CAC elevado. Verifica que tu LTV justifique esta inversión.</p>';
+            }
+            
+            document.getElementById('cac-interpretation').innerHTML = interpretacion;
+            document.getElementById('cac-result').classList.add('show');
+        }
+
+        function cargarEjemploCAC() {
+            document.getElementById('cac-gastos').value = '20000';
+            document.getElementById('cac-clientes').value = '100';
+        }
+
+        // ============== LTV ==============
+        function calcularLTV() {
+            const compra = parseFloat(document.getElementById('ltv-compra').value);
+            const frecuencia = parseFloat(document.getElementById('ltv-frecuencia').value);
+            const margen = parseFloat(document.getElementById('ltv-margen').value) / 100;
+            const vida = parseFloat(document.getElementById('ltv-vida').value);
+            
+            if (!compra || !frecuencia || !margen || !vida) {
+                alert('Por favor completa todos los campos');
+                return;
+            }
+            
+            const ltv = compra * frecuencia * margen * vida;
+            
+            document.getElementById('ltv-value').textContent = '$' + ltv.toFixed(2);
+            
+            let interpretacion = '<h4>¿Qué significa este resultado?</h4>';
+            interpretacion += `<p>Un cliente promedio te genera <strong>$${ltv.toFixed(2)}</strong> de ganancia durante su vida útil.</p>`;
+            interpretacion += `<p><strong>Desglose:</strong> $${compra} × ${frecuencia} veces/año × ${(margen*100).toFixed(0)}% margen × ${vida} años = $${ltv.toFixed(2)}</p>`;
+            
+            const cacIdeal = ltv / 3;
+            interpretacion += `<p class="positive">💡 <strong>Regla de oro:</strong> Tu CAC debería ser máximo $${cacIdeal.toFixed(2)} (1/3 del LTV).</p>`;
+            
+            if (ltv > 1000) {
+                interpretacion += '<p class="positive">✅ Excelente LTV. Puedes invertir más en adquisición de clientes.</p>';
+            } else if (ltv > 500) {
+                interpretacion += '<p class="positive">✅ Buen LTV. Negocio con potencial de crecimiento.</p>';
+            } else {
+                interpretacion += '<p class="warning">⚠️ LTV bajo. Busca formas de aumentar frecuencia de compra o ticket promedio.</p>';
+            }
+            
+            document.getElementById('ltv-interpretation').innerHTML = interpretacion;
+            document.getElementById('ltv-result').classList.add('show');
+        }
+
+        function cargarEjemploLTV() {
+            document.getElementById('ltv-compra').value = '200';
+            document.getElementById('ltv-frecuencia').value = '12';
+            document.getElementById('ltv-margen').value = '60';
+            document.getElementById('ltv-vida').value = '2';
+        }
+
+        // Inicializar con algunos flujos de ejemplo
+        window.onload = function() {
+            agregarFlujoTIR();
+            agregarFlujoVPN();
+            agregarFlujoPayback();
+            agregarFlujoIR();
+        };
+    </script>
+</body>
+</html>

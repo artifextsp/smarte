@@ -1,0 +1,1690 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PromptLab AI - Transformador de Fotos de Personas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e0e0e0;
+            overflow-x: auto;
+        }
+
+        .tab {
+            flex: 1;
+            min-width: 150px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s;
+            border: none;
+            background: none;
+            font-size: 0.9em;
+        }
+
+        .tab:hover {
+            background: #e9ecef;
+        }
+
+        .tab.active {
+            background: white;
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .section {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .section-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title .icon {
+            font-size: 1.5em;
+        }
+
+        .section-description {
+            font-size: 0.95em;
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.6;
+            padding: 10px;
+            background: white;
+            border-radius: 6px;
+            border-left: 3px solid #48bb78;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .input-group input[type="text"],
+        .input-group textarea,
+        .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border 0.3s;
+            font-family: inherit;
+        }
+
+        .input-group input:focus,
+        .input-group textarea:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .input-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .option-btn {
+            padding: 12px 8px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9em;
+            text-align: center;
+            position: relative;
+        }
+
+        .option-btn:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+            transform: translateY(-2px);
+        }
+
+        .option-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .prompt-preview {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 1em;
+            line-height: 1.6;
+            min-height: 100px;
+            position: relative;
+        }
+
+        .prompt-preview::before {
+            content: '🎨 Prompt de Transformación:';
+            display: block;
+            color: #a0aec0;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .actions {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+            flex: 1;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #48bb78;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #38a169;
+        }
+
+        .btn-reset {
+            background: #f56565;
+            color: white;
+        }
+
+        .btn-reset:hover {
+            background: #e53e3e;
+        }
+
+        .templates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .template-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .template-card:hover {
+            border-color: #667eea;
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .template-card h3 {
+            color: #667eea;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        .template-card p {
+            color: #666;
+            font-size: 0.85em;
+            line-height: 1.4;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #48bb78;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            display: none;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.3s ease;
+            z-index: 2000;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .checkbox-item:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .checkbox-item label {
+            cursor: pointer;
+            margin-bottom: 0;
+        }
+
+        .language-note {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            color: #856404;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        .category-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #e0e7ff;
+            color: #4c51bf;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            .options-grid {
+                grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            }
+
+            .checkbox-group {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎨 PromptLab AI PRO</h1>
+            <p>Transformador de Fotos de Personas - Vestuario, Cabello, Maquillaje y Más</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('personas')">👤 Personas</button>
+            <button class="tab" onclick="switchTab('transformaciones')">✨ Transformaciones</button>
+            <button class="tab" onclick="switchTab('general')">🎨 General</button>
+            <button class="tab" onclick="switchTab('plantillas')">📋 Plantillas</button>
+        </div>
+
+        <div class="content">
+            <!-- TAB PERSONAS -->
+            <div id="personas-tab">
+                <div class="language-note">
+                    👤 <strong>Transforma fotos de personas:</strong> Cambia vestuario, peinado, maquillaje, edad, estilo y más. Perfecto para fotos individuales o grupales.
+                </div>
+
+                <!-- Base -->
+                <div class="section">
+                    <div class="section-title">
+                        <span class="icon">📸</span>
+                        <span>Base: Describe la persona/foto</span>
+                    </div>
+                    <div class="section-description">
+                        💡 <strong>Describe brevemente:</strong> "Mujer de 30 años", "Hombre joven", "Grupo de amigos", "Niña con vestido", etc.
+                    </div>
+                    <div class="input-group">
+                        <textarea id="subject-person" placeholder="Ej: Mujer de 30 años con cabello largo"></textarea>
+                    </div>
+                </div>
+
+                <!-- Vestuario -->
+                <div class="section">
+                    <div class="section-title">
+                        <span class="icon">👗</span>
+                        <span>Vestuario y Ropa</span>
+                    </div>
+                    <div class="section-description">
+                        💡 <strong>Cambia completamente el outfit:</strong> Desde casual hasta épocas históricas
+                    </div>
+                    <div class="options-grid">
+                        <button class="option-btn" onclick="selectOption(this, 'vestuario', 'vestido elegante de gala')">Vestido de Gala</button>
+                        <button class="option-btn" onclick="selectOption(this, 'vestuario', 'traje formal ejecutivo')">Traje Ejecutivo</button>
+                        <button class="option-btn" onclick="selectOption(this, 'vestuario', 'ropa casual urbana')">Casual Urbano</button>
+                        <button class="option-btn" onclick="selectOption(this, 'vestuario', 'ropa deportiva atlética')">Deportivo</button>
+                        <button class="option-btn" onclick="selectOption(this, 'vestuario', 'vestido de novia')">Vestido de Novia</button>
+                        <button class="option-btn" onclick="selectOption(this, 'vestuario', 'kimono japonés tradicional')">Kimono</button>
+                        <button class="option-btn" onclick="selectOption(this, 'vestuario', 'vestido victoriano del siglo XIX')">Victoriano</button>
+                        <button class="option-btn" onclick="selectOption(this, 'vestuario', 'traje espacial futurista')">Espacial</button>
+                        <button class="option-btn" onclick="selectOption(this, 'vestuario', 'armadura medieval de caballero')">Armadura Medieval</button>
+                        <button class="option-btn" onclick="selectOption(this, 'vestuario', 'atuendo hippie años 70')">Hippie 70s</button>
+                        <button class="option-btn" onclick="selectOption(this, 'vestuario', 'ropa punk con chaqueta de cuero')">Punk</button>
+                        <button class="option-btn" onclick="selectOption(this, 'vestuario', 'toga romana antigua')">Toga Romana</button>
+                    </div>
+                </div>
+
+                <!-- Cabello -->
+                <div class="section">
+                    <div class="section-title">
+                        <span class="icon">💇</span>
+                        <span>Cabello y Peinado</span>
+                    </div>
+                    <div class="section-description">
+                        💡 <strong>Cambia color, largo, estilo:</strong> Desde natural hasta súper creativo
+                    </div>
+                    
+                    <label style="display: block; margin: 15px 0 10px 0; font-weight: 600; color: #667eea;">Estilo de Cabello:</label>
+                    <div class="options-grid">
+                        <button class="option-btn" onclick="selectOption(this, 'cabello-estilo', 'cabello largo liso')">Largo Liso</button>
+                        <button class="option-btn" onclick="selectOption(this, 'cabello-estilo', 'cabello corto pixie')">Corte Pixie</button>
+                        <button class="option-btn" onclick="selectOption(this, 'cabello-estilo', 'cabello rizado afro')">Afro</button>
+                        <button class="option-btn" onclick="selectOption(this, 'cabello-estilo', 'trenzas africanas')">Trenzas</button>
+                        <button class="option-btn" onclick="selectOption(this, 'cabello-estilo', 'coleta alta')">Coleta Alta</button>
+                        <button class="option-btn" onclick="selectOption(this, 'cabello-estilo', 'moño elegante')">Moño Elegante</button>
+                        <button class="option-btn" onclick="selectOption(this, 'cabello-estilo', 'cabello con ondas suaves')">Ondas Suaves</button>
+                        <button class="option-btn" onclick="selectOption(this, 'cabello-estilo', 'rapado a los lados')">Rapado Lados</button>
+                        <button class="option-btn" onclick="selectOption(this, 'cabello-estilo', 'dreadlocks')">Dreadlocks</button>
+                        <button class="option-btn" onclick="selectOption(this, 'cabello-estilo', 'cabello con flequillo')">Con Flequillo</button>
+                    </div>
+
+                    <label style="display: block; margin: 15px 0 10px 0; font-weight: 600; color: #667eea;">Color de Cabello:</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="hair-color1" value="cabello rubio platinado">
+                            <label for="hair-color1">Rubio Platino</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="hair-color2" value="cabello rojo intenso">
+                            <label for="hair-color2">Rojo Intenso</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="hair-color3" value="cabello azul vibrante">
+                            <label for="hair-color3">Azul Vibrante</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="hair-color4" value="cabello rosa pastel">
+                            <label for="hair-color4">Rosa Pastel</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="hair-color5" value="cabello morado oscuro">
+                            <label for="hair-color5">Morado Oscuro</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="hair-color6" value="cabello con mechas multicolor">
+                            <label for="hair-color6">Mechas Multicolor</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="hair-color7" value="cabello gris plateado">
+                            <label for="hair-color7">Gris Plateado</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="hair-color8" value="cabello verde neón">
+                            <label for="hair-color8">Verde Neón</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Maquillaje -->
+                <div class="section">
+                    <div class="section-title">
+                        <span class="icon">💄</span>
+                        <span>Maquillaje</span>
+                    </div>
+                    <div class="options-grid">
+                        <button class="option-btn" onclick="selectOption(this, 'maquillaje', 'maquillaje natural suave')">Natural</button>
+                        <button class="option-btn" onclick="selectOption(this, 'maquillaje', 'maquillaje dramático con smokey eyes')">Dramático</button>
+                        <button class="option-btn" onclick="selectOption(this, 'maquillaje', 'maquillaje de alta costura editorial')">Alta Costura</button>
+                        <button class="option-btn" onclick="selectOption(this, 'maquillaje', 'maquillaje artístico de fantasía')">Artístico</button>
+                        <button class="option-btn" onclick="selectOption(this, 'maquillaje', 'maquillaje estilo años 20')">Años 20</button>
+                        <button class="option-btn" onclick="selectOption(this, 'maquillaje', 'maquillaje gótico oscuro')">Gótico</button>
+                        <button class="option-btn" onclick="selectOption(this, 'maquillaje', 'maquillaje con glitter brillante')">Con Glitter</button>
+                        <button class="option-btn" onclick="selectOption(this, 'maquillaje', 'maquillaje tribal con pinturas')">Tribal</button>
+                    </div>
+                </div>
+
+                <!-- Características Físicas -->
+                <div class="section">
+                    <div class="section-title">
+                        <span class="icon">👁️</span>
+                        <span>Características Físicas</span>
+                    </div>
+                    
+                    <label style="display: block; margin: 15px 0 10px 0; font-weight: 600; color: #667eea;">Color de Ojos:</label>
+                    <div class="options-grid">
+                        <button class="option-btn" onclick="selectOption(this, 'ojos', 'ojos azul cielo')">Azul Cielo</button>
+                        <button class="option-btn" onclick="selectOption(this, 'ojos', 'ojos verdes esmeralda')">Verde Esmeralda</button>
+                        <button class="option-btn" onclick="selectOption(this, 'ojos', 'ojos color miel')">Color Miel</button>
+                        <button class="option-btn" onclick="selectOption(this, 'ojos', 'ojos violeta')">Violeta</button>
+                        <button class="option-btn" onclick="selectOption(this, 'ojos', 'ojos heterocromía (dos colores)')">Heterocromía</button>
+                        <button class="option-btn" onclick="selectOption(this, 'ojos', 'ojos rojos')">Rojos</button>
+                    </div>
+
+                    <label style="display: block; margin: 15px 0 10px 0; font-weight: 600; color: #667eea;">Tono de Piel:</label>
+                    <div class="options-grid">
+                        <button class="option-btn" onclick="selectOption(this, 'piel', 'piel clara porcelana')">Clara Porcelana</button>
+                        <button class="option-btn" onclick="selectOption(this, 'piel', 'piel morena canela')">Morena Canela</button>
+                        <button class="option-btn" onclick="selectOption(this, 'piel', 'piel oscura ébano')">Oscura Ébano</button>
+                        <button class="option-btn" onclick="selectOption(this, 'piel', 'piel bronceada dorada')">Bronceada</button>
+                        <button class="option-btn" onclick="selectOption(this, 'piel', 'piel con pecas')">Con Pecas</button>
+                        <button class="option-btn" onclick="selectOption(this, 'piel', 'piel perfecta sin imperfecciones')">Perfecta</button>
+                    </div>
+                </div>
+
+                <!-- Accesorios -->
+                <div class="section">
+                    <div class="section-title">
+                        <span class="icon">👓</span>
+                        <span>Accesorios</span>
+                    </div>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="acc1" value="gafas de sol estilo aviador">
+                            <label for="acc1">Gafas Aviador</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="acc2" value="gafas redondas estilo Harry Potter">
+                            <label for="acc2">Gafas Redondas</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="acc3" value="sombrero elegante">
+                            <label for="acc3">Sombrero</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="acc4" value="collar de diamantes">
+                            <label for="acc4">Collar Diamantes</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="acc5" value="aretes largos elegantes">
+                            <label for="acc5">Aretes Largos</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="acc6" value="corona de flores">
+                            <label for="acc6">Corona Flores</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="acc7" value="piercing facial">
+                            <label for="acc7">Piercing</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="acc8" value="tatuajes visibles">
+                            <label for="acc8">Tatuajes</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Calidad Retrato -->
+                <div class="section">
+                    <div class="section-title">
+                        <span class="icon">✨</span>
+                        <span>Calidad del Retrato</span>
+                    </div>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="quality-p1" value="iluminación profesional de estudio">
+                            <label for="quality-p1">Luz Profesional</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="quality-p2" value="fotografía de retrato de alta resolución">
+                            <label for="quality-p2">Alta Resolución</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="quality-p3" value="detalles de piel realistas">
+                            <label for="quality-p3">Piel Realista</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="quality-p4" value="fondo desenfocado bokeh">
+                            <label for="quality-p4">Fondo Bokeh</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="quality-p5" value="retoque profesional de fotografía">
+                            <label for="quality-p5">Retoque Pro</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="quality-p6" value="expresión natural y relajada">
+                            <label for="quality-p6">Expresión Natural</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="prompt-preview" id="promptPreviewPersonas">
+                    Tu prompt de transformación aparecerá aquí...
+                </div>
+
+                <div class="actions">
+                    <button class="btn btn-primary" onclick="copyPrompt('personas')">📋 Copiar Prompt</button>
+                    <button class="btn btn-secondary" onclick="savePrompt('personas')">💾 Guardar</button>
+                    <button class="btn btn-reset" onclick="resetTab('personas')">🔄 Reset</button>
+                </div>
+            </div>
+
+            <!-- TAB TRANSFORMACIONES CREATIVAS -->
+            <div id="transformaciones-tab" class="hidden">
+                <div class="language-note">
+                    ✨ <strong>Transformaciones súper creativas:</strong> Épocas históricas, profesiones, efectos especiales, edades, y más locuras
+                </div>
+
+                <div class="section">
+                    <div class="section-title">
+                        <span class="icon">🎭</span>
+                        <span>Base de Persona</span>
+                    </div>
+                    <div class="input-group">
+                        <textarea id="subject-transform" placeholder="Ej: Hombre joven"></textarea>
+                    </div>
+                </div>
+
+                <!-- Épocas Históricas -->
+                <div class="section">
+                    <div class="section-title">
+                        <span class="icon">🕰️</span>
+                        <span>Épocas Históricas</span>
+                    </div>
+                    <div class="options-grid">
+                        <button class="option-btn" onclick="selectOption(this, 'epoca', 'estilo antiguo Egipto faraónico')">Egipto Antiguo</button>
+                        <button class="option-btn" onclick="selectOption(this, 'epoca', 'estilo Grecia antigua con toga')">Grecia Antigua</button>
+                        <button class="option-btn" onclick="selectOption(this, 'epoca', 'estilo medieval europeo')">Medieval</button>
+                        <button class="option-btn" onclick="selectOption(this, 'epoca', 'estilo Renacimiento italiano')">Renacimiento</button>
+                        <button class="option-btn" onclick="selectOption(this, 'epoca', 'estilo victoriano siglo XIX')">Victoriano</button>
+                        <button class="option-btn" onclick="selectOption(this, 'epoca', 'estilo años 1920 art deco')">Años 20</button>
+                        <button class="option-btn" onclick="selectOption(this, 'epoca', 'estilo años 1950 vintage')">Años 50</button>
+                        <button class="option-btn" onclick="selectOption(this, 'epoca', 'estilo años 1980 colorido')">Años 80</button>
+                        <button class="option-btn" onclick="selectOption(this, 'epoca', 'estilo steampunk victoriano futurista')">Steampunk</button>
+                        <button class="option-btn" onclick="selectOption(this, 'epoca', 'estilo cyberpunk 2077 futurista')">Cyberpunk 2077</button>
+                        <button class="option-btn" onclick="selectOption(this, 'epoca', 'estilo postapocalíptico Mad Max')">Postapocalíptico</button>
+                        <button class="option-btn" onclick="selectOption(this, 'epoca', 'estilo año 3000 ciencia ficción')">Año 3000</button>
+                    </div>
+                </div>
+
+                <!-- Profesiones -->
+                <div class="section">
+                    <div class="section-title">
+                        <span class="icon">👨‍⚕️</span>
+                        <span>Profesiones y Roles</span>
+                    </div>
+                    <div class="options-grid">
+                        <button class="option-btn" onclick="selectOption(this, 'profesion', 'como doctor con bata médica')">Doctor</button>
+                        <button class="option-btn" onclick="selectOption(this, 'profesion', 'como astronauta con traje espacial NASA')">Astronauta</button>
+                        <button class="option-btn" onclick="selectOption(this, 'profesion', 'como chef con uniforme blanco')">Chef</button>
+                        <button class="option-btn" onclick="selectOption(this, 'profesion', 'como piloto de avión')">Piloto</button>
+                        <button class="option-btn" onclick="selectOption(this, 'profesion', 'como bombero con equipo completo')">Bombero</button>
+                        <button class="option-btn" onclick="selectOption(this, 'profesion', 'como rey o reina con corona')">Realeza</button>
+                        <button class="option-btn" onclick="selectOption(this, 'profesion', 'como superhéroe con capa')">Superhéroe</button>
+                        <button class="option-btn" onclick="selectOption(this, 'profesion', 'como pirata del Caribe')">Pirata</button>
+                        <button class="option-btn" onclick="selectOption(this, 'profesion', 'como ninja japonés')">Ninja</button>
+                        <button class="option-btn" onclick="selectOption(this, 'profesion', 'como samurái con armadura')">Samurái</button>
+                        <button class="option-btn" onclick="selectOption(this, 'profesion', 'como vikingo nórdico')">Vikingo</button>
+                        <button class="option-btn" onclick="selectOption(this, 'profesion', 'como mago hechicero')">Mago</button>
+                    </div>
+                </div>
+
+                <!-- Transformaciones Edad -->
+                <div class="section">
+                    <div class="section-title">
+                        <span class="icon">⏳</span>
+                        <span>Transformación de Edad</span>
+                    </div>
+                    <div class="options-grid">
+                        <button class="option-btn" onclick="selectOption(this, 'edad', 'rejuvenecido a los 18 años')">18 Años</button>
+                        <button class="option-btn" onclick="selectOption(this, 'edad', 'con 25 años de edad')">25 Años</button>
+                        <button class="option-btn" onclick="selectOption(this, 'edad', 'envejecido a los 60 años')">60 Años</button>
+                        <button class="option-btn" onclick="selectOption(this, 'edad', 'como anciano de 80 años')">80 Años</button>
+                        <button class="option-btn" onclick="selectOption(this, 'edad', 'como niño de 10 años')">Niño 10 Años</button>
+                        <button class="option-btn" onclick="selectOption(this, 'edad', 'como bebé')">Bebé</button>
+                    </div>
+                </div>
+
+                <!-- Efectos Especiales Creativos -->
+                <div class="section">
+                    <div class="section-title">
+                        <span class="icon">🦄</span>
+                        <span>Efectos Especiales Creativos</span>
+                    </div>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="efx1" value="con alas de ángel">
+                            <label for="efx1">Alas de Ángel</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="efx2" value="con cuernos de demonio">
+                            <label for="efx2">Cuernos Demonio</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="efx3" value="piel con escamas de reptil">
+                            <label for="efx3">Escamas Reptil</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="efx4" value="orejas de elfo puntiagudas">
+                            <label for="efx4">Orejas de Elfo</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="efx5" value="ojos brillantes con luz interior">
+                            <label for="efx5">Ojos Brillantes</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="efx6" value="cabello en llamas de fuego">
+                            <label for="efx6">Cabello de Fuego</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="efx7" value="transformado en cyborg mitad robot">
+                            <label for="efx7">Cyborg</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="efx8" value="con superpoderes emanando energía">
+                            <label for="efx8">Energía Poderes</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="efx9" value="piel azul estilo Avatar">
+                            <label for="efx9">Piel Azul Avatar</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="efx10" value="con tercer ojo en la frente">
+                            <label for="efx10">Tercer Ojo</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Estilos Artísticos -->
+                <div class="section">
+                    <div class="section-title">
+                        <span class="icon">🎨</span>
+                        <span>Estilo Artístico</span>
+                    </div>
+                    <div class="options-grid">
+                        <button class="option-btn" onclick="selectOption(this, 'estilo-art', 'estilo fotorrealista')">Fotorrealista</button>
+                        <button class="option-btn" onclick="selectOption(this, 'estilo-art', 'estilo anime japonés')">Anime</button>
+                        <button class="option-btn" onclick="selectOption(this, 'estilo-art', 'estilo Disney Pixar')">Disney Pixar</button>
+                        <button class="option-btn" onclick="selectOption(this, 'estilo-art', 'estilo cómic Marvel')">Cómic Marvel</button>
+                        <button class="option-btn" onclick="selectOption(this, 'estilo-art', 'estilo pintura al óleo')">Pintura Óleo</button>
+                        <button class="option-btn" onclick="selectOption(this, 'estilo-art', 'estilo acuarela artística')">Acuarela</button>
+                        <button class="option-btn" onclick="selectOption(this, 'estilo-art', 'estilo render 3D hiperrealista')">Render 3D</button>
+                        <button class="option-btn" onclick="selectOption(this, 'estilo-art', 'estilo cyberpunk neon')">Cyberpunk Neon</button>
+                    </div>
+                </div>
+
+                <div class="prompt-preview" id="promptPreviewTransform">
+                    Tu prompt de transformación creativa aparecerá aquí...
+                </div>
+
+                <div class="actions">
+                    <button class="btn btn-primary" onclick="copyPrompt('transformaciones')">📋 Copiar Prompt</button>
+                    <button class="btn btn-secondary" onclick="savePrompt('transformaciones')">💾 Guardar</button>
+                    <button class="btn btn-reset" onclick="resetTab('transformaciones')">🔄 Reset</button>
+                </div>
+            </div>
+
+            <!-- TAB GENERAL COMPLETO -->
+            <div id="general-tab" class="hidden">
+                <div class="language-note">
+                    🎨 <strong>Constructor general completo:</strong> Para cualquier tipo de imagen (paisajes, objetos, escenas, arquitectura, etc.)
+                </div>
+                
+                <!-- Sujeto -->
+                <div class="section">
+                    <div class="section-title">
+                        <span class="icon">🎭</span>
+                        <span>Sujeto Principal</span>
+                    </div>
+                    <div class="section-description">
+                        💡 <strong>¿Qué quieres crear?</strong> Describe cualquier cosa: paisajes, objetos, escenas, arquitectura, etc.
+                    </div>
+                    <div class="input-group">
+                        <textarea id="subject-general" placeholder="Ej: Un paisaje de montañas al atardecer, Una taza de café humeante, Un edificio futurista..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Estilo Artístico con Categorías -->
+                <div class="section">
+                    <div class="section-title">
+                        <span class="icon">🎨</span>
+                        <span>Estilo Artístico</span>
+                    </div>
+                    <div class="section-description">
+                        💡 <strong>Define el estilo visual:</strong> ¿Foto real? ¿Pintura? ¿3D? ¿Anime?
+                    </div>
+                    <div class="input-group">
+                        <label>Primero elige una categoría:</label>
+                        <select id="styleCategory-general" onchange="updateStyleOptionsGeneral()">
+                            <option value="">Seleccionar categoría...</option>
+                            <option value="photography">📷 Fotografía</option>
+                            <option value="painting">🖼️ Pintura</option>
+                            <option value="digital">💻 Arte Digital</option>
+                            <option value="3d">🎮 3D / Render</option>
+                            <option value="artist">👨‍🎨 Artista Famoso</option>
+                        </select>
+                    </div>
+                    <div id="styleOptions-general" class="options-grid"></div>
+                </div>
+
+                <!-- Tipo de Toma -->
+                <div class="section">
+                    <div class="section-title">
+                        <span class="icon">🎬</span>
+                        <span>Tipo de Toma</span>
+                    </div>
+                    <div class="section-description">
+                        💡 <strong>¿Qué tan cerca o lejos?</strong> Define el encuadre
+                    </div>
+                    <div class="options-grid">
+                        <button class="option-btn" onclick="selectOption(this, 'shot-gen', 'primerísimo plano extremo')">Extremo Plano</button>
+                        <button class="option-btn" onclick="selectOption(this, 'shot-gen', 'primer plano cerrado')">Primer Plano</button>
+                        <button class="option-btn" onclick="selectOption(this, 'shot-gen', 'plano medio')">Plano Medio</button>
+                        <button class="option-btn" onclick="selectOption(this, 'shot-gen', 'plano americano')">Plano Americano</button>
+                        <button class="option-btn" onclick="selectOption(this, 'shot-gen', 'plano completo')">Plano Completo</button>
+                        <button class="option-btn" onclick="selectOption(this, 'shot-gen', 'plano general amplio')">Plano General</button>
+                        <button class="option-btn" onclick="selectOption(this, 'shot-gen', 'gran plano general panorámico')">Gran Plano</button>
+                        <button class="option-btn" onclick="selectOption(this, 'shot-gen', 'plano de establecimiento épico')">Establecimiento</button>
+                        <button class="option-btn" onclick="selectOption(this, 'shot-gen', 'plano detalle macro')">Detalle Macro</button>
+                        <button class="option-btn" onclick="selectOption(this, 'shot-gen', 'plano conjunto grupal')">Conjunto</button>
+                    </div>
+                </div>
+
+                <!-- Ángulo de Cámara -->
+                <div class="section">
+                    <div class="section-title">
+                        <span class="icon">📷</span>
+                        <span>Ángulo de Cámara</span>
+                    </div>
+                    <div class="section-description">
+                        💡 <strong>Perspectiva de la cámara:</strong> Cambia completamente la sensación
+                    </div>
+                    <div class="options-grid">
+                        <button class="option-btn" onclick="selectOption(this, 'angle-gen', 'ángulo a nivel de ojos')">Nivel Ojos</button>
+                        <button class="option-btn" onclick="selectOption(this, 'angle-gen', 'ángulo picado desde arriba')">Picado</button>
+                        <button class="option-btn" onclick="selectOption(this, 'angle-gen', 'ángulo contrapicado desde abajo')">Contrapicado</button>
+                        <button class="option-btn" onclick="selectOption(this, 'angle-gen', 'vista de pájaro cenital')">Vista Pájaro</button>
+                        <button class="option-btn" onclick="selectOption(this, 'angle-gen', 'vista de gusano desde el suelo')">Vista Gusano</button>
+                        <button class="option-btn" onclick="selectOption(this, 'angle-gen', 'ángulo holandés inclinado')">Holandés</button>
+                        <button class="option-btn" onclick="selectOption(this, 'angle-gen', 'perspectiva primera persona POV')">Primera Persona</button>
+                        <button class="option-btn" onclick="selectOption(this, 'angle-gen', 'vista sobre el hombro')">Sobre Hombro</button>
+                        <button class="option-btn" onclick="selectOption(this, 'angle-gen', 'ángulo de tres cuartos')">Tres Cuartos</button>
+                        <button class="option-btn" onclick="selectOption(this, 'angle-gen', 'vista de perfil lateral')">Perfil</button>
+                    </div>
+                </div>
+
+                <!-- Iluminación -->
+                <div class="section">
+                    <div class="section-title">
+                        <span class="icon">💡</span>
+                        <span>Iluminación</span>
+                    </div>
+                    <div class="section-description">
+                        💡 <strong>La luz define el mood:</strong> Dramática, suave, natural, artificial...
+                    </div>
+                    <div class="options-grid">
+                        <button class="option-btn" onclick="selectOption(this, 'lighting-gen', 'luz de hora dorada cálida')">Hora Dorada</button>
+                        <button class="option-btn" onclick="selectOption(this, 'lighting-gen', 'luz de hora azul crepuscular')">Hora Azul</button>
+                        <button class="option-btn" onclick="selectOption(this, 'lighting-gen', 'iluminación natural suave')">Natural Suave</button>
+                        <button class="option-btn" onclick="selectOption(this, 'lighting-gen', 'iluminación de estudio profesional')">Estudio Pro</button>
+                        <button class="option-btn" onclick="selectOption(this, 'lighting-gen', 'iluminación dramática con sombras')">Dramática</button>
+                        <button class="option-btn" onclick="selectOption(this, 'lighting-gen', 'contraluz silueta')">Contraluz</button>
+                        <button class="option-btn" onclick="selectOption(this, 'lighting-gen', 'luces de neón vibrantes')">Neón</button>
+                        <button class="option-btn" onclick="selectOption(this, 'lighting-gen', 'iluminación cinematográfica')">Cinematográfica</button>
+                        <button class="option-btn" onclick="selectOption(this, 'lighting-gen', 'luz de velas cálida')">Velas</button>
+                        <button class="option-btn" onclick="selectOption(this, 'lighting-gen', 'luz de luna nocturna')">Luna</button>
+                        <button class="option-btn" onclick="selectOption(this, 'lighting-gen', 'rayos de luz volumétricos god rays')">Rayos Volumétricos</button>
+                        <button class="option-btn" onclick="selectOption(this, 'lighting-gen', 'iluminación de tres puntos')">Tres Puntos</button>
+                        <button class="option-btn" onclick="selectOption(this, 'lighting-gen', 'luz dura con sombras definidas')">Luz Dura</button>
+                        <button class="option-btn" onclick="selectOption(this, 'lighting-gen', 'luz difusa suave')">Difusa</button>
+                        <button class="option-btn" onclick="selectOption(this, 'lighting-gen', 'iluminación de borde rim light')">Luz de Borde</button>
+                    </div>
+                </div>
+
+                <!-- Composición -->
+                <div class="section">
+                    <div class="section-title">
+                        <span class="icon">📐</span>
+                        <span>Composición</span>
+                    </div>
+                    <div class="section-description">
+                        💡 <strong>Organización visual:</strong> Reglas de composición profesional
+                    </div>
+                    <div class="options-grid">
+                        <button class="option-btn" onclick="selectOption(this, 'composition-gen', 'regla de los tercios')">Tercios</button>
+                        <button class="option-btn" onclick="selectOption(this, 'composition-gen', 'composición centrada')">Centrada</button>
+                        <button class="option-btn" onclick="selectOption(this, 'composition-gen', 'composición simétrica perfecta')">Simétrica</button>
+                        <button class="option-btn" onclick="selectOption(this, 'composition-gen', 'líneas guía convergentes')">Líneas Guía</button>
+                        <button class="option-btn" onclick="selectOption(this, 'composition-gen', 'marco dentro del marco')">Marco en Marco</button>
+                        <button class="option-btn" onclick="selectOption(this, 'composition-gen', 'espacio negativo minimalista')">Espacio Negativo</button>
+                        <button class="option-btn" onclick="selectOption(this, 'composition-gen', 'proporción áurea fibonacci')">Áurea</button>
+                        <button class="option-btn" onclick="selectOption(this, 'composition-gen', 'diagonal dinámica')">Diagonal</button>
+                        <button class="option-btn" onclick="selectOption(this, 'composition-gen', 'patrón de triángulo')">Triángulo</button>
+                        <button class="option-btn" onclick="selectOption(this, 'composition-gen', 'equilibrio asimétrico')">Asimétrica</button>
+                    </div>
+                </div>
+
+                <!-- Colores y Paleta -->
+                <div class="section">
+                    <div class="section-title">
+                        <span class="icon">🎨</span>
+                        <span>Paleta de Colores</span>
+                    </div>
+                    <div class="options-grid">
+                        <button class="option-btn" onclick="selectOption(this, 'colors-gen', 'paleta de colores vibrantes saturados')">Vibrante</button>
+                        <button class="option-btn" onclick="selectOption(this, 'colors-gen', 'paleta de colores pastel suaves')">Pastel</button>
+                        <button class="option-btn" onclick="selectOption(this, 'colors-gen', 'paleta monocromática')">Monocromática</button>
+                        <button class="option-btn" onclick="selectOption(this, 'colors-gen', 'colores complementarios contrastantes')">Complementarios</button>
+                        <button class="option-btn" onclick="selectOption(this, 'colors-gen', 'paleta cálida de rojos y naranjas')">Cálida</button>
+                        <button class="option-btn" onclick="selectOption(this, 'colors-gen', 'paleta fría de azules y verdes')">Fría</button>
+                        <button class="option-btn" onclick="selectOption(this, 'colors-gen', 'colores desaturados apagados')">Desaturada</button>
+                        <button class="option-btn" onclick="selectOption(this, 'colors-gen', 'blanco y negro monocromo')">B&N</button>
+                        <button class="option-btn" onclick="selectOption(this, 'colors-gen', 'colores neón eléctricos')">Neón</button>
+                        <button class="option-btn" onclick="selectOption(this, 'colors-gen', 'tonos tierra naturales')">Tierra</button>
+                    </div>
+                </div>
+
+                <!-- Ambiente y Mood -->
+                <div class="section">
+                    <div class="section-title">
+                        <span class="icon">🌟</span>
+                        <span>Ambiente y Mood</span>
+                    </div>
+                    <div class="options-grid">
+                        <button class="option-btn" onclick="selectOption(this, 'mood-gen', 'atmósfera dramática intensa')">Dramático</button>
+                        <button class="option-btn" onclick="selectOption(this, 'mood-gen', 'ambiente sereno tranquilo')">Sereno</button>
+                        <button class="option-btn" onclick="selectOption(this, 'mood-gen', 'mood épico grandioso')">Épico</button>
+                        <button class="option-btn" onclick="selectOption(this, 'mood-gen', 'atmósfera misteriosa enigmática')">Misterioso</button>
+                        <button class="option-btn" onclick="selectOption(this, 'mood-gen', 'ambiente alegre optimista')">Alegre</button>
+                        <button class="option-btn" onclick="selectOption(this, 'mood-gen', 'mood melancólico nostálgico')">Melancólico</button>
+                        <button class="option-btn" onclick="selectOption(this, 'mood-gen', 'atmósfera oscura siniestra')">Oscuro</button>
+                        <button class="option-btn" onclick="selectOption(this, 'mood-gen', 'ambiente romántico íntimo')">Romántico</button>
+                        <button class="option-btn" onclick="selectOption(this, 'mood-gen', 'mood futurista sci-fi')">Futurista</button>
+                        <button class="option-btn" onclick="selectOption(this, 'mood-gen', 'atmósfera etérea onírica')">Etéreo</button>
+                    </div>
+                </div>
+
+                <!-- Calidad Técnica -->
+                <div class="section">
+                    <div class="section-title">
+                        <span class="icon">✨</span>
+                        <span>Calidad Técnica</span>
+                    </div>
+                    <div class="section-description">
+                        💡 <strong>Parámetros de calidad:</strong> Elige 2-4 opciones máximo
+                    </div>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="quality-g1" value="muy detallado intrincado">
+                            <label for="quality-g1">Muy Detallado</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="quality-g2" value="resolución 8k ultra alta">
+                            <label for="quality-g2">8K Ultra</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="quality-g3" value="fotorrealista hiperrealista">
+                            <label for="quality-g3">Fotorrealista</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="quality-g4" value="calidad de fotografía profesional">
+                            <label for="quality-g4">Foto Profesional</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="quality-g5" value="ultra realista">
+                            <label for="quality-g5">Ultra Realista</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="quality-g6" value="enfoque nítido preciso">
+                            <label for="quality-g6">Nítido</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="quality-g7" value="masterpiece obra maestra">
+                            <label for="quality-g7">Obra Maestra</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="quality-g8" value="trending on artstation">
+                            <label for="quality-g8">Trending</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="quality-g9" value="award winning premiado">
+                            <label for="quality-g9">Premiado</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="quality-g10" value="alta calidad de producción">
+                            <label for="quality-g10">Alta Producción</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Efectos Visuales -->
+                <div class="section">
+                    <div class="section-title">
+                        <span class="icon">🎆</span>
+                        <span>Efectos Visuales</span>
+                    </div>
+                    <div class="section-description">
+                        💡 <strong>Efectos especiales:</strong> Agrega elementos artísticos
+                    </div>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="effect-g1" value="fondo con efecto bokeh desenfocado">
+                            <label for="effect-g1">Bokeh</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="effect-g2" value="profundidad de campo cinematográfica">
+                            <label for="effect-g2">Profundidad Campo</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="effect-g3" value="desenfoque de movimiento motion blur">
+                            <label for="effect-g3">Motion Blur</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="effect-g4" value="grano de película analógica">
+                            <label for="effect-g4">Grano Película</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="effect-g5" value="destello de lente lens flare">
+                            <label for="effect-g5">Lens Flare</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="effect-g6" value="viñeta oscura en bordes">
+                            <label for="effect-g6">Viñeta</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="effect-g7" value="partículas de polvo flotando">
+                            <label for="effect-g7">Partículas</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="effect-g8" value="niebla atmosférica brumosa">
+                            <label for="effect-g8">Niebla</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="effect-g9" value="brillos y destellos luminosos">
+                            <label for="effect-g9">Brillos</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="effect-g10" value="reflejos y refracciones realistas">
+                            <label for="effect-g10">Reflejos</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="effect-g11" value="aberración cromática">
+                            <label for="effect-g11">Aberración</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="effect-g12" value="HDR alto rango dinámico">
+                            <label for="effect-g12">HDR</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Textura y Material -->
+                <div class="section">
+                    <div class="section-title">
+                        <span class="icon">🧱</span>
+                        <span>Textura y Material</span>
+                    </div>
+                    <div class="options-grid">
+                        <button class="option-btn" onclick="selectOption(this, 'texture-gen', 'textura suave sedosa')">Suave</button>
+                        <button class="option-btn" onclick="selectOption(this, 'texture-gen', 'textura rugosa áspera')">Rugosa</button>
+                        <button class="option-btn" onclick="selectOption(this, 'texture-gen', 'material metálico brillante')">Metálica</button>
+                        <button class="option-btn" onclick="selectOption(this, 'texture-gen', 'material de vidrio transparente')">Vidrio</button>
+                        <button class="option-btn" onclick="selectOption(this, 'texture-gen', 'textura de madera natural')">Madera</button>
+                        <button class="option-btn" onclick="selectOption(this, 'texture-gen', 'material de piedra rocosa')">Piedra</button>
+                        <button class="option-btn" onclick="selectOption(this, 'texture-gen', 'textura de tela textil')">Tela</button>
+                        <button class="option-btn" onclick="selectOption(this, 'texture-gen', 'superficie mate sin brillo')">Mate</button>
+                        <button class="option-btn" onclick="selectOption(this, 'texture-gen', 'superficie brillante reflectante')">Brillante</button>
+                        <button class="option-btn" onclick="selectOption(this, 'texture-gen', 'textura orgánica natural')">Orgánica</button>
+                    </div>
+                </div>
+
+                <!-- Clima y Tiempo -->
+                <div class="section">
+                    <div class="section-title">
+                        <span class="icon">🌤️</span>
+                        <span>Clima y Condiciones</span>
+                    </div>
+                    <div class="options-grid">
+                        <button class="option-btn" onclick="selectOption(this, 'weather-gen', 'día soleado despejado')">Soleado</button>
+                        <button class="option-btn" onclick="selectOption(this, 'weather-gen', 'nublado overcast')">Nublado</button>
+                        <button class="option-btn" onclick="selectOption(this, 'weather-gen', 'lluvia intensa tormentosa')">Lluvia</button>
+                        <button class="option-btn" onclick="selectOption(this, 'weather-gen', 'nieve cayendo invernal')">Nieve</button>
+                        <button class="option-btn" onclick="selectOption(this, 'weather-gen', 'neblina brumosa misteriosa')">Neblina</button>
+                        <button class="option-btn" onclick="selectOption(this, 'weather-gen', 'tormenta con rayos dramática')">Tormenta</button>
+                        <button class="option-btn" onclick="selectOption(this, 'weather-gen', 'ventoso con movimiento')">Ventoso</button>
+                        <button class="option-btn" onclick="selectOption(this, 'weather-gen', 'amanecer dorado naciente')">Amanecer</button>
+                        <button class="option-btn" onclick="selectOption(this, 'weather-gen', 'atardecer crepuscular')">Atardecer</button>
+                        <button class="option-btn" onclick="selectOption(this, 'weather-gen', 'noche estrellada oscura')">Noche</button>
+                    </div>
+                </div>
+
+                <div class="prompt-preview" id="promptPreviewGeneral">
+                    Tu prompt completo aparecerá aquí...
+                </div>
+
+                <div class="actions">
+                    <button class="btn btn-primary" onclick="copyPrompt('general')">📋 Copiar Prompt</button>
+                    <button class="btn btn-secondary" onclick="savePrompt('general')">💾 Guardar</button>
+                    <button class="btn btn-reset" onclick="resetTab('general')">🔄 Reset</button>
+                </div>
+            </div>
+
+            <!-- TAB PLANTILLAS -->
+            <div id="plantillas-tab" class="hidden">
+                <h2 style="margin-bottom: 20px; color: #333;">Plantillas Rápidas</h2>
+                
+                <div class="category-badge">TRANSFORMACIONES DE PERSONAS</div>
+                <div class="templates-grid">
+                    <div class="template-card" onclick="loadPersonTemplate('glamour')">
+                        <h3>💃 Sesión Glamour</h3>
+                        <p>Transformación de alta moda con vestido elegante, maquillaje profesional</p>
+                    </div>
+                    <div class="template-card" onclick="loadPersonTemplate('casual')">
+                        <h3>👕 Look Casual</h3>
+                        <p>Ropa casual urbana, peinado relajado, ambiente natural</p>
+                    </div>
+                    <div class="template-card" onclick="loadPersonTemplate('fantasy')">
+                        <h3>🧝 Elfo Fantástico</h3>
+                        <p>Orejas puntiagudas, ropa medieval, cabello largo, ojos brillantes</p>
+                    </div>
+                    <div class="template-card" onclick="loadPersonTemplate('cyberpunk')">
+                        <h3>🤖 Cyborg Futurista</h3>
+                        <p>Implantes robóticos, ropa neón, cabello colorido</p>
+                    </div>
+                    <div class="template-card" onclick="loadPersonTemplate('victoriano')">
+                        <h3>🎩 Era Victoriana</h3>
+                        <p>Ropa siglo XIX, peinado de época, elegante</p>
+                    </div>
+                    <div class="template-card" onclick="loadPersonTemplate('superhero')">
+                        <h3>🦸 Superhéroe</h3>
+                        <p>Traje de superhéroe, poderes, capa dramática</p>
+                    </div>
+                </div>
+
+                <div class="category-badge" style="margin-top: 30px;">GENERAL</div>
+                <div class="templates-grid">
+                    <div class="template-card" onclick="loadGeneralTemplate('landscape')">
+                        <h3>🏞️ Paisaje Natural</h3>
+                        <p>Montañas, luz dorada, alta calidad</p>
+                    </div>
+                    <div class="template-card" onclick="loadGeneralTemplate('city')">
+                        <h3>🌃 Ciudad Nocturna</h3>
+                        <p>Luces neón, cyberpunk, futurista</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">
+        <span>✅</span>
+        <span id="toastMessage">Prompt copiado</span>
+    </div>
+
+    <script>
+        const states = {
+            personas: {
+                subject: '',
+                vestuario: '',
+                cabelloEstilo: '',
+                cabelloColor: [],
+                maquillaje: '',
+                ojos: '',
+                piel: '',
+                accesorios: [],
+                quality: []
+            },
+            transformaciones: {
+                subject: '',
+                epoca: '',
+                profesion: '',
+                edad: '',
+                efectos: [],
+                estiloArt: ''
+            },
+            general: {
+                subject: '',
+                style: '',
+                shot: '',
+                angle: '',
+                lighting: '',
+                composition: '',
+                colors: '',
+                mood: '',
+                texture: '',
+                weather: '',
+                quality: [],
+                effects: []
+            }
+        };
+
+        // Estilos para tab general
+        const styleOptionsGeneral = {
+            photography: [
+                { value: 'fotografía realista', label: 'Fotografía Realista' },
+                { value: 'fotografía de retrato', label: 'Retrato' },
+                { value: 'fotografía de moda', label: 'Moda' },
+                { value: 'fotografía documental', label: 'Documental' },
+                { value: 'fotografía callejera', label: 'Callejera' },
+                { value: 'fotografía de vida salvaje', label: 'Vida Salvaje' },
+                { value: 'fotografía macro', label: 'Macro' },
+                { value: 'fotografía aérea', label: 'Aérea' },
+                { value: 'fotografía de paisaje', label: 'Paisaje' },
+                { value: 'fotografía de producto', label: 'Producto' }
+            ],
+            painting: [
+                { value: 'pintura al óleo', label: 'Óleo' },
+                { value: 'pintura de acuarela', label: 'Acuarela' },
+                { value: 'pintura impresionista', label: 'Impresionista' },
+                { value: 'pintura surrealista', label: 'Surrealista' },
+                { value: 'pintura abstracta', label: 'Abstracto' },
+                { value: 'estilo renacentista', label: 'Renacentista' },
+                { value: 'estilo barroco', label: 'Barroco' },
+                { value: 'estilo pop art', label: 'Pop Art' },
+                { value: 'pintura expresionista', label: 'Expresionista' },
+                { value: 'pintura cubista', label: 'Cubista' }
+            ],
+            digital: [
+                { value: 'arte digital', label: 'Arte Digital' },
+                { value: 'arte conceptual', label: 'Arte Conceptual' },
+                { value: 'estilo cyberpunk', label: 'Cyberpunk' },
+                { value: 'arte de fantasía', label: 'Fantasía' },
+                { value: 'arte de ciencia ficción', label: 'Ciencia Ficción' },
+                { value: 'estilo anime', label: 'Anime' },
+                { value: 'estilo de caricatura', label: 'Caricatura' },
+                { value: 'arte vectorial', label: 'Vector' },
+                { value: 'pixel art retro', label: 'Pixel Art' },
+                { value: 'arte matte painting', label: 'Matte Painting' }
+            ],
+            '3d': [
+                { value: 'render 3D', label: 'Render 3D' },
+                { value: '3D low-poly', label: 'Low-Poly' },
+                { value: 'arte voxel', label: 'Voxel' },
+                { value: 'CGI', label: 'CGI' },
+                { value: 'render octane', label: 'Octane Render' },
+                { value: 'unreal engine', label: 'Unreal Engine' },
+                { value: 'render blender', label: 'Blender' },
+                { value: 'render de arcilla', label: 'Arcilla' },
+                { value: 'render isométrico', label: 'Isométrico' },
+                { value: '3D hiperrealista', label: 'Hiperrealista' }
+            ],
+            artist: [
+                { value: 'estilo de Van Gogh', label: 'Van Gogh' },
+                { value: 'estilo de Monet', label: 'Monet' },
+                { value: 'estilo de Picasso', label: 'Picasso' },
+                { value: 'estilo de Dalí', label: 'Dalí' },
+                { value: 'estilo de Banksy', label: 'Banksy' },
+                { value: 'estilo de Greg Rutkowski', label: 'Greg Rutkowski' },
+                { value: 'estilo de Artgerm', label: 'Artgerm' },
+                { value: 'estilo de Studio Ghibli', label: 'Studio Ghibli' },
+                { value: 'estilo de Bob Ross', label: 'Bob Ross' },
+                { value: 'estilo de Alphonse Mucha', label: 'Alphonse Mucha' }
+            ]
+        };
+
+        function updateStyleOptionsGeneral() {
+            const category = document.getElementById('styleCategory-general').value;
+            const container = document.getElementById('styleOptions-general');
+            container.innerHTML = '';
+
+            if (category && styleOptionsGeneral[category]) {
+                styleOptionsGeneral[category].forEach(styleObj => {
+                    const btn = document.createElement('button');
+                    btn.className = 'option-btn';
+                    btn.textContent = styleObj.label;
+                    btn.onclick = function() { selectOption(this, 'style-gen', styleObj.value); };
+                    container.appendChild(btn);
+                });
+            }
+        }
+
+        function selectOption(btn, category, value) {
+            const buttons = btn.parentElement.querySelectorAll('.option-btn');
+            buttons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            let activeTab = 'personas';
+            if (!document.getElementById('transformaciones-tab').classList.contains('hidden')) {
+                activeTab = 'transformaciones';
+            } else if (!document.getElementById('general-tab').classList.contains('hidden')) {
+                activeTab = 'general';
+            }
+            
+            const categoryMap = {
+                'cabello-estilo': 'cabelloEstilo',
+                'estilo-art': 'estiloArt',
+                'style-gen': 'style',
+                'angle-gen': 'angle',
+                'shot-gen': 'shot',
+                'lighting-gen': 'lighting',
+                'composition-gen': 'composition',
+                'colors-gen': 'colors',
+                'mood-gen': 'mood',
+                'texture-gen': 'texture',
+                'weather-gen': 'weather'
+            };
+            
+            const mappedCategory = categoryMap[category] || category;
+            states[activeTab][mappedCategory] = value;
+            updatePrompt(activeTab);
+        }
+
+        function updatePrompt(tab) {
+            const state = states[tab];
+            let prompt = '';
+
+            if (tab === 'personas') {
+                const subject = document.getElementById('subject-person').value;
+                state.subject = subject;
+                
+                state.cabelloColor = [];
+                for (let i = 1; i <= 8; i++) {
+                    const cb = document.getElementById('hair-color' + i);
+                    if (cb && cb.checked) state.cabelloColor.push(cb.value);
+                }
+                
+                state.accesorios = [];
+                for (let i = 1; i <= 8; i++) {
+                    const cb = document.getElementById('acc' + i);
+                    if (cb && cb.checked) state.accesorios.push(cb.value);
+                }
+                
+                state.quality = [];
+                for (let i = 1; i <= 6; i++) {
+                    const cb = document.getElementById('quality-p' + i);
+                    if (cb && cb.checked) state.quality.push(cb.value);
+                }
+
+                if (subject) prompt += subject;
+                if (state.vestuario) prompt += (prompt ? ', ' : '') + state.vestuario;
+                if (state.cabelloEstilo) prompt += (prompt ? ', ' : '') + state.cabelloEstilo;
+                if (state.cabelloColor.length > 0) prompt += (prompt ? ', ' : '') + state.cabelloColor.join(', ');
+                if (state.maquillaje) prompt += (prompt ? ', ' : '') + state.maquillaje;
+                if (state.ojos) prompt += (prompt ? ', ' : '') + state.ojos;
+                if (state.piel) prompt += (prompt ? ', ' : '') + state.piel;
+                if (state.accesorios.length > 0) prompt += (prompt ? ', ' : '') + state.accesorios.join(', ');
+                if (state.quality.length > 0) prompt += (prompt ? ', ' : '') + state.quality.join(', ');
+
+                document.getElementById('promptPreviewPersonas').textContent = prompt || 'Tu prompt de transformación aparecerá aquí...';
+                
+            } else if (tab === 'transformaciones') {
+                const subject = document.getElementById('subject-transform').value;
+                state.subject = subject;
+                
+                state.efectos = [];
+                for (let i = 1; i <= 10; i++) {
+                    const cb = document.getElementById('efx' + i);
+                    if (cb && cb.checked) state.efectos.push(cb.value);
+                }
+
+                if (subject) prompt += subject;
+                if (state.epoca) prompt += (prompt ? ', ' : '') + state.epoca;
+                if (state.profesion) prompt += (prompt ? ', ' : '') + state.profesion;
+                if (state.edad) prompt += (prompt ? ', ' : '') + state.edad;
+                if (state.efectos.length > 0) prompt += (prompt ? ', ' : '') + state.efectos.join(', ');
+                if (state.estiloArt) prompt += (prompt ? ', ' : '') + state.estiloArt;
+
+                document.getElementById('promptPreviewTransform').textContent = prompt || 'Tu prompt de transformación creativa aparecerá aquí...';
+                
+            } else if (tab === 'general') {
+                const subject = document.getElementById('subject-general').value;
+                state.subject = subject;
+                
+                state.quality = [];
+                for (let i = 1; i <= 10; i++) {
+                    const cb = document.getElementById('quality-g' + i);
+                    if (cb && cb.checked) state.quality.push(cb.value);
+                }
+                
+                state.effects = [];
+                for (let i = 1; i <= 12; i++) {
+                    const cb = document.getElementById('effect-g' + i);
+                    if (cb && cb.checked) state.effects.push(cb.value);
+                }
+
+                if (subject) prompt += subject;
+                if (state.style) prompt += (prompt ? ', ' : '') + state.style;
+                if (state.shot) prompt += (prompt ? ', ' : '') + state.shot;
+                if (state.angle) prompt += (prompt ? ', ' : '') + state.angle;
+                if (state.lighting) prompt += (prompt ? ', ' : '') + state.lighting;
+                if (state.composition) prompt += (prompt ? ', ' : '') + state.composition;
+                if (state.colors) prompt += (prompt ? ', ' : '') + state.colors;
+                if (state.mood) prompt += (prompt ? ', ' : '') + state.mood;
+                if (state.texture) prompt += (prompt ? ', ' : '') + state.texture;
+                if (state.weather) prompt += (prompt ? ', ' : '') + state.weather;
+                if (state.quality.length > 0) prompt += (prompt ? ', ' : '') + state.quality.join(', ');
+                if (state.effects.length > 0) prompt += (prompt ? ', ' : '') + state.effects.join(', ');
+
+                document.getElementById('promptPreviewGeneral').textContent = prompt || 'Tu prompt completo aparecerá aquí...';
+            }
+        }
+
+        function copyPrompt(tab) {
+            let previewId = 'promptPreviewPersonas';
+            if (tab === 'transformaciones') previewId = 'promptPreviewTransform';
+            if (tab === 'general') previewId = 'promptPreviewGeneral';
+            
+            const prompt = document.getElementById(previewId).textContent;
+            
+            if (prompt && !prompt.includes('aparecerá aquí')) {
+                navigator.clipboard.writeText(prompt).then(() => {
+                    showToast('✅ Prompt copiado! Úsalo en tu generador de IA');
+                });
+            } else {
+                showToast('⚠️ Completa al menos la descripción base', 'warning');
+            }
+        }
+
+        function savePrompt(tab) {
+            let previewId = 'promptPreviewPersonas';
+            if (tab === 'transformaciones') previewId = 'promptPreviewTransform';
+            if (tab === 'general') previewId = 'promptPreviewGeneral';
+            
+            const prompt = document.getElementById(previewId).textContent;
+            
+            if (prompt && !prompt.includes('aparecerá aquí')) {
+                let saved = JSON.parse(localStorage.getItem('prompts') || '[]');
+                saved.push({
+                    prompt: prompt,
+                    date: new Date().toISOString(),
+                    tab: tab
+                });
+                localStorage.setItem('prompts', JSON.stringify(saved));
+                showToast('💾 Prompt guardado');
+            }
+        }
+
+        function resetTab(tab) {
+            if (tab === 'personas') {
+                document.getElementById('subject-person').value = '';
+                for (let i = 1; i <= 8; i++) {
+                    const cb = document.getElementById('hair-color' + i);
+                    if (cb) cb.checked = false;
+                }
+                for (let i = 1; i <= 8; i++) {
+                    const cb = document.getElementById('acc' + i);
+                    if (cb) cb.checked = false;
+                }
+                for (let i = 1; i <= 6; i++) {
+                    const cb = document.getElementById('quality-p' + i);
+                    if (cb) cb.checked = false;
+                }
+            } else if (tab === 'transformaciones') {
+                document.getElementById('subject-transform').value = '';
+                for (let i = 1; i <= 10; i++) {
+                    const cb = document.getElementById('efx' + i);
+                    if (cb) cb.checked = false;
+                }
+            } else if (tab === 'general') {
+                document.getElementById('subject-general').value = '';
+                document.getElementById('styleCategory-general').value = '';
+                document.getElementById('styleOptions-general').innerHTML = '';
+                for (let i = 1; i <= 10; i++) {
+                    const cb = document.getElementById('quality-g' + i);
+                    if (cb) cb.checked = false;
+                }
+                for (let i = 1; i <= 12; i++) {
+                    const cb = document.getElementById('effect-g' + i);
+                    if (cb) cb.checked = false;
+                }
+            }
+            
+            document.querySelectorAll('.option-btn.active').forEach(btn => btn.classList.remove('active'));
+            
+            states[tab] = tab === 'personas' ? {
+                subject: '', vestuario: '', cabelloEstilo: '', cabelloColor: [], 
+                maquillaje: '', ojos: '', piel: '', accesorios: [], quality: []
+            } : tab === 'transformaciones' ? {
+                subject: '', epoca: '', profesion: '', edad: '', efectos: [], estiloArt: ''
+            } : {
+                subject: '', style: '', shot: '', angle: '', lighting: '', composition: '',
+                colors: '', mood: '', texture: '', weather: '', quality: [], effects: []
+            };
+            
+            updatePrompt(tab);
+            showToast('🔄 Limpio, empieza de nuevo');
+        }
+
+        function switchTab(tabName) {
+            document.getElementById('personas-tab').classList.add('hidden');
+            document.getElementById('transformaciones-tab').classList.add('hidden');
+            document.getElementById('general-tab').classList.add('hidden');
+            document.getElementById('plantillas-tab').classList.add('hidden');
+
+            document.getElementById(tabName + '-tab').classList.remove('hidden');
+
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            toastMessage.textContent = message;
+            toast.style.display = 'flex';
+            toast.style.background = type === 'warning' ? '#f56565' : '#48bb78';
+
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+
+        function loadPersonTemplate(type) {
+            switchTab('personas');
+            resetTab('personas');
+            
+            const templates = {
+                glamour: {
+                    subject: 'Mujer elegante',
+                    vestuario: 'vestido elegante de gala',
+                    cabelloEstilo: 'cabello largo con ondas suaves',
+                    maquillaje: 'maquillaje dramático con smokey eyes',
+                    quality: ['iluminación profesional de estudio', 'fotografía de retrato de alta resolución', 'fondo desenfocado bokeh']
+                },
+                casual: {
+                    subject: 'Persona joven',
+                    vestuario: 'ropa casual urbana',
+                    cabelloEstilo: 'cabello con estilo relajado',
+                    quality: ['iluminación natural', 'expresión natural y relajada']
+                },
+                fantasy: {
+                    subject: 'Persona transformada en elfo',
+                    vestuario: 'ropa medieval fantástica',
+                    cabelloEstilo: 'cabello largo liso',
+                    ojos: 'ojos verdes esmeralda',
+                    accesorios: ['corona de flores'],
+                    efectos: ['orejas de elfo puntiagudas', 'ojos brillantes con luz interior']
+                },
+                cyberpunk: {
+                    subject: 'Persona en futuro cyberpunk',
+                    vestuario: 'ropa futurista con luces neón',
+                    cabelloEstilo: 'cabello corto con estilo futurista',
+                    cabelloColor: ['cabello con mechas multicolor'],
+                    efectos: ['transformado en cyborg mitad robot']
+                },
+                victoriano: {
+                    subject: 'Persona en era victoriana',
+                    vestuario: 'vestido victoriano del siglo XIX',
+                    cabelloEstilo: 'moño elegante de época',
+                    quality: ['iluminación cinematográfica', 'fotografía de retrato de alta resolución']
+                },
+                superhero: {
+                    subject: 'Superhéroe poderoso',
+                    vestuario: 'traje de superhéroe con capa',
+                    efectos: ['con superpoderes emanando energía', 'ojos brillantes con luz interior']
+                }
+            };
+            
+            const t = templates[type];
+            document.getElementById('subject-person').value = t.subject;
+            states.personas = {
+                subject: t.subject,
+                vestuario: t.vestuario || '',
+                cabelloEstilo: t.cabelloEstilo || '',
+                cabelloColor: t.cabelloColor || [],
+                maquillaje: t.maquillaje || '',
+                ojos: t.ojos || '',
+                piel: '',
+                accesorios: t.accesorios || [],
+                quality: t.quality || []
+            };
+            
+            setTimeout(() => {
+                if (t.quality) {
+                    t.quality.forEach(q => {
+                        for (let i = 1; i <= 6; i++) {
+                            const cb = document.getElementById('quality-p' + i);
+                            if (cb && cb.value === q) cb.checked = true;
+                        }
+                    });
+                }
+                updatePrompt('personas');
+            }, 100);
+            
+            showToast('✨ Plantilla cargada: ' + type);
+        }
+
+        function loadGeneralTemplate(type) {
+            switchTab('general');
+            resetTab('general');
+            
+            if (type === 'landscape') {
+                document.getElementById('subject-general').value = 'Paisaje de montañas al atardecer';
+                states.general = {
+                    subject: 'Paisaje de montañas al atardecer',
+                    style: 'fotografía realista',
+                    lighting: 'luz de hora dorada cálida',
+                    quality: ['muy detallado intrincado', 'resolución 8k ultra alta'],
+                    effects: []
+                };
+            } else if (type === 'city') {
+                document.getElementById('subject-general').value = 'Ciudad futurista de noche';
+                states.general = {
+                    subject: 'Ciudad futurista de noche',
+                    style: 'render 3D',
+                    lighting: 'luces de neón vibrantes',
+                    quality: ['muy detallado intrincado', 'ultra realista'],
+                    effects: []
+                };
+            }
+            
+            setTimeout(() => {
+                states.general.quality.forEach(q => {
+                    for (let i = 1; i <= 10; i++) {
+                        const cb = document.getElementById('quality-g' + i);
+                        if (cb && cb.value === q) cb.checked = true;
+                    }
+                });
+                updatePrompt('general');
+            }, 100);
+            
+            showToast('✨ Plantilla cargada');
+        }
+
+        // Event listeners
+        document.getElementById('subject-person').addEventListener('input', () => updatePrompt('personas'));
+        document.getElementById('subject-transform').addEventListener('input', () => updatePrompt('transformaciones'));
+        document.getElementById('subject-general').addEventListener('input', () => updatePrompt('general'));
+        
+        for (let i = 1; i <= 8; i++) {
+            const cb = document.getElementById('hair-color' + i);
+            if (cb) cb.addEventListener('change', () => updatePrompt('personas'));
+        }
+        for (let i = 1; i <= 8; i++) {
+            const cb = document.getElementById('acc' + i);
+            if (cb) cb.addEventListener('change', () => updatePrompt('personas'));
+        }
+        for (let i = 1; i <= 6; i++) {
+            const cb = document.getElementById('quality-p' + i);
+            if (cb) cb.addEventListener('change', () => updatePrompt('personas'));
+        }
+        for (let i = 1; i <= 10; i++) {
+            const cb = document.getElementById('efx' + i);
+            if (cb) cb.addEventListener('change', () => updatePrompt('transformaciones'));
+        }
+        for (let i = 1; i <= 10; i++) {
+            const cb = document.getElementById('quality-g' + i);
+            if (cb) cb.addEventListener('change', () => updatePrompt('general'));
+        }
+        for (let i = 1; i <= 12; i++) {
+            const cb = document.getElementById('effect-g' + i);
+            if (cb) cb.addEventListener('change', () => updatePrompt('general'));
+        }
+
+        updatePrompt('personas');
+    </script>
+</body>
+</html>

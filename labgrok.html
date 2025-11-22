@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ProtoPrompts 2.0 ⚡</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <style>
+    body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+    .chip { transition: all 0.2s; }
+    .chip.selected { background-color: #4f46e5; color: white; }
+    .preview-img { transition: all 0.4s ease; }
+  </style>
+</head>
+<body class="text-gray-800 dark:text-gray-200">
+
+<div class="min-h-screen py-8 px-4">
+  <div class="max-w-5xl mx-auto">
+    
+    <h1 class="text-4xl md:text-5xl font-bold text-center text-white mb-2">
+      ProtoPrompts 2.0
+    </h1>
+    <p class="text-center text-white/80 mb-10">Crea prompts perfectos sin saber inglés técnico</p>
+
+    <div class="grid lg:grid-cols-2 gap-8">
+
+      <!-- Panel izquierdo: Controles -->
+      <div class="space-y-6">
+
+        <!-- 1. Imagen de referencia -->
+        <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-6 shadow-2xl">
+          <label class="block text-sm font-semibold text-white mb-3">
+            Imagen de referencia (opcional)
+          </label>
+          <div class="border-2 border-dashed border-white/30 rounded-xl p-8 text-center">
+            <input type="file" id="upload" accept="image/*" class="hidden" />
+            <label for="upload" class="cursor-pointer">
+              <i class="fas fa-cloud-upload-alt text-4xl text-white/60 mb-3"></i>
+              <p class="text-white/80">Haz clic o arrastra una foto</p>
+            </label>
+            <img id="previewImg" class="preview-img mt-4 max-w-full rounded-lg mx-auto hidden shadow-lg" />
+          </div>
+        </div>
+
+        <!-- 2. Sujeto -->
+        <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-6 shadow-2xl">
+          <label class="block text-sm font-semibold text-white mb-2">¿Qué quieres ver?</label>
+          <input type="text" id="sujeto" placeholder="Ej: una chica con vestido rojo, un dragón volando, un coche clásico..."
+                 class="w-full px-4 py-3 rounded-lg bg-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-4 focus:ring-indigo-500">
+        </div>
+
+        <!-- 3. Estilos (chips) -->
+        <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-6 shadow-2xl">
+          <label class="block text-sm font-semibold text-white mb-3">Estilos artísticos</label>
+          <div id="estilosContainer" class="flex flex-wrap gap-2">
+            <!-- Los chips se generan con JS -->
+          </div>
+        </div>
+
+        <!-- 4. Ángulos y luces -->
+        <div class="grid grid-cols-2 gap-4">
+          <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-6 shadow-2xl">
+            <label class="block text-sm font-semibold text-white mb-3">Ángulo</label>
+            <select id="angulo" class="w-full px-4 py-3 rounded-lg bg-white/20 text-white focus:outline-none focus:ring-4 focus:ring-indigo-500">
+              <option value="">Automático</option>
+              <option value="frontal close-up portrait">Retrato frontal cercano</option>
+              <option value="three quarter view">Tres cuartos</option>
+              <option value="side profile">Perfil lateral</option>
+              <option value="from above, bird's eye">Desde arriba (ojo de pájaro)</option>
+              <option value="low angle shot">Ángulo bajo (heroico)</option>
+              <option value="wide establishing shot">Plano amplio</option>
+            </select>
+          </div>
+
+          <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-6 shadow-2xl">
+            <label class="block text-sm font-semibold text-white mb-3">Iluminación</label>
+            <select id="luz" class="w-full px-4 py-3 rounded-lg bg-white/20 text-white focus:outline-none focus:ring-4 focus:ring-indigo-500">
+              <option value="">Automático</option>
+              <option value="soft natural daylight">Luz natural suave</option>
+              <option value="golden hour sunset">Atardecer dorado</option>
+              <option value="dramatic rim lighting">Iluminación de contorno dramática</option>
+              <option value="neon cyberpunk night">Neón nocturno cyberpunk</option>
+              <option value="studio lighting">Luz de estudio profesional</option>
+              <option value="volumetric god rays">Rayos volumétricos divinos</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- 5. Sliders avanzados -->
+        <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-6 shadow-2xl space-y-4">
+          <div>
+            <label class="text-sm text-white">Nivel de detalle</label>
+            <input type="range" id="detalle" min="1" max="5" value="4" class="w-full">
+            <div class="flex justify-between text-xs text-white/70">
+              <span>Básico</span><span id="detalleText">Muy alto</span><span>Extremo</span>
+            </div>
+          </div>
+          <div>
+            <label class="text-sm text-white">Intensidad del estilo</label>
+            <input type="range" id="intensidad" min="0" max="3" value="1" step="0.1" class="w-full">
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Panel derecho: Prompt en vivo + botón copiar -->
+      <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-8 shadow-2xl h-fit">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-2xl font-bold text-white">Prompt generado</h2>
+          <button id="copyBtn" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg text-white font-medium transition">
+            <i class="fas fa-copy mr-2"></i>Copiar
+          </button>
+        </div>
+
+        <textarea id="promptOutput" readonly
+          class="w-full h-96 p-5 bg-black/40 rounded-lg text-white font-mono text-sm resize-none focus:outline-none"
+          placeholder="Tu prompt aparecerá aquí en tiempo real..."></textarea>
+
+        <div id="copiedAlert" class="mt-3 text-center text-green-400 font-bold hidden">
+          ¡Copiado al portapapeles!
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+// Lista de estilos (incluye los más populares de Banana Prompts + muchos más)
+const estilosLista = [
+  "hyper-realistic cinematic","photorealistic 8k","black and white","oil painting","watercolor",
+  "anime","manga","cyberpunk","vaporwave","studio ghibli","disney pixar","lego style",
+  "claymation","pixel art","vector art","neon noir","steampunk","gothic","baroque",
+  "surrealism","low poly","isometric","octane render","unreal engine","volumetric lighting",
+  "35mm film","polaroid","vintage 90s","dreamy pastel","dark fantasy","sci-fi concept art"
+];
+
+const estilosContainer = document.getElementById('estilosContainer');
+let estilosSeleccionados = [];
+
+estilosLista.forEach(est => {
+  const chip = document.createElement('span');
+  chip.className = "chip px-4 py-2 rounded-full bg-white/20 text-white text-sm cursor-pointer hover:bg-white/30";
+  chip.textContent = est;
+  chip.onclick = () => {
+    chip.classList.toggle('selected');
+    if (chip.classList.includes(est)) {
+      estilosSeleccionados = estilosSeleccionados.filter(e => e !== est);
+    } else {
+      estilosSeleccionados.push(est);
+    }
+    actualizarPrompt();
+  };
+  estilosContainer.appendChild(chip);
+});
+
+// Preview imagen
+document.getElementById('upload').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const img = document.getElementById('previewImg');
+      img.src = ev.target.result;
+      img.classList.remove('hidden');
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+// Actualizar en tiempo real
+const inputs = ['sujeto','angulo','luz','detalle','intensidad'];
+inputs.forEach(id => {
+  document.getElementById(id).addEventListener('input', actualizarPrompt);
+});
+
+// Detalle texto
+document.getElementById('detalle').addEventListener('input', e => {
+  const vals = ["Básico","Alto","Muy alto","Ultra","Extremo"];
+  document.getElementById('detalleText').textContent = vals[e.target.value-1];
+  actualizarPrompt();
+});
+
+function actualizarPrompt() {
+  let sujeto = document.getElementById('sujeto').value.trim() || "una escena increíble";
+  let estiloTxt = estilosSeleccionados.length ? ", " + estilosSeleccionados.join(", ") + " style" : "";
+  let angulo = document.getElementById('angulo').value ? ", " + document.getElementById('angulo').value : "";
+  let luz = document.getElementById('luz').value ? ", " + document.getElementById('luz').value : "";
+  let ref = document.getElementById('upload').files.length ? " [use uploaded image as reference for face/body/details]" : "";
+  
+  const detalle = parseInt(document.getElementById('detalle').value);
+  const intensidad = parseFloat(document.getElementById('intensidad').value).toFixed(1);
+  
+  let calidad = "highly detailed, sharp focus, 8k HDR";
+  if (detalle >= 5) calidad = "intricate, ultra-detailed, masterpiece, best quality, absurdres";
+  
+  let pesoEstilo = intensidad > 0 ? ` (${estilosSeleccionados.join(':'):intensidad})` : "";
+
+  const prompt = `${sujeto}${estiloTxt}${pesoEstilo}${angulo}${luz}${ref}, ${calidad}, cinematic lighting, professional photography`;
+
+  document.getElementById('promptOutput').value = prompt.trim();
+}
+
+// Copiar al portapapeles
+document.getElementById('copyBtn').addEventListener('click', () => {
+  const textarea = document.getElementById('promptOutput');
+  textarea.select();
+  document.execCommand('copy');
+  
+  const alert = document.getElementById('copiedAlert');
+  alert.classList.remove('hidden');
+  setTimeout(() => alert.classList.add('hidden'), 2000);
+});
+
+// Primera carga
+actualizarPrompt();
+</script>
+
+</body>
+</html>
