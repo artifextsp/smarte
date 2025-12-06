@@ -179,7 +179,7 @@
             "url": "https://myaccount.google.com/security",
             "type": "link",
             "description": "Se debe activar la autenticación en dos pasos para acceder a los servicios de automatización de gmail.",
-            "order": 1
+            "order": 2
           },
           {
             "id": "miturxa56h7o5boy98v",
@@ -187,7 +187,7 @@
             "url": "https://myaccount.google.com/apppasswords",
             "type": "link",
             "description": "Se genera una contraseña asociada al email para que el servicio de automatización de correos pueda enviar y recibir emails de forma automática",
-            "order": 2
+            "order": 3
           },
           {
             "id": "mituvdgk7ertv371gp8",
@@ -195,7 +195,7 @@
             "url": "https://cloudinary.com/",
             "type": "link",
             "description": "Repositorio para la administración de mis imágenes y videos para la landing page",
-            "order": 3
+            "order": 4
           },
           {
             "id": "mituwl1ta00riycpka4",
@@ -203,7 +203,7 @@
             "url": "https://brandmark.io/",
             "type": "link",
             "description": "Creación del logo de la marca",
-            "order": 4
+            "order": 5
           },
           {
             "id": "mitvpknu371c8curclp",
@@ -211,7 +211,7 @@
             "url": "https://chat.deepseek.com/",
             "type": "link",
             "description": "Deep Seek ofrece buen recurso de tokens los cuales son suficientes para el desarrollo",
-            "order": 5
+            "order": 6
           },
           {
             "id": "mitvrmcepfg5be19vps",
@@ -219,7 +219,7 @@
             "url": "https://github.com/signup",
             "type": "link",
             "description": "Almacenamiento en la nube de mi página web",
-            "order": 7
+            "order": 8
           },
           {
             "id": "mitvwzzrrd2adczpgk9",
@@ -227,7 +227,7 @@
             "url": "https://builder.io/",
             "type": "link",
             "description": "Mayor apoyo de la IA",
-            "order": 6
+            "order": 7
           },
           {
             "id": "mitvymfsbxs3ulbwt9v",
@@ -235,7 +235,15 @@
             "url": "https://vercel.com/signup",
             "type": "link",
             "description": "Nombre comercial en la nube",
-            "order": 8
+            "order": 9
+          },
+          {
+            "id": "mitwhka9wod3mfjq74",
+            "title": "0. CONFERENCIA BASE",
+            "url": "https://drive.google.com/file/d/1whDc6_rNyOik9s171qOei8CoCut45LgN/view?usp=sharing",
+            "type": "link",
+            "description": "Conferencia base del curso",
+            "order": 1
           }
         ]
       }
