@@ -98,7 +98,7 @@
             "url": "SUPERPROMPTS.html",
             "type": "platform",
             "description": "Biblioteca de superprompts con aplicación a emprendimiento",
-            "order": 2
+            "order": 1
           },
           {
             "id": "mi9psf6ceazdlj2yn4",
@@ -106,15 +106,7 @@
             "url": "CALCULADORA_FINANCIERA.html",
             "type": "link",
             "description": "Educación financiera de indicadores de inversión",
-            "order": 3
-          },
-          {
-            "id": "mia9zoxzlh4assnh5wh",
-            "title": "CONFERENCIA",
-            "url": "https://drive.google.com/file/d/1UHfhbPDAhrDT9uUdbieZ4OY43bUlcV8G/view?usp=drive_link",
-            "type": "pdf",
-            "description": "Base teórica de la jornada",
-            "order": 1
+            "order": 2
           }
         ]
       },
@@ -163,14 +155,87 @@
             "type": "platform",
             "description": "Generador de prompts para aplicar a la generación de imágenes con IA",
             "order": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "mitulge54e6wzc4b9k",
+    "name": "LANDING PAGE Y WEB APPS",
+    "icon": null,
+    "description": "Diseño y construcción de la página web del emprendimiento con web apps internas como aplicativos de automatización",
+    "order": 3,
+    "chapters": [
+      {
+        "id": "mitumljtvr4ex72amzl",
+        "name": "PRE - REQUISITOS DE DESARROLLO",
+        "description": "Los elementos y herramientas necesarias para el desarrollo",
+        "order": 1,
+        "resources": [
+          {
+            "id": "mitupxjzjk8khvxarw",
+            "title": "1. ACTIVACIÓN DEL SERVICIO DE AUTENTICACIÓN DE GMAIL",
+            "url": "https://myaccount.google.com/security",
+            "type": "link",
+            "description": "Se debe activar la autenticación en dos pasos para acceder a los servicios de automatización de gmail.",
+            "order": 1
           },
           {
-            "id": "miaa3ibs2jz9vwthexx",
-            "title": "CATÁLOGO IS MULTIMEDIA",
-            "url": "MULTIMEDIA.html",
-            "type": "platform",
-            "description": "Biblioteca de enlaces web de acceso a IA multimedia para el procesamiento de imágenes, audio y vídeo.",
+            "id": "miturxa56h7o5boy98v",
+            "title": "2. GENERACIÓN DE LA CONTRASEÑA DE APLICACIÓN",
+            "url": "https://myaccount.google.com/apppasswords",
+            "type": "link",
+            "description": "Se genera una contraseña asociada al email para que el servicio de automatización de correos pueda enviar y recibir emails de forma automática",
             "order": 2
+          },
+          {
+            "id": "mituvdgk7ertv371gp8",
+            "title": "3. MATERIAL VISUAL DE MI LANDING PAGE",
+            "url": "https://cloudinary.com/",
+            "type": "link",
+            "description": "Repositorio para la administración de mis imágenes y videos para la landing page",
+            "order": 3
+          },
+          {
+            "id": "mituwl1ta00riycpka4",
+            "title": "4. BRANDING",
+            "url": "https://brandmark.io/",
+            "type": "link",
+            "description": "Creación del logo de la marca",
+            "order": 4
+          },
+          {
+            "id": "mitvpknu371c8curclp",
+            "title": "5. IA DE DESARROLLO",
+            "url": "https://chat.deepseek.com/",
+            "type": "link",
+            "description": "Deep Seek ofrece buen recurso de tokens los cuales son suficientes para el desarrollo",
+            "order": 5
+          },
+          {
+            "id": "mitvrmcepfg5be19vps",
+            "title": "6. ALOJAMIENTO EN LA NUBE (HOSTING)",
+            "url": "https://github.com/signup",
+            "type": "link",
+            "description": "Almacenamiento en la nube de mi página web",
+            "order": 7
+          },
+          {
+            "id": "mitvwzzrrd2adczpgk9",
+            "title": "5.1 IA DE DESARROLLO BASADA EN AGENTES",
+            "url": "https://builder.io/",
+            "type": "link",
+            "description": "Mayor apoyo de la IA",
+            "order": 6
+          },
+          {
+            "id": "mitvymfsbxs3ulbwt9v",
+            "title": "7. NOMBRE EN LA NUBE (DOMINIO)",
+            "url": "https://vercel.com/signup",
+            "type": "link",
+            "description": "Nombre comercial en la nube",
+            "order": 8
           }
         ]
       }
